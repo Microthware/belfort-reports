@@ -94,7 +94,15 @@
       <div class="section-title">Current Holdings</div>
       <table>
         <thead>
-          <tr><th>Symbol</th><th>Qty</th><th>% of Portfolio</th><th>% Since Buy</th><th>Current Value</th><th>Value at Buy</th></tr>
+          <tr>
+            <th>Symbol</th>
+            <th>Qty</th>
+            <th>% of Portfolio</th>
+            <th>% Since Buy</th>
+            <th>Current Value</th>
+            <th>Value at Buy</th>
+            <th>Buy Time</th> <!-- moved to last column -->
+          </tr>
         </thead>
         <tbody id="holdingsBody"></tbody>
       </table>
@@ -152,6 +160,7 @@
 
     const fmtMoney = v => (v==null ? "—" : "$"+Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}));
     const fmtPct   = v => (v==null ? "—" : (v*100).toFixed(2)+"%");
+    const fmtQty   = v => (v==null ? "—" : Number(v).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:6}));
     const fmtTime  = iso => {
       if(!iso) return "—";
       const d = new Date(iso);
@@ -209,43 +218,76 @@
         }
       }
 
-      // Open holdings
+      // Open holdings + invested value & buy time (earliest remaining lot)
       const holdings = [];
-      let totalValue = 0;
+      let investedValue = 0;
       for(const sym of Object.keys(lots)){
-        let qty=0, cost=0;
-        for(const lot of lots[sym]){ qty += lot.qty; cost += lot.qty*lot.price; }
+        let qty=0, cost=0, firstBuyTime=null;
+        for(const lot of lots[sym]){
+          if(!firstBuyTime) firstBuyTime = lot.time;
+          qty += lot.qty;
+          cost += lot.qty*lot.price;
+        }
         if(qty>0){
           const price = lastPrice[sym] || 0;
           const cur = qty*price;
-          totalValue += cur;
+          investedValue += cur;
           const gainPct = cost>0 ? (cur - cost)/cost : 0;
-          holdings.push({symbol:sym, qty, price, cost, cur, gainPct});
+          holdings.push({symbol:sym, qty, price, cost, cur, gainPct, buy_time:firstBuyTime});
         }
       }
       holdings.sort((a,b)=> b.cur - a.cur);
-      for(const h of holdings){ h.allocPct = totalValue>0 ? h.cur/totalValue : 0; }
+
+      // Portfolio value from latest balance series point (fallback to investedValue)
+      const series = (BAL && BAL.v) ? BAL.v : [];
+      const latestBal = series.length ? Number(series[series.length-1]) : null;
+      const portfolioValue = (latestBal!=null ? latestBal : investedValue);
+      const cash = Math.max(0, portfolioValue - investedValue);
+
+      // Allocation %
+      for(const h of holdings){ h.allocPct = portfolioValue>0 ? h.cur/portfolioValue : 0; }
 
       closed.sort((a,b)=> (b.sell_time||"").localeCompare(a.sell_time||""));
-      return {holdings, closed};
+      return {holdings, closed, cash, portfolioValue};
     }
 
     (function(){
       const data = buildPortfolio(window.TRADES || []);
 
-      // Holdings
+      // Holdings + CASH row
       const hb = document.getElementById("holdingsBody");
-      hb.innerHTML = data.holdings.length
-        ? data.holdings.map(h=>{
-            const alloc=(h.allocPct*100).toFixed(2)+"%";
-            const gain=(h.gainPct*100).toFixed(2)+"%";
-            const cls = h.gainPct>=0 ? "pct up" : "pct down";
-            return `<tr>
-              <td>${h.symbol}</td><td>${h.qty}</td><td>${alloc}</td>
-              <td class="${cls}">${gain}</td><td>${fmtMoney(h.cur)}</td><td>${fmtMoney(h.cost)}</td>
-            </tr>`;
-          }).join("")
-        : `<tr><td colspan="6" class="note">No open positions.</td></tr>`;
+      let rows = "";
+      if(data.holdings.length){
+        rows += data.holdings.map(h=>{
+          const alloc=(h.allocPct*100).toFixed(2)+"%";
+          const gain=(h.gainPct*100).toFixed(2)+"%";
+          const cls = h.gainPct>=0 ? "pct up" : "pct down";
+          return `<tr>
+            <td>${h.symbol}</td>
+            <td>${fmtQty(h.qty)}</td>
+            <td>${alloc}</td>
+            <td class="${cls}">${gain}</td>
+            <td>${fmtMoney(h.cur)}</td>
+            <td>${fmtMoney(h.cost)}</td>
+            <td>${fmtTime(h.buy_time)}</td>
+          </tr>`;
+        }).join("");
+      } else {
+        rows += `<tr><td colspan="7" class="note">No open positions.</td></tr>`;
+      }
+
+      // CASH row (always show)
+      const cashAlloc = data.portfolioValue>0 ? ((data.cash/data.portfolioValue)*100).toFixed(2)+"%" : "—";
+      rows += `<tr>
+        <td>CASH</td>
+        <td>—</td>
+        <td>${cashAlloc}</td>
+        <td>—</td>
+        <td>${fmtMoney(data.cash)}</td>
+        <td>—</td>
+        <td>—</td>
+      </tr>`;
+      hb.innerHTML = rows;
 
       // Closed trades
       const cb = document.getElementById("closedBody");
@@ -257,7 +299,7 @@
               <td>${fmtTime(t.sell_time)}</td>
               <td>${fmtHold(t.hold_ms)}</td>
               <td>${t.symbol}</td>
-              <td>${t.qty}</td>
+              <td>${fmtQty(t.qty)}</td>
               <td class="${pnlCls}">${fmtPct(t.pnl_pct)}</td>
               <td>${fmtMoney(t.price)}</td>
               <td>${fmtMoney(t.balance_after)}</td>

@@ -9,8 +9,9 @@ from dotenv import load_dotenv
 # ------------------------------------------------------------------
 # Debug & runtime flags
 # ------------------------------------------------------------------
-DEBUG = False
-DISABLE_SYNTH_HOLD = os.environ.get("DISABLE_SYNTH_HOLD", "0") == "1"
+DEBUG = True
+DISABLE_SYNTH_HOLD = os.environ.get("DISABLE_SYNTH_HOLD", "1") == "1"
+HIST_CONSOLIDATE = os.getenv("CONSOLIDATE_HISTORY", "1") == "1"  # consolidated per-bot file default ON
 
 # Make sure local folder is importable (so stock.py works no matter CWD)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -106,7 +107,54 @@ def _slug(name: str) -> str:
     s = re.sub(r"[^a-zA-Z0-9]+", "-", name.strip()).strip("-").lower()
     return s or "bot"
 
-def _load_yesterday_state(model_slug: str) -> Dict[str, Any]:
+# ------------------------------------------------------------------
+# Consolidated history helpers (one file per bot) + legacy fallback
+# ------------------------------------------------------------------
+def _save_history_consolidated(model_slug: str, payload: Dict[str, Any], parsed: BotDay):
+    os.makedirs(HISTORY_DIR, exist_ok=True)
+    path = os.path.join(HISTORY_DIR, f"{model_slug}.json")
+    doc = {"slug": model_slug, "version": 1, "runs": []}
+    try:
+        if os.path.exists(path):
+            doc = json.load(open(path, "r", encoding="utf-8"))
+            if not isinstance(doc.get("runs"), list):
+                doc["runs"] = []
+    except Exception:
+        pass
+
+    run = {
+        "saved_at": datetime.utcnow().isoformat() + "Z",
+        "ending_balance": _ending_balance(parsed),
+        "last_trade_time": parsed.trades[0].time if parsed.trades else None,
+        "raw": payload.get("response"),
+        "prompt": payload.get("prompt"),
+        "parsed": asdict(parsed),
+    }
+    doc["runs"].append(run)
+    json.dump(doc, open(path, "w", encoding="utf-8"), indent=2)
+    if DEBUG:
+        print(f"[history] wrote (consolidated) {path} runs={len(doc['runs'])}")
+
+def _load_yesterday_state_consolidated(model_slug: str) -> Dict[str, Any]:
+    path = os.path.join(HISTORY_DIR, f"{model_slug}.json")
+    if not os.path.exists(path):
+        return {"balance": None, "last_time": None}
+    try:
+        doc = json.load(open(path, "r", encoding="utf-8"))
+        runs = doc.get("runs") or []
+        if not runs:
+            return {"balance": None, "last_time": None}
+        last = runs[-1]
+        return {
+            "balance": last.get("ending_balance"),
+            "last_time": last.get("last_trade_time"),
+        }
+    except Exception as e:
+        if DEBUG:
+            print("[state] failed consolidated read:", repr(e))
+        return {"balance": None, "last_time": None}
+
+def _load_yesterday_state_legacy(model_slug: str) -> Dict[str, Any]:
     pattern = os.path.join(HISTORY_DIR, f"*__{model_slug}.json")
     files = sorted(glob.glob(pattern))
     if not files:
@@ -119,10 +167,15 @@ def _load_yesterday_state(model_slug: str) -> Dict[str, Any]:
         return {"balance": balance, "last_time": last_time}
     except Exception as e:
         if DEBUG:
-            print("[state] failed to read last history:", repr(e))
+            print("[state] failed to read last history (legacy):", repr(e))
         return {"balance": None, "last_time": None}
 
-def _save_history(model_slug: str, payload: Dict[str, Any], parsed: BotDay):
+def _load_yesterday_state(model_slug: str) -> Dict[str, Any]:
+    if HIST_CONSOLIDATE:
+        return _load_yesterday_state_consolidated(model_slug)
+    return _load_yesterday_state_legacy(model_slug)
+
+def _save_history_legacy(model_slug: str, payload: Dict[str, Any], parsed: BotDay):
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     out = {
         "raw": payload,
@@ -135,8 +188,17 @@ def _save_history(model_slug: str, payload: Dict[str, Any], parsed: BotDay):
     path = os.path.join(HISTORY_DIR, f"{ts}__{model_slug}.json")
     json.dump(out, open(path,"w",encoding="utf-8"), indent=2)
     if DEBUG:
-        print("[history] wrote", path)
+        print("[history] wrote (legacy)", path)
 
+def _save_history(model_slug: str, payload: Dict[str, Any], parsed: BotDay):
+    if HIST_CONSOLIDATE:
+        _save_history_consolidated(model_slug, payload, parsed)
+    else:
+        _save_history_legacy(model_slug, payload, parsed)
+
+# ------------------------------------------------------------------
+# Parse & coerce
+# ------------------------------------------------------------------
 def _parse_ai_json(txt: str) -> Dict[str, Any]:
     # Find the first JSON object in the response
     m = re.search(r"\{.*\}", txt, flags=re.S)
@@ -144,8 +206,11 @@ def _parse_ai_json(txt: str) -> Dict[str, Any]:
         raise ValueError("No JSON object found in response.")
     return json.loads(m.group(0))
 
-def _coerce_bot_day(d: Dict[str, Any], carry_balance: float | None) -> BotDay:
-    name = d.get("model_name") or d.get("name") or "Unnamed Bot"
+# Anchor identity to prompt file if provided
+def _coerce_bot_day(d: Dict[str, Any], carry_balance: float | None, canonical_name: Optional[str] = None) -> BotDay:
+    response_name = d.get("model_name") or d.get("name") or "Unnamed Bot"
+    name = canonical_name or response_name  # anchor identity to prompt file if provided
+
     uni = d.get("universe") or d.get("symbols") or []
     starting = d.get("starting_balance")
     if starting is None:
@@ -172,16 +237,8 @@ def _ending_balance(b: BotDay) -> float | None:
             return t.balance_after
     return b.starting_balance
 
-# ---------- NEW: unified FIFO stats (wins/losses from closed sells) ----------
+# ---------- unified FIFO stats ----------
 def _compute_fifo_stats(trades: List[Trade]) -> Dict[str, float]:
-    """
-    Closed-trade stats using FIFO cost basis.
-    Returns:
-      - win_rate_num (0..1),
-      - avg_win_num, avg_loss_num (fractions; e.g., 0.0123 == 1.23%),
-      - trades_count (total actions),
-      - closed_sells (list of dicts)  -- not used by overview, handy for debugging.
-    """
     chron = sorted(trades, key=lambda x: x.time or "")
     lots: Dict[str, List[Dict[str, Any]]] = {}
     closed = []
@@ -240,6 +297,91 @@ def _compute_fifo_stats(trades: List[Trade]) -> Dict[str, float]:
         "trades_count": len(trades),
         "closed_sells": closed,
     }
+
+# ---------- validator (no mutation) ----------
+def _validate_trades_budget(trades: List[Trade], starting_balance: float, prices_today: Dict[str,float]) -> List[str]:
+    issues: List[str] = []
+    EPS_BAL = 0.015  # 1.5% tolerance for balance_after checks
+
+    chron = sorted(trades, key=lambda x: x.time or "")
+    cash = float(starting_balance or 0.0)
+    lots: Dict[str, List[Dict[str, float]]] = {}   # sym -> [{qty,price}]
+    last_px: Dict[str, float] = {}
+
+    def port_value() -> float:
+        total = cash
+        for sym, ls in lots.items():
+            px = prices_today.get(sym.upper(), last_px.get(sym, 0.0))
+            if px > 0:
+                qty = sum(l["qty"] for l in ls)
+                total += qty * px
+        return total
+
+    for t in chron:
+        side = (t.side or "").lower()
+        sym  = t.symbol
+        qty  = float(t.qty or 0)   # allow fractional
+        px   = float(t.price or 0.0)
+        if sym and px > 0:
+            last_px[sym] = px
+
+        if side in ("buy","rebalance"):
+            if px <= 0 or qty < 0:
+                issues.append(f"{t.time} {sym} BUY invalid price/qty (price={px}, qty={qty}).")
+            else:
+                cost = qty * px
+                if cost > cash + 1e-6:
+                    issues.append(f"{t.time} {sym} BUY cost ${cost:,.2f} exceeds available cash ${cash:,.2f}.")
+                else:
+                    lots.setdefault(sym, []).append({"qty": qty, "price": px})
+                    cash -= cost
+
+        elif side == "sell":
+            if px <= 0 or qty < 0:
+                issues.append(f"{t.time} {sym} SELL invalid price/qty (price={px}, qty={qty}).")
+            else:
+                held = sum(l["qty"] for l in lots.get(sym, []))
+                if qty > held + 1e-9:
+                    issues.append(f"{t.time} {sym} SELL qty {qty} exceeds held {held}.")
+                else:
+                    remaining = qty
+                    fifo_cost = 0.0
+                    for lot in list(lots.get(sym, [])):
+                        if remaining <= 1e-12: break
+                        take = min(remaining, lot["qty"])
+                        fifo_cost += take * lot["price"]
+                        lot["qty"] -= take
+                        remaining -= take
+                        if lot["qty"] <= 1e-12:
+                            lots[sym].pop(0)
+                    cash += qty * px
+                    if t.pnl_pct is not None and fifo_cost > 0:
+                        exp = (qty*px - fifo_cost)/fifo_cost
+                        if abs((t.pnl_pct or 0) - exp) > 0.005:
+                            issues.append(f"{t.time} {sym} SELL pnl_pct {t.pnl_pct:.4f} != FIFO {exp:.4f} (tolerance 0.005).")
+
+        # balance_after required & sanity check
+        if t.balance_after is None:
+            issues.append(f"{t.time} {sym or ''} missing balance_after.")
+        else:
+            est = port_value()
+            if est > 0:
+                ba = float(t.balance_after or 0.0)
+                if abs(ba - est) / est > EPS_BAL:
+                    issues.append(f"{t.time} balance_after ${ba:,.2f} != estimated ${est:,.2f} (>{int(EPS_BAL*100)}% diff).")
+
+    return issues
+
+def _build_correction_prompt(original_full_prompt: str, previous_json_text: str, issues: List[str]) -> str:
+    lines = []
+    lines.append(original_full_prompt)
+    lines.append("\n--- PREVIOUS JSON (for reference; fix it) ---\n")
+    lines.append(previous_json_text.strip())
+    lines.append("\n--- VALIDATION ERRORS (you must fix ALL) ---")
+    for it in issues[:20]:  # cap to avoid ballooning
+        lines.append(f"- {it}")
+    lines.append("\nRe-output STRICT JSON ONLY (no commentary, no code fences), obeying all budget/qty rules and including 'balance_after' for EVERY action.")
+    return "\n".join(lines)
 
 # ------------------------------------------------------------------
 # Candidates (stock.py preferred; Finviz + leaders fallback)
@@ -353,7 +495,7 @@ def _format_prices_for_prompt(prices: Dict[str, float]) -> str:
     return ", ".join(f"{k}={v:.2f}" for k, v in sorted(prices.items()))
 
 # ------------------------------------------------------------------
-# Aggregation
+# Aggregation (consolidated-aware)
 # ------------------------------------------------------------------
 def _history_files_for(model_slug: str):
     pattern = os.path.join(HISTORY_DIR, f"*__{model_slug}.json")
@@ -375,46 +517,87 @@ def _aggregate_history(model_slug: str, latest_bot: BotDay) -> BotDay:
     universe_latest = latest_bot.universe
     portfolio_latest = latest_bot.portfolio_analysis
 
-    for path in _history_files_for(model_slug):
+    consolidated = os.path.join(HISTORY_DIR, f"{model_slug}.json")
+    if os.path.exists(consolidated):
         try:
-            blob = json.load(open(path, "r", encoding="utf-8"))
-        except Exception:
-            continue
+            doc = json.load(open(consolidated, "r", encoding="utf-8"))
+            runs = doc.get("runs") or []
+            for run in runs:
+                parsed = run.get("parsed") or {}
+                sb = parsed.get("starting_balance")
+                if sb is not None and earliest_start is None:
+                    try: earliest_start = float(sb)
+                    except: pass
 
-        parsed = blob.get("parsed") or {}
-        sb = parsed.get("starting_balance")
-        if sb is not None and earliest_start is None:
+                uni = parsed.get("universe")
+                if uni: universe_latest = uni
+
+                pa = parsed.get("portfolio_analysis") or ""
+                if pa: portfolio_latest = pa
+
+                for td in (parsed.get("trades") or []):
+                    k = _trade_key(td)
+                    if k in seen:
+                        continue
+                    seen.add(k)
+                    try:
+                        all_trades.append(Trade(
+                            time=str(td.get("time")),
+                            symbol=str(td.get("symbol")),
+                            side=str(td.get("side")).lower(),
+                            qty=float(td.get("qty") or 0),
+                            price=float(td.get("price") or 0),
+                            pnl_pct=(float(td.get("pnl_pct")) if td.get("pnl_pct") is not None else None),
+                            balance_after=(float(td.get("balance_after")) if td.get("balance_after") is not None else None),
+                            notes=str(td.get("notes") or ""),
+                        ))
+                    except Exception:
+                        continue
+        except Exception as e:
+            if DEBUG: print("[agg] consolidated read failed:", repr(e))
+
+    else:
+        # legacy timestamped history
+        for path in _history_files_for(model_slug):
             try:
-                earliest_start = float(sb)
-            except Exception:
-                pass
-
-        uni = parsed.get("universe")
-        if uni:
-            universe_latest = uni
-
-        pa = parsed.get("portfolio_analysis") or ""
-        if pa:
-            portfolio_latest = pa
-
-        for td in (parsed.get("trades") or []):
-            k = _trade_key(td)
-            if k in seen:
-                continue
-            seen.add(k)
-            try:
-                all_trades.append(Trade(
-                    time=str(td.get("time")),
-                    symbol=str(td.get("symbol")),
-                    side=str(td.get("side")).lower(),
-                    qty=float(td.get("qty") or 0),
-                    price=float(td.get("price") or 0),
-                    pnl_pct=(float(td.get("pnl_pct")) if td.get("pnl_pct") is not None else None),
-                    balance_after=(float(td.get("balance_after")) if td.get("balance_after") is not None else None),
-                    notes=str(td.get("notes") or ""),
-                ))
+                blob = json.load(open(path, "r", encoding="utf-8"))
             except Exception:
                 continue
+
+            parsed = blob.get("parsed") or {}
+            sb = parsed.get("starting_balance")
+            if sb is not None and earliest_start is None:
+                try:
+                    earliest_start = float(sb)
+                except Exception:
+                    pass
+
+            uni = parsed.get("universe")
+            if uni:
+                universe_latest = uni
+
+            pa = parsed.get("portfolio_analysis") or ""
+            if pa:
+                portfolio_latest = pa
+
+            for td in (parsed.get("trades") or []):
+                k = _trade_key(td)
+                if k in seen:
+                    continue
+                seen.add(k)
+                try:
+                    all_trades.append(Trade(
+                        time=str(td.get("time")),
+                        symbol=str(td.get("symbol")),
+                        side=str(td.get("side")).lower(),
+                        qty=float(td.get("qty") or 0),
+                        price=float(td.get("price") or 0),
+                        pnl_pct=(float(td.get("pnl_pct")) if td.get("pnl_pct") is not None else None),
+                        balance_after=(float(td.get("balance_after") if td.get("balance_after") is not None else 0)),
+                        notes=str(td.get("notes") or ""),
+                    ))
+                except Exception:
+                    continue
 
     all_trades.sort(key=lambda x: x.time, reverse=True)
     start_balance = earliest_start if earliest_start is not None else latest_bot.starting_balance
@@ -444,7 +627,8 @@ def _render_overview(env, bots_rows: List[Dict[str, Any]]):
     )
     open(os.path.join(REPORT_DIR,"overview.html"),"w",encoding="utf-8").write(html)
 
-def _render_model(env, b: BotDay, stats: Dict[str, Any], prompt_text: str = "", response_text: str = ""):
+# Accept file_slug for stable filenames
+def _render_model(env, b: BotDay, stats: Dict[str, Any], prompt_text: str = "", response_text: str = "", file_slug: Optional[str] = None):
     tpl = env.get_template("model_report.html")
     series = {"t":[], "v":[]}
     chron = list(sorted(b.trades, key=lambda x: x.time))
@@ -467,7 +651,6 @@ def _render_model(env, b: BotDay, stats: Dict[str, Any], prompt_text: str = "", 
         gen_time=time.strftime("%m/%d/%y %H:%M"),
         tz=TZ,
         balance_text=bal_text,
-        # unified numbers (fractions)
         win_rate_num=stats.get("win_rate_num", 0.0),
         avg_win_num=stats.get("avg_win_num", 0.0),
         avg_loss_num=stats.get("avg_loss_num", 0.0),
@@ -476,11 +659,14 @@ def _render_model(env, b: BotDay, stats: Dict[str, Any], prompt_text: str = "", 
             "time": t.time,
             "symbol": t.symbol,
             "side": t.side,
-            "qty": f"{t.qty:.4f}".rstrip("0").rstrip("."),
-            "price": f"{t.price:.4f}",
-            "pnl_pct": (f"{t.pnl_pct*100:.2f}%" if t.pnl_pct is not None else "—"),
+            "qty": f"{t.qty:.6f}".rstrip("0").rstrip("."),   # more precision for fractional shares
+            "qty_num": float(t.qty),
+            "price": f"{t.price:.6f}",
+            "price_num": float(t.price),
+            "pnl_pct": (f"{(t.pnl_pct*100):.2f}%" if t.pnl_pct is not None else "—"),
             "pnl_pct_num": (t.pnl_pct if t.pnl_pct is not None else 0.0),
             "balance_after": (f"${t.balance_after:,.2f}" if t.balance_after is not None else "—"),
+            "balance_after_num": (float(t.balance_after) if t.balance_after is not None else None),
             "balance_dir": 1 if (t.pnl_pct or 0) >= 0 else -1,
             "notes": t.notes,
         } for t in b.trades],
@@ -488,8 +674,10 @@ def _render_model(env, b: BotDay, stats: Dict[str, Any], prompt_text: str = "", 
         portfolio_analysis=b.portfolio_analysis,
         prompt_text=prompt_text,
         response_text=response_text,
+        start_balance=(b.starting_balance or 0.0),
     )
-    fname = f"{_slug(b.model_name)}.html"
+
+    fname = f"{(file_slug or _slug(b.model_name))}.html"
     open(os.path.join(REPORT_DIR, fname),"w",encoding="utf-8").write(html)
     return fname
 
@@ -515,11 +703,12 @@ def _build_prompt(base_prompt: str, yesterday: Dict[str,Any], candidates_note: s
     parts.append(f"- Starting balance for a new/first run: {start_balance_hint}.")
     parts.append(f"- Include only NEW actions since {last or 'yesterday'} but ensure the final 'balance_after' reflects current balance.")
     parts.append("- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.")
-    parts.append("- Allocate ~100% of capital across 1–4 positions using PRICES_TODAY (USD). For each buy, compute whole-share 'qty' = floor(allocation * starting_balance / price). Set 'balance_after' equal to total portfolio value after actions. PNL may be 0 on entry.")
-    parts.append("- Use ISO8601 UTC timestamps (e.g., 2025-10-06T15:30:00Z).")
-    parts.append("- Provide pnl_pct for closed trades when possible.")
-    parts.append("- Keep numbers as raw numbers (no % symbols).")
-    parts.append("- Include a concise 'portfolio_analysis' explaining the day's selection/rationale in 1–4 sentences.")
+    parts.append("- Allocate ~100% of capital across 1–4 positions using PRICES_TODAY (USD). Buys may be **fractional shares** (qty can be decimal, ≥ 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.")
+    parts.append("- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.")
+    parts.append("- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.")
+    parts.append("- Keep numbers raw (no % signs in 'pnl_pct').")
+    parts.append("- HARD BUDGET: Do NOT exceed available cash. Sum(qty*price) across BUYS must be ≤ available cash at that step. SELL 'qty' must be ≤ currently held shares (FIFO). If your draft violates any rule, recalc before you answer.")
+    parts.append("- End-of-day you may hold 1–4 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.")
     parts.append("PRICES_TODAY (USD):")
     parts.append(prices_note)
     parts.append("CANDIDATES_TODAY:")
@@ -529,7 +718,6 @@ def _build_prompt(base_prompt: str, yesterday: Dict[str,Any], candidates_note: s
     parts.append("=== STRATEGY CONTEXT ===")
     parts.append(base_prompt)
 
-    # Minimal HOLD example for clarity
     parts.append(
         'Example HOLD:\n'
         '{\n'
@@ -634,12 +822,12 @@ def main():
     prompts = _load_prompts()
     bots_rows = []
 
-    # Scan candidates & prices once per run
-    # buckets = _scan_candidates()  # enable when desired
-    buckets = {}
+    # Scan candidates & prices once per run (toggle with USE_SCAN, default ON)
+    USE_SCAN = os.getenv("USE_SCAN", "1") == "1"
+    buckets = _scan_candidates() if USE_SCAN else {}
     candidates_note = _format_candidates_for_prompt(buckets)
     uniq: List[str] = sorted({t.upper() for arr in buckets.values() for t in arr})
-    prices = _fetch_prices(uniq)
+    prices = _fetch_prices(uniq) if uniq else {}
     prices_note = _format_prices_for_prompt(prices)
     if DEBUG:
         print("[scan] CANDIDATE buckets:", {k: len(v) for k, v in buckets.items()})
@@ -669,9 +857,33 @@ def main():
                 print("[parse] raw snippet:", raw[:2000])
             data = {"model_name": fname, "universe": [], "starting_balance": yest.get("balance", DEFAULT_START_BAL), "portfolio_analysis": "", "trades": []}
 
-        latest = _coerce_bot_day(data, yest.get("balance"))
+        # Anchor to prompt name
+        latest = _coerce_bot_day(data, yest.get("balance"), canonical_name=fname)
         if DEBUG:
             print(f"[parsed] trades={len(latest.trades)} starting_balance={latest.starting_balance}")
+
+        # Validate (do not modify). If invalid, ask the model to correct itself.
+        issues = _validate_trades_budget(latest.trades, latest.starting_balance or DEFAULT_START_BAL, prices)
+        if issues:
+            if DEBUG:
+                print("[validate] issues found:", len(issues))
+                for e in issues[:10]:
+                    print("  -", e)
+            correction_prompt = _build_correction_prompt(full_prompt, raw, issues)
+            raw2 = query_model(fname, correction_prompt)
+            try:
+                data2 = _parse_ai_json(raw2)
+                latest2 = _coerce_bot_day(data2, yest.get("balance"), canonical_name=fname)
+                issues2 = _validate_trades_budget(latest2.trades, latest2.starting_balance or DEFAULT_START_BAL, prices)
+                if not issues2 and len(latest2.trades) > 0:
+                    if DEBUG: print("[validate] correction succeeded")
+                    latest = latest2
+                    raw = raw2
+                else:
+                    if DEBUG:
+                        print("[validate] correction still invalid; keeping original (unmodified).")
+            except Exception as e:
+                if DEBUG: print("[validate] correction parse failed:", repr(e))
 
         # Retry once if empty
         if len(latest.trades) == 0:
@@ -679,7 +891,7 @@ def main():
             raw2 = query_model(fname, retry_prompt)
             try:
                 data2 = _parse_ai_json(raw2)
-                latest2 = _coerce_bot_day(data2, yest.get("balance"))
+                latest2 = _coerce_bot_day(data2, yest.get("balance"), canonical_name=fname)
                 if len(latest2.trades) > 0:
                     if DEBUG: print("[retry] succeeded with trades:", len(latest2.trades))
                     latest = latest2
@@ -706,11 +918,15 @@ def main():
         # Aggregate full history for display & stats parity across runs
         agg = _aggregate_history(slug, latest)
 
-        # ---------- unified stats (used by both pages) ----------
+        # Pretty display name derived from prompt filename (keep slug stable)
+        pretty_name = fname.replace("-", " ").replace("_", " ").title()
+        agg.model_name = pretty_name
+
+        # unified stats (used by both pages)
         stats = _compute_fifo_stats(agg.trades)
 
-        # Render model page (pass unified numbers)
-        page = _render_model(env, agg, stats, prompt_text=full_prompt, response_text=raw)
+        # Render model page (stable file name based on prompt slug)
+        page = _render_model(env, agg, stats, prompt_text=full_prompt, response_text=raw, file_slug=slug)
 
         end_bal = _ending_balance(agg) or 0.0
         start_bal = agg.starting_balance or 0.0
@@ -734,14 +950,13 @@ def main():
             "avg_loss": f"{stats['avg_loss_num']*100:.2f}%",
             "balance": f"${end_bal:,.2f}" if end_bal else "—",
             "balance_dir": 1 if end_bal >= start_bal else -1,
-            "trades": len(agg.trades),            # show total actions
+            "trades": len(agg.trades),
             "total_actions": len(agg.trades),
             "updated": time.strftime("%m/%d/%y %H:%M"),
             "link": page,
         })
 
     _render_overview(env, bots_rows)
-
     print("Report generated")
 
 if __name__ == "__main__":

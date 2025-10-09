@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>doc — Report</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{--bg:#0b0f14;--card:#11161d;--muted:#8ea0b3;--text:#e7eef7;--green:#16a34a;--red:#dc2626;--border:#223142;--barbg:#2c3238}
+    html,body{background:var(--bg);color:var(--text);margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    .wrap{max-width:1100px;margin:28px auto 20px;padding:0 16px}
+    header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:12px}
+    h1{font-size:22px;margin:0}
+    .updated{color:var(--muted);font-size:12px}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
+    .section-title{font-size:14px;font-weight:700;margin:6px 0 10px;letter-spacing:.3px;color:#cfe1f7}
+    .muted{color:var(--muted);font-size:12px}
+    .value{font-size:20px;font-weight:700}
+    .donut{display:flex;align-items:center;gap:12px}
+    .pie{--p:50%;width:48px;height:48px;border-radius:50%;background:conic-gradient(var(--green) var(--p),var(--red) 0);-webkit-mask:radial-gradient(farthest-side,#0000 58%,#000 60%);mask:radial-gradient(farthest-side,#0000 58%,#000 60%);box-shadow:0 0 0 1px var(--border) inset}
+    .winrate-num{font-size:18px;font-weight:800}
+    .bar-block{display:grid;gap:8px}
+    .hbar{background:var(--barbg);height:12px;border-radius:6px;overflow:hidden;position:relative}
+    .hbar .fill.win{background:var(--green);height:100%;width:0}
+    .hbar .fill.loss{background:var(--red);height:100%;width:0}
+    .legend{display:flex;gap:12px;margin-top:4px;color:var(--muted);font-size:12px;align-items:center;flex-wrap:wrap}
+    .legend .chip{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:6px}
+    table{width:100%;border-collapse:collapse}
+    thead th{text-align:left;font-weight:600;font-size:13px;color:var(--muted);padding:10px 12px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border)}
+    tbody td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:14px}
+    .money.up{color:var(--green);font-weight:600}
+    .money.down{color:var(--red);font-weight:600}
+    .pct.up{color:var(--green);font-weight:600}
+    .pct.down{color:var(--red);font-weight:600}
+    .note{color:var(--muted)}
+    details{border:1px solid var(--border);border-radius:12px;background:var(--card);padding:0}
+    details>summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:700}
+    details>summary::-webkit-details-marker{display:none}
+    details .inner{padding:0 14px 14px}
+    pre{white-space:pre-wrap;word-break:break-word}
+    /* Balance chart container ensures no overflow */
+    #balanceWrap{height:160px; position: relative;}
+    #spark{width:100%; height:160px; display:block;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>doc — Report</h1>
+      <div class="updated">Updated 10/08/25 16:00</div>
+    </header>
+
+    <!-- Top grid: Balance (with axes) / Win donut / Avg Win vs Loss -->
+    <div class="grid">
+      <!-- Balance card (includes sparkline WITH axes, contained) -->
+      <section class="card" style="grid-column: span 5;">
+        <div class="section-title">Balance</div>
+        <div class="value" style="margin-bottom:6px">$10,000.00</div>
+        <div id="balanceWrap"><canvas id="spark"></canvas></div>
+      </section>
+
+      <section class="card" style="grid-column: span 3;">
+        <div class="section-title">Win Rate</div>
+        <div class="donut">
+          <div class="pie" id="winPie" style="--p:0%;"></div>
+          <div class="winrate-num" id="winNum">0%</div>
+        </div>
+        <div class="muted" style="margin-top:6px">wins vs losses (closed trades)</div>
+      </section>
+
+      <section class="card" style="grid-column: span 4;">
+        <div class="section-title">Avg Win vs Avg Loss</div>
+        <div class="bar-block">
+          <div>
+            <div class="muted">Average Win</div>
+            <div class="hbar"><div class="fill win" id="barWin"></div></div>
+          </div>
+          <div>
+            <div class="muted">Average Loss</div>
+            <div class="hbar"><div class="fill loss" id="barLoss"></div></div>
+          </div>
+          <div class="legend">
+            <span><span class="chip" style="background:var(--green)"></span>Avg Win PNL %</span>
+            <span><span class="chip" style="background:var(--red)"></span>Avg Loss PNL %</span>
+            <span id="barVals" class="muted">0.00% vs 0.00%</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Current Holdings -->
+    <section class="card" style="margin-top:14px;">
+      <div class="section-title">Current Holdings</div>
+      <table>
+        <thead>
+          <tr><th>Symbol</th><th>Qty</th><th>% of Portfolio</th><th>% Since Buy</th><th>Current Value</th><th>Value at Buy</th></tr>
+        </thead>
+        <tbody id="holdingsBody"></tbody>
+      </table>
+      <div class="muted" style="margin-top:6px;">Values use the last known trade price per symbol unless live quotes are provided.</div>
+    </section>
+
+    <!-- Closed Trades (sells only) with buy/sell/hold times -->
+    <section class="card" style="margin-top:14px;">
+      <div class="section-title">Closed Trades</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Buy Time</th>
+            <th>Sell Time</th>
+            <th>Hold Time</th>
+            <th>Symbol</th>
+            <th>Qty</th>
+            <th>PNL %</th>
+            <th>Price</th>
+            <th>Balance After</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="closedBody"></tbody>
+      </table>
+    </section>
+
+    <!-- Expandables (bottom, closed by default) -->
+    
+    <details style="margin-top:14px;">
+      <summary>Portfolio Analysis</summary>
+      <div class="inner"><pre>Dev mode sample (no API key).</pre></div>
+    </details>
+    
+
+    
+    <details style="margin-top:12px;">
+      <summary>Prompt</summary>
+      <div class="inner"><pre>You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.
+
+- Starting balance for a new/first run: 10000.0.
+
+- Include only NEW actions since 2025-10-08T19:32:26.957315Z but ensure the final &#39;balance_after&#39; reflects current balance.
+
+- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with &#39;balance_after&#39;.
+
+- Allocate ~100% of capital across 1–4 positions using PRICES_TODAY (USD). For each buy, compute whole-share &#39;qty&#39; = floor(allocation * starting_balance / price). Set &#39;balance_after&#39; equal to total portfolio value after actions. PNL may be 0 on entry.
+
+- Use ISO8601 UTC timestamps (e.g., 2025-10-06T15:30:00Z).
+
+- Provide pnl_pct for closed trades when possible.
+
+- Keep numbers as raw numbers (no % symbols).
+
+- Include a concise &#39;portfolio_analysis&#39; explaining the day&#39;s selection/rationale in 1–4 sentences.
+
+PRICES_TODAY (USD):
+
+(none)
+
+CANDIDATES_TODAY:
+
+(total candidates: 0)
+
+Schema:
+
+{
+  &#34;model_name&#34;: &#34;&lt;string&gt;&#34;,
+  &#34;universe&#34;: [&#34;SYM&#34;,&#34;...&#34;] | &#34;ALL&#34;,
+  &#34;starting_balance&#34;: &lt;number&gt;,
+  &#34;portfolio_analysis&#34;: &#34;&lt;string&gt;&#34;,
+  &#34;trades&#34;: [
+    {
+      &#34;time&#34;: &#34;&lt;ISO8601Z&gt;&#34;,
+      &#34;symbol&#34;: &#34;&lt;string&gt;&#34;,
+      &#34;side&#34;: &#34;buy&#34;|&#34;sell&#34;|&#34;hold&#34;|&#34;rebalance&#34;,
+      &#34;qty&#34;: &lt;number&gt;,
+      &#34;price&#34;: &lt;number&gt;,
+      &#34;pnl_pct&#34;: &lt;number|null&gt;,
+      &#34;balance_after&#34;: &lt;number&gt;,
+      &#34;notes&#34;: &#34;&lt;string&gt;&#34;
+    }
+  ]
+}
+
+=== STRATEGY CONTEXT ===
+
+Objective
+- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.
+- You take high risk and concentrate the entire portfolio in 1–4 stocks at all times.
+
+Universe
+- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set &#34;universe&#34; to &#34;ALL&#34; or a short representative list you actively monitored.
+
+Daily mandate
+- End each day holding 1–4 positions and be fully invested unless explicitly holding cash is optimal.
+- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a “notes” explanation).
+
+Selection &amp; sizing
+- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.
+- Allocate across 1–4 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.). It’s OK to be 100% in one.
+- Use whole-share quantities; reflect the resulting balance_after after each action.
+
+Trade cadence
+- If you’re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.
+- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.
+
+Risk &amp; constraints
+- Favor large/mega-cap liquidity; avoid penny stocks.
+- No options; equities/ETFs only.
+
+
+Example HOLD:
+{
+  &#34;model_name&#34;: &#34;example&#34;,
+  &#34;universe&#34;: &#34;ALL&#34;,
+  &#34;starting_balance&#34;: 10000.0,
+  &#34;portfolio_analysis&#34;: &#34;No new setups; preserving capital.&#34;,
+  &#34;trades&#34;: [
+    {&#34;time&#34;:&#34;2025-10-07T14:30:00Z&#34;,&#34;symbol&#34;:&#34;CASH&#34;,&#34;side&#34;:&#34;hold&#34;,&#34;qty&#34;:0,&#34;price&#34;:0,&#34;pnl_pct&#34;:null,&#34;balance_after&#34;:10000.0,&#34;notes&#34;:&#34;No change today; waiting for setups.&#34;}
+  ]
+}
+</pre></div>
+    </details>
+    
+
+    
+    <details style="margin-top:12px;">
+      <summary>Response</summary>
+      <div class="inner"><pre>{&#34;model_name&#34;:&#34;doc&#34;,&#34;universe&#34;:&#34;ALL&#34;,&#34;starting_balance&#34;:10000.0,&#34;portfolio_analysis&#34;:&#34;Dev mode sample (no API key).&#34;,&#34;trades&#34;:[{&#34;time&#34;:&#34;2025-10-08T20:00:20.305089Z&#34;,&#34;symbol&#34;:&#34;CASH&#34;,&#34;side&#34;:&#34;hold&#34;,&#34;qty&#34;:0,&#34;price&#34;:0,&#34;pnl_pct&#34;:null,&#34;balance_after&#34;:10000.0,&#34;notes&#34;:&#34;Auto HOLD: no trades returned; maintaining balance.&#34;}]}</pre></div>
+    </details>
+    
+  </div>
+
+  <script>
+    // server-provided data
+    window.TRADES = [{"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-08T20:00:20.305089Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-08T19:32:26.957315Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-08T19:31:50.940018Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-08T19:22:13.708928Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-08T19:11:18.304320Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:34:39.833749Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:33:04.333271Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:26:42.376397Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:26:09.553093Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:24:59.813213Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:24:07.448736Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:19:34.962238Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:11:54.663048Z"}];
+    const BAL = {"t":["2025-10-07T20:11:54.663048Z","2025-10-07T20:19:34.962238Z","2025-10-07T20:24:07.448736Z","2025-10-07T20:24:59.813213Z","2025-10-07T20:26:09.553093Z","2025-10-07T20:26:42.376397Z","2025-10-07T20:33:04.333271Z","2025-10-07T20:34:39.833749Z","2025-10-08T19:11:18.304320Z","2025-10-08T19:22:13.708928Z","2025-10-08T19:31:50.940018Z","2025-10-08T19:32:26.957315Z","2025-10-08T20:00:20.305089Z"],"v":[10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0]};
+
+    const fmtMoney = v => (v==null ? "—" : "$"+Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}));
+    const fmtPct   = v => (v==null ? "—" : (v*100).toFixed(2)+"%");
+    const fmtTime  = iso => {
+      if(!iso) return "—";
+      const d = new Date(iso);
+      const MM = String(d.getMonth()+1).padStart(2,'0');
+      const DD = String(d.getDate()).padStart(2,'0');
+      const YY = String(d.getFullYear()).slice(-2);
+      const hh = String(d.getHours()).padStart(2,'0');
+      const mm = String(d.getMinutes()).padStart(2,'0');
+      return `${MM}:${DD}:${YY} ${hh}:${mm}`;
+    };
+    const fmtHold  = (ms) => {
+      if(!ms || ms<0) return "—";
+      const d = Math.floor(ms/86400000);
+      ms %= 86400000;
+      const h = Math.floor(ms/3600000);
+      ms %= 3600000;
+      const m = Math.floor(ms/60000);
+      return (d?`${d}d `:"")+`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    };
+
+    // Build holdings & closed sells (FIFO with buy-time capture)
+    function buildPortfolio(trades){
+      const chron = [...trades].sort((a,b)=> (a.time||"").localeCompare(b.time||""));
+      const lots = {};      // sym -> [{qty, price, time}]
+      const lastPrice = {}; // sym -> last known trade price
+      const closed = [];
+
+      for(const t of chron){
+        const side = String(t.side||"").toLowerCase();
+        const sym = t.symbol, qty = Number(t.qty||0), price = Number(t.price||0);
+        if(sym){ if(price>0) lastPrice[sym] = price; else lastPrice[sym] = lastPrice[sym]||0; }
+
+        if(side === "buy" || side === "rebalance"){
+          if(!lots[sym]) lots[sym] = [];
+          if(qty>0 && price>0) lots[sym].push({qty, price, time: t.time});
+        } else if (side === "sell"){
+          let remaining = qty, cost = 0, proceeds = (price||0) * qty;
+          let firstBuyTime = null;
+          if(!lots[sym]) lots[sym] = [];
+          while(remaining > 0 && lots[sym].length){
+            const lot = lots[sym][0];
+            const take = Math.min(remaining, lot.qty);
+            cost += take * lot.price;
+            if(!firstBuyTime) firstBuyTime = lot.time;
+            lot.qty -= take;
+            remaining -= take;
+            if(lot.qty <= 0) lots[sym].shift();
+          }
+          const sellTime = t.time;
+          if(qty > 0 && cost > 0){
+            const pnlPct = (proceeds - cost) / cost;
+            closed.push({
+              buy_time:firstBuyTime, sell_time:sellTime, hold_ms:(firstBuyTime && sellTime) ? (new Date(sellTime)-new Date(firstBuyTime)) : null,
+              symbol:sym, qty, price, balance_after:t.balance_after, notes:t.notes||"", pnl_pct:pnlPct
+            });
+          } else if (t.pnl_pct != null){
+            closed.push({
+              buy_time:firstBuyTime, sell_time:sellTime, hold_ms:(firstBuyTime && sellTime) ? (new Date(sellTime)-new Date(firstBuyTime)) : null,
+              symbol:sym, qty, price, balance_after:t.balance_after, notes:t.notes||"", pnl_pct:Number(t.pnl_pct)
+            });
+          }
+        }
+      }
+
+      // Open holdings
+      const holdings = [];
+      let totalValue = 0;
+      for(const sym of Object.keys(lots)){
+        let qty=0, cost=0;
+        for(const lot of lots[sym]){ qty += lot.qty; cost += lot.qty*lot.price; }
+        if(qty>0){
+          const price = lastPrice[sym] || 0;
+          const cur = qty*price;
+          totalValue += cur;
+          const gainPct = cost>0 ? (cur - cost)/cost : 0;
+          holdings.push({symbol:sym, qty, price, cost, cur, gainPct});
+        }
+      }
+      holdings.sort((a,b)=> b.cur - a.cur);
+      for(const h of holdings){ h.allocPct = totalValue>0 ? h.cur/totalValue : 0; }
+
+      closed.sort((a,b)=> (b.sell_time||"").localeCompare(a.sell_time||""));
+      return {holdings, closed};
+    }
+
+    (function(){
+      const data = buildPortfolio(window.TRADES || []);
+
+      // Win rate & averages from closed
+      const wins = data.closed.filter(x=> x.pnl_pct>0).map(x=> x.pnl_pct);
+      const losses = data.closed.filter(x=> x.pnl_pct<0).map(x=> x.pnl_pct);
+      const total = wins.length + losses.length;
+      const winRate = total ? wins.length/total : 0;
+      const avgWin = wins.length ? wins.reduce((a,b)=>a+b,0)/wins.length : 0;
+      const avgLoss = losses.length ? losses.reduce((a,b)=>a+b,0)/losses.length : 0;
+
+      // Donut + big number (no overlay label)
+      document.getElementById("winPie").style.setProperty("--p",(winRate*100).toFixed(2)+"%");
+      document.getElementById("winNum").textContent = Math.round(winRate*100)+"%";
+
+      // Horizontal bars (scale to max)
+      const mx = Math.max(Math.abs(avgWin), Math.abs(avgLoss), 0.0001);
+      document.getElementById("barWin").style.width = ((Math.abs(avgWin)/mx)*100).toFixed(0)+"%";
+      document.getElementById("barLoss").style.width = ((Math.abs(avgLoss)/mx)*100).toFixed(0)+"%";
+      document.getElementById("barVals").textContent = (avgWin*100).toFixed(2)+"% vs "+(avgLoss*100).toFixed(2)+"%";
+
+      // Holdings
+      const hb = document.getElementById("holdingsBody");
+      hb.innerHTML = data.holdings.length
+        ? data.holdings.map(h=>{
+            const alloc=(h.allocPct*100).toFixed(2)+"%";
+            const gain=(h.gainPct*100).toFixed(2)+"%";
+            const cls = h.gainPct>=0 ? "pct up" : "pct down";
+            return `<tr>
+              <td>${h.symbol}</td><td>${h.qty}</td><td>${alloc}</td>
+              <td class="${cls}">${gain}</td><td>${fmtMoney(h.cur)}</td><td>${fmtMoney(h.cost)}</td>
+            </tr>`;
+          }).join("")
+        : `<tr><td colspan="6" class="note">No open positions.</td></tr>`;
+
+      // Closed trades
+      const cb = document.getElementById("closedBody");
+      cb.innerHTML = data.closed.length
+        ? data.closed.map(t=>{
+            const pnlCls = (t.pnl_pct||0) >= 0 ? "pct up" : "pct down";
+            return `<tr>
+              <td>${fmtTime(t.buy_time)}</td>
+              <td>${fmtTime(t.sell_time)}</td>
+              <td>${fmtHold(t.hold_ms)}</td>
+              <td>${t.symbol}</td>
+              <td>${t.qty}</td>
+              <td class="${pnlCls}">${fmtPct(t.pnl_pct)}</td>
+              <td>${fmtMoney(t.price)}</td>
+              <td>${fmtMoney(t.balance_after)}</td>
+              <td class="note">${t.notes||""}</td>
+            </tr>`;
+          }).join("")
+        : `<tr><td colspan="9" class="note">No closed trades yet.</td></tr>`;
+
+      // Balance chart with axes inside the card
+      (function drawChart(){
+        const cvs = document.getElementById("spark");
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        const wrap = document.getElementById("balanceWrap");
+        const W = Math.floor(wrap.clientWidth * dpr), H = Math.floor(160 * dpr);
+        cvs.width = W; cvs.height = H;
+
+        const ctx = cvs.getContext("2d");
+        const xs = BAL.t || [], ys = BAL.v || [];
+        if(!ctx || xs.length===0 || ys.length===0) return;
+
+        // scale helpers
+        const padL=50*dpr, padR=10*dpr, padT=15*dpr, padB=25*dpr;
+        const minY = Math.min(...ys), maxY = Math.max(...ys), spanY = Math.max(1e-9, maxY-minY);
+        const n = ys.length;
+
+        ctx.clearRect(0,0,W,H);
+        ctx.save();
+        ctx.translate(0.5,0.5);
+
+        // axes
+        ctx.strokeStyle = "rgba(255,255,255,.25)";
+        ctx.lineWidth = 1;
+        // y-axis
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H-padB); ctx.stroke();
+        // x-axis
+        ctx.beginPath(); ctx.moveTo(padL, H-padB); ctx.lineTo(W-padR, H-padB); ctx.stroke();
+
+        // y ticks (min, mid, max)
+        ctx.fillStyle = "rgba(255,255,255,.6)";
+        ctx.font = `${12*dpr}px system-ui, sans-serif`;
+        const yVals = [minY, minY + spanY/2, maxY];
+        yVals.forEach((v,i)=>{
+          const y = H - padB - (H-padT-padB)*((v-minY)/spanY);
+          ctx.strokeStyle = "rgba(255,255,255,.08)";
+          ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W-padR, y); ctx.stroke();
+          ctx.fillText("$"+v.toFixed(0), 6*dpr, y+4*dpr);
+        });
+
+        // line
+        ctx.strokeStyle = "#7dd3fc";
+        ctx.lineWidth = 2*dpr; ctx.beginPath();
+        for(let i=0;i<n;i++){
+          const x = padL + (W-padL-padR) * (i/(n-1));
+          const y = H - padB - (H-padT-padB) * ((ys[i]-minY)/spanY);
+          if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+        }
+        ctx.stroke();
+
+        // x labels (first, mid, last)
+        const labels = [0, Math.floor((n-1)/2), n-1];
+        ctx.fillStyle = "rgba(255,255,255,.6)";
+        labels.forEach(idx=>{
+          const dd = new Date(xs[idx]);
+          const lab = `${String(dd.getMonth()+1).padStart(2,"0")}:${String(dd.getDate()).padStart(2,"0")}`;
+          const x = padL + (W-padL-padR) * (idx/(n-1));
+          ctx.fillText(lab, x-12*dpr, H-7*dpr);
+        });
+
+        ctx.restore();
+      })();
+    })();
+  </script>
+</body>
+</html>

@@ -14,15 +14,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "Gate: only continue if it's 5pm in New York"
+      - name: "Gate: run at 5pm NY on schedule; always run on manual"
         id: gate
         run: |
-          hour=$(TZ="America/New_York" date +%H)
-          echo "NY hour=$hour"
-          if [ "$hour" = "17" ]; then
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual run -> proceeding"
             echo "run_ok=true" >> $GITHUB_OUTPUT
           else
-            echo "run_ok=false" >> $GITHUB_OUTPUT
+            hour=$(TZ="America/New_York" date +%H)
+            echo "NY hour=$hour"
+            if [ "$hour" = "17" ]; then
+              echo "run_ok=true" >> $GITHUB_OUTPUT
+            else
+              echo "run_ok=false" >> $GITHUB_OUTPUT
+            fi
           fi
 
       - name: Checkout
@@ -51,17 +56,34 @@ jobs:
           OPENAI_MODEL: gpt-5
           DEBUG: "0"
           PUBLIC: "1"
-          # REQUIRE_OPENAI: "1"
-          # DISABLE_SYNTH_HOLD: "1"
         run: |
           python dispatcher.py
           cp -f report/overview.html report/index.html || true
           touch report/.nojekyll
+          echo "::group::report dir listing"
+          ls -la report
+          echo "::endgroup::"
 
-      - name: Mirror report/ to docs/ and push
+      - name: Mirror report/ to docs/
         if: steps.gate.outputs.run_ok == 'true'
         run: |
           rm -rf docs/*
           mkdir -p docs
           cp -r dwarfs/report/* docs/
-          git config user.name  "
+          echo "::group::docs AFTER"
+          ls -la docs
+          echo "::endgroup::"
+
+      - name: Commit & push changes
+        if: steps.gate.outputs.run_ok == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Show what changed under docs/
+          git status --porcelain docs
+          # Stage all changes (adds, mods, deletes)
+          git add -A docs
+          # Commit only if there are staged changes
+          git diff --cached --quiet && echo "No changes to commit" || git commit -m "Auto-update report ($(date -u +'%Y-%m-%d %H:%M:%S UTC'))"
+          # Push (will be a no-op if no commit)
+          git push

@@ -1,0 +1,67 @@
+name: Update Report (5pm New York, Mon–Fri)
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 21 * * 1-5"
+    - cron: "0 22 * * 1-5"
+
+permissions:
+  contents: write
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Gate: only continue if it's 5pm in New York"
+        id: gate
+        run: |
+          hour=$(TZ="America/New_York" date +%H)
+          echo "NY hour=$hour"
+          if [ "$hour" = "17" ]; then
+            echo "run_ok=true" >> $GITHUB_OUTPUT
+          else
+            echo "run_ok=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Checkout
+        if: steps.gate.outputs.run_ok == 'true'
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        if: steps.gate.outputs.run_ok == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        if: steps.gate.outputs.run_ok == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || true
+          pip install jinja2 python-dotenv requests beautifulsoup4 lxml yfinance
+
+      - name: Build report (runs dispatcher.py)
+        if: steps.gate.outputs.run_ok == 'true'
+        working-directory: dwarfs
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: gpt-5
+          DEBUG: "0"
+          PUBLIC: "1"
+          # REQUIRE_OPENAI: "1"
+          # DISABLE_SYNTH_HOLD: "1"
+        run: |
+          python dispatcher.py
+          cp -f report/overview.html report/index.html || true
+          touch report/.nojekyll
+
+      - name: Mirror report/ to docs/ and push
+        if: steps.gate.outputs.run_ok == 'true'
+        run: |
+          rm -rf docs/*
+          mkdir -p docs
+          cp -r dwarfs/report/* docs/
+          git config user.name  "

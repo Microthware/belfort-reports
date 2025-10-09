@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>doc — Report</title>
+  <title>Doc — Report</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root{--bg:#0b0f14;--card:#11161d;--muted:#8ea0b3;--text:#e7eef7;--green:#16a34a;--red:#dc2626;--border:#223142;--barbg:#2c3238}
@@ -46,8 +46,8 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>doc — Report</h1>
-      <div class="updated">Updated 10/08/25 16:00</div>
+      <h1>Doc — Report</h1>
+      <div class="updated">Updated 10/09/25 21:29</div>
     </header>
 
     <!-- Top grid: Balance (with axes) / Win donut / Avg Win vs Loss -->
@@ -62,27 +62,28 @@
       <section class="card" style="grid-column: span 3;">
         <div class="section-title">Win Rate</div>
         <div class="donut">
-          <div class="pie" id="winPie" style="--p:0%;"></div>
-          <div class="winrate-num" id="winNum">0%</div>
+          <div class="pie" style="--p: 0.0%;"></div>
+          <div class="winrate-num">0.0%</div>
         </div>
         <div class="muted" style="margin-top:6px">wins vs losses (closed trades)</div>
       </section>
 
+      
       <section class="card" style="grid-column: span 4;">
         <div class="section-title">Avg Win vs Avg Loss</div>
         <div class="bar-block">
           <div>
             <div class="muted">Average Win</div>
-            <div class="hbar"><div class="fill win" id="barWin"></div></div>
+            <div class="hbar"><div class="fill win" style="width: 0.0%;"></div></div>
           </div>
           <div>
             <div class="muted">Average Loss</div>
-            <div class="hbar"><div class="fill loss" id="barLoss"></div></div>
+            <div class="hbar"><div class="fill loss" style="width: 0.0%;"></div></div>
           </div>
           <div class="legend">
             <span><span class="chip" style="background:var(--green)"></span>Avg Win PNL %</span>
             <span><span class="chip" style="background:var(--red)"></span>Avg Loss PNL %</span>
-            <span id="barVals" class="muted">0.00% vs 0.00%</span>
+            <span class="muted">0.0% vs 0.0%</span>
           </div>
         </div>
       </section>
@@ -93,7 +94,15 @@
       <div class="section-title">Current Holdings</div>
       <table>
         <thead>
-          <tr><th>Symbol</th><th>Qty</th><th>% of Portfolio</th><th>% Since Buy</th><th>Current Value</th><th>Value at Buy</th></tr>
+          <tr>
+            <th>Symbol</th>
+            <th>Qty</th>
+            <th>% of Portfolio</th>
+            <th>% Since Buy</th>
+            <th>Current Value</th>
+            <th>Value at Buy</th>
+            <th>Buy Time</th> <!-- moved to last column -->
+          </tr>
         </thead>
         <tbody id="holdingsBody"></tbody>
       </table>
@@ -125,7 +134,7 @@
     
     <details style="margin-top:14px;">
       <summary>Portfolio Analysis</summary>
-      <div class="inner"><pre>Dev mode sample (no API key).</pre></div>
+      <div class="inner"><pre>Concentrated into 3 higher-liquidity momentum names from today&#39;s candidates (gap/pivot). Avoided sub-$5 tickers; near-fully invested to capture trend continuation.</pre></div>
     </details>
     
 
@@ -136,27 +145,31 @@
 
 - Starting balance for a new/first run: 10000.0.
 
-- Include only NEW actions since 2025-10-08T19:32:26.957315Z but ensure the final &#39;balance_after&#39; reflects current balance.
+- Include only NEW actions since yesterday but ensure the final &#39;balance_after&#39; reflects current balance.
 
 - You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with &#39;balance_after&#39;.
 
-- Allocate ~100% of capital across 1–4 positions using PRICES_TODAY (USD). For each buy, compute whole-share &#39;qty&#39; = floor(allocation * starting_balance / price). Set &#39;balance_after&#39; equal to total portfolio value after actions. PNL may be 0 on entry.
+- Allocate ~100% of capital across 1–4 positions using PRICES_TODAY (USD). Buys may be **fractional shares** (qty can be decimal, ≥ 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.
 
-- Use ISO8601 UTC timestamps (e.g., 2025-10-06T15:30:00Z).
+- For EVERY action you output (buy/sell/hold/rebalance), include &#39;balance_after&#39; = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.
 
-- Provide pnl_pct for closed trades when possible.
+- For SELL actions, compute &#39;pnl_pct&#39; from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.
 
-- Keep numbers as raw numbers (no % symbols).
+- Keep numbers raw (no % signs in &#39;pnl_pct&#39;).
 
-- Include a concise &#39;portfolio_analysis&#39; explaining the day&#39;s selection/rationale in 1–4 sentences.
+- HARD BUDGET: Do NOT exceed available cash. Sum(qty*price) across BUYS must be ≤ available cash at that step. SELL &#39;qty&#39; must be ≤ currently held shares (FIFO). If your draft violates any rule, recalc before you answer.
+
+- End-of-day you may hold 1–4 positions or cash if no setups qualify. Always output at least one action with &#39;balance_after&#39;.
 
 PRICES_TODAY (USD):
 
-(none)
+APGE=53.21, BYRN=27.63, CABA=2.85, CSIQ=15.97, DPRO=13.22, IVVD=1.89, LAES=6.09, LPTH=9.60, LWLG=5.95, LXRX=1.64, NKTX=2.36, NUAI=2.83, PATH=18.51, PRSO=1.62, PYXS=3.83, SERV=17.68, SGMT=8.62, SYRE=21.17, TE=3.83, WWR=1.98
 
 CANDIDATES_TODAY:
 
-(total candidates: 0)
+- gap_ups: NUAI, PYXS, LAES, TE, SYRE, CABA, SERV, WWR, PATH, PRSO, NKTX, APGE
+- pivots: NUAI, PYXS, LAES, TE, SYRE, CABA, SERV, IVVD, SGMT, WWR, LWLG, DPRO, LXRX, PATH, PRSO, BYRN, LPTH, CSIQ, NKTX, APGE
+(total candidates: 32)
 
 Schema:
 
@@ -223,18 +236,56 @@ Example HOLD:
     
     <details style="margin-top:12px;">
       <summary>Response</summary>
-      <div class="inner"><pre>{&#34;model_name&#34;:&#34;doc&#34;,&#34;universe&#34;:&#34;ALL&#34;,&#34;starting_balance&#34;:10000.0,&#34;portfolio_analysis&#34;:&#34;Dev mode sample (no API key).&#34;,&#34;trades&#34;:[{&#34;time&#34;:&#34;2025-10-08T20:00:20.305089Z&#34;,&#34;symbol&#34;:&#34;CASH&#34;,&#34;side&#34;:&#34;hold&#34;,&#34;qty&#34;:0,&#34;price&#34;:0,&#34;pnl_pct&#34;:null,&#34;balance_after&#34;:10000.0,&#34;notes&#34;:&#34;Auto HOLD: no trades returned; maintaining balance.&#34;}]}</pre></div>
+      <div class="inner"><pre>{
+  &#34;model_name&#34;: &#34;AggroMomentumV1&#34;,
+  &#34;universe&#34;: &#34;ALL&#34;,
+  &#34;starting_balance&#34;: 10000.0,
+  &#34;portfolio_analysis&#34;: &#34;Concentrated into 3 higher-liquidity momentum names from today&#39;s candidates (gap/pivot). Avoided sub-$5 tickers; near-fully invested to capture trend continuation.&#34;,
+  &#34;trades&#34;: [
+    {
+      &#34;time&#34;: &#34;2025-10-09T14:30:00Z&#34;,
+      &#34;symbol&#34;: &#34;PATH&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 270.1400,
+      &#34;price&#34;: 18.51,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 10000.0,
+      &#34;notes&#34;: &#34;Top momentum from candidates with solid liquidity; core position.&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-09T14:31:00Z&#34;,
+      &#34;symbol&#34;: &#34;CSIQ&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 188.0000,
+      &#34;price&#34;: 15.97,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 10000.0,
+      &#34;notes&#34;: &#34;Pivot continuation in solar; mid-cap with improving multi-timeframe momentum.&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-09T14:32:00Z&#34;,
+      &#34;symbol&#34;: &#34;APGE&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 37.5300,
+      &#34;price&#34;: 53.21,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 10000.0,
+      &#34;notes&#34;: &#34;Strong gap-up candidate with relative strength; smaller allocation due to volatility.&#34;
+    }
+  ]
+}</pre></div>
     </details>
     
   </div>
 
   <script>
     // server-provided data
-    window.TRADES = [{"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-08T20:00:20.305089Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-08T19:32:26.957315Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-08T19:31:50.940018Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-08T19:22:13.708928Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-08T19:11:18.304320Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:34:39.833749Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:33:04.333271Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:26:42.376397Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:26:09.553093Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:24:59.813213Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:24:07.448736Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:19:34.962238Z"}, {"balance_after": "$10,000.00", "balance_dir": 1, "notes": "Auto HOLD: no trades returned; maintaining balance.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.0000", "qty": "0", "side": "hold", "symbol": "CASH", "time": "2025-10-07T20:11:54.663048Z"}];
-    const BAL = {"t":["2025-10-07T20:11:54.663048Z","2025-10-07T20:19:34.962238Z","2025-10-07T20:24:07.448736Z","2025-10-07T20:24:59.813213Z","2025-10-07T20:26:09.553093Z","2025-10-07T20:26:42.376397Z","2025-10-07T20:33:04.333271Z","2025-10-07T20:34:39.833749Z","2025-10-08T19:11:18.304320Z","2025-10-08T19:22:13.708928Z","2025-10-08T19:31:50.940018Z","2025-10-08T19:32:26.957315Z","2025-10-08T20:00:20.305089Z"],"v":[10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0]};
+    window.TRADES = [{"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Strong gap-up candidate with relative strength; smaller allocation due to volatility.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "53.210000", "price_num": 53.21, "qty": "37.53", "qty_num": 37.53, "side": "buy", "symbol": "APGE", "time": "2025-10-09T14:32:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Pivot continuation in solar; mid-cap with improving multi-timeframe momentum.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "15.970000", "price_num": 15.97, "qty": "188", "qty_num": 188.0, "side": "buy", "symbol": "CSIQ", "time": "2025-10-09T14:31:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Top momentum from candidates with solid liquidity; core position.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "18.510000", "price_num": 18.51, "qty": "270.14", "qty_num": 270.14, "side": "buy", "symbol": "PATH", "time": "2025-10-09T14:30:00Z"}];
+    const BAL = {"t":["2025-10-09T14:30:00Z","2025-10-09T14:31:00Z","2025-10-09T14:32:00Z"],"v":[10000.0,10000.0,10000.0]};
 
     const fmtMoney = v => (v==null ? "—" : "$"+Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}));
     const fmtPct   = v => (v==null ? "—" : (v*100).toFixed(2)+"%");
+    const fmtQty   = v => (v==null ? "—" : Number(v).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:6}));
     const fmtTime  = iso => {
       if(!iso) return "—";
       const d = new Date(iso);
@@ -284,76 +335,84 @@ Example HOLD:
             if(lot.qty <= 0) lots[sym].shift();
           }
           const sellTime = t.time;
-          if(qty > 0 && cost > 0){
-            const pnlPct = (proceeds - cost) / cost;
-            closed.push({
-              buy_time:firstBuyTime, sell_time:sellTime, hold_ms:(firstBuyTime && sellTime) ? (new Date(sellTime)-new Date(firstBuyTime)) : null,
-              symbol:sym, qty, price, balance_after:t.balance_after, notes:t.notes||"", pnl_pct:pnlPct
-            });
-          } else if (t.pnl_pct != null){
-            closed.push({
-              buy_time:firstBuyTime, sell_time:sellTime, hold_ms:(firstBuyTime && sellTime) ? (new Date(sellTime)-new Date(firstBuyTime)) : null,
-              symbol:sym, qty, price, balance_after:t.balance_after, notes:t.notes||"", pnl_pct:Number(t.pnl_pct)
-            });
-          }
+          const pnlPct = cost>0 ? (proceeds - cost)/cost : (t.pnl_pct_num ?? null);
+          closed.push({
+            buy_time:firstBuyTime, sell_time:sellTime, hold_ms:(firstBuyTime && sellTime) ? (new Date(sellTime)-new Date(firstBuyTime)) : null,
+            symbol:sym, qty, price, balance_after:t.balance_after, notes:t.notes||"", pnl_pct:pnlPct
+          });
         }
       }
 
-      // Open holdings
+      // Open holdings + invested value & buy time (earliest remaining lot)
       const holdings = [];
-      let totalValue = 0;
+      let investedValue = 0;
       for(const sym of Object.keys(lots)){
-        let qty=0, cost=0;
-        for(const lot of lots[sym]){ qty += lot.qty; cost += lot.qty*lot.price; }
+        let qty=0, cost=0, firstBuyTime=null;
+        for(const lot of lots[sym]){
+          if(!firstBuyTime) firstBuyTime = lot.time;
+          qty += lot.qty;
+          cost += lot.qty*lot.price;
+        }
         if(qty>0){
           const price = lastPrice[sym] || 0;
           const cur = qty*price;
-          totalValue += cur;
+          investedValue += cur;
           const gainPct = cost>0 ? (cur - cost)/cost : 0;
-          holdings.push({symbol:sym, qty, price, cost, cur, gainPct});
+          holdings.push({symbol:sym, qty, price, cost, cur, gainPct, buy_time:firstBuyTime});
         }
       }
       holdings.sort((a,b)=> b.cur - a.cur);
-      for(const h of holdings){ h.allocPct = totalValue>0 ? h.cur/totalValue : 0; }
+
+      // Portfolio value from latest balance series point (fallback to investedValue)
+      const series = (BAL && BAL.v) ? BAL.v : [];
+      const latestBal = series.length ? Number(series[series.length-1]) : null;
+      const portfolioValue = (latestBal!=null ? latestBal : investedValue);
+      const cash = Math.max(0, portfolioValue - investedValue);
+
+      // Allocation %
+      for(const h of holdings){ h.allocPct = portfolioValue>0 ? h.cur/portfolioValue : 0; }
 
       closed.sort((a,b)=> (b.sell_time||"").localeCompare(a.sell_time||""));
-      return {holdings, closed};
+      return {holdings, closed, cash, portfolioValue};
     }
 
     (function(){
       const data = buildPortfolio(window.TRADES || []);
 
-      // Win rate & averages from closed
-      const wins = data.closed.filter(x=> x.pnl_pct>0).map(x=> x.pnl_pct);
-      const losses = data.closed.filter(x=> x.pnl_pct<0).map(x=> x.pnl_pct);
-      const total = wins.length + losses.length;
-      const winRate = total ? wins.length/total : 0;
-      const avgWin = wins.length ? wins.reduce((a,b)=>a+b,0)/wins.length : 0;
-      const avgLoss = losses.length ? losses.reduce((a,b)=>a+b,0)/losses.length : 0;
-
-      // Donut + big number (no overlay label)
-      document.getElementById("winPie").style.setProperty("--p",(winRate*100).toFixed(2)+"%");
-      document.getElementById("winNum").textContent = Math.round(winRate*100)+"%";
-
-      // Horizontal bars (scale to max)
-      const mx = Math.max(Math.abs(avgWin), Math.abs(avgLoss), 0.0001);
-      document.getElementById("barWin").style.width = ((Math.abs(avgWin)/mx)*100).toFixed(0)+"%";
-      document.getElementById("barLoss").style.width = ((Math.abs(avgLoss)/mx)*100).toFixed(0)+"%";
-      document.getElementById("barVals").textContent = (avgWin*100).toFixed(2)+"% vs "+(avgLoss*100).toFixed(2)+"%";
-
-      // Holdings
+      // Holdings + CASH row
       const hb = document.getElementById("holdingsBody");
-      hb.innerHTML = data.holdings.length
-        ? data.holdings.map(h=>{
-            const alloc=(h.allocPct*100).toFixed(2)+"%";
-            const gain=(h.gainPct*100).toFixed(2)+"%";
-            const cls = h.gainPct>=0 ? "pct up" : "pct down";
-            return `<tr>
-              <td>${h.symbol}</td><td>${h.qty}</td><td>${alloc}</td>
-              <td class="${cls}">${gain}</td><td>${fmtMoney(h.cur)}</td><td>${fmtMoney(h.cost)}</td>
-            </tr>`;
-          }).join("")
-        : `<tr><td colspan="6" class="note">No open positions.</td></tr>`;
+      let rows = "";
+      if(data.holdings.length){
+        rows += data.holdings.map(h=>{
+          const alloc=(h.allocPct*100).toFixed(2)+"%";
+          const gain=(h.gainPct*100).toFixed(2)+"%";
+          const cls = h.gainPct>=0 ? "pct up" : "pct down";
+          return `<tr>
+            <td>${h.symbol}</td>
+            <td>${fmtQty(h.qty)}</td>
+            <td>${alloc}</td>
+            <td class="${cls}">${gain}</td>
+            <td>${fmtMoney(h.cur)}</td>
+            <td>${fmtMoney(h.cost)}</td>
+            <td>${fmtTime(h.buy_time)}</td>
+          </tr>`;
+        }).join("");
+      } else {
+        rows += `<tr><td colspan="7" class="note">No open positions.</td></tr>`;
+      }
+
+      // CASH row (always show)
+      const cashAlloc = data.portfolioValue>0 ? ((data.cash/data.portfolioValue)*100).toFixed(2)+"%" : "—";
+      rows += `<tr>
+        <td>CASH</td>
+        <td>—</td>
+        <td>${cashAlloc}</td>
+        <td>—</td>
+        <td>${fmtMoney(data.cash)}</td>
+        <td>—</td>
+        <td>—</td>
+      </tr>`;
+      hb.innerHTML = rows;
 
       // Closed trades
       const cb = document.getElementById("closedBody");
@@ -365,7 +424,7 @@ Example HOLD:
               <td>${fmtTime(t.sell_time)}</td>
               <td>${fmtHold(t.hold_ms)}</td>
               <td>${t.symbol}</td>
-              <td>${t.qty}</td>
+              <td>${fmtQty(t.qty)}</td>
               <td class="${pnlCls}">${fmtPct(t.pnl_pct)}</td>
               <td>${fmtMoney(t.price)}</td>
               <td>${fmtMoney(t.balance_after)}</td>

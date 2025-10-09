@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>{{ model_name }} — Report</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{--bg:#0b0f14;--card:#11161d;--muted:#8ea0b3;--text:#e7eef7;--green:#16a34a;--red:#dc2626;--border:#223142;--barbg:#2c3238}
+    html,body{background:var(--bg);color:var(--text);margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    .wrap{max-width:1100px;margin:28px auto 20px;padding:0 16px}
+    header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:12px}
+    h1{font-size:22px;margin:0}
+    .updated{color:var(--muted);font-size:12px}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
+    .section-title{font-size:14px;font-weight:700;margin:6px 0 10px;letter-spacing:.3px;color:#cfe1f7}
+    .muted{color:var(--muted);font-size:12px}
+    .value{font-size:20px;font-weight:700}
+    .donut{display:flex;align-items:center;gap:12px}
+    .pie{--p:50%;width:48px;height:48px;border-radius:50%;background:conic-gradient(var(--green) var(--p),var(--red) 0);-webkit-mask:radial-gradient(farthest-side,#0000 58%,#000 60%);mask:radial-gradient(farthest-side,#0000 58%,#000 60%);box-shadow:0 0 0 1px var(--border) inset}
+    .winrate-num{font-size:18px;font-weight:800}
+    .bar-block{display:grid;gap:8px}
+    .hbar{background:var(--barbg);height:12px;border-radius:6px;overflow:hidden;position:relative}
+    .hbar .fill.win{background:var(--green);height:100%;width:0}
+    .hbar .fill.loss{background:var(--red);height:100%;width:0}
+    .legend{display:flex;gap:12px;margin-top:4px;color:var(--muted);font-size:12px;align-items:center;flex-wrap:wrap}
+    .legend .chip{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:6px}
+    table{width:100%;border-collapse:collapse}
+    thead th{text-align:left;font-weight:600;font-size:13px;color:var(--muted);padding:10px 12px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border)}
+    tbody td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:14px}
+    .money.up{color:var(--green);font-weight:600}
+    .money.down{color:var(--red);font-weight:600}
+    .pct.up{color:var(--green);font-weight:600}
+    .pct.down{color:var(--red);font-weight:600}
+    .note{color:var(--muted)}
+    details{border:1px solid var(--border);border-radius:12px;background:var(--card);padding:0}
+    details>summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:700}
+    details>summary::-webkit-details-marker{display:none}
+    details .inner{padding:0 14px 14px}
+    pre{white-space:pre-wrap;word-break:break-word}
+    /* Balance chart container ensures no overflow */
+    #balanceWrap{height:160px; position: relative;}
+    #spark{width:100%; height:160px; display:block;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>{{ model_name }} — Report</h1>
+      <div class="updated">Updated {{ gen_time }}</div>
+    </header>
+
+    <!-- Top grid: Balance (with axes) / Win donut / Avg Win vs Loss -->
+    <div class="grid">
+      <!-- Balance card (includes sparkline WITH axes, contained) -->
+      <section class="card" style="grid-column: span 5;">
+        <div class="section-title">Balance</div>
+        <div class="value" style="margin-bottom:6px">{{ balance_text }}</div>
+        <div id="balanceWrap"><canvas id="spark"></canvas></div>
+      </section>
+
+      <section class="card" style="grid-column: span 3;">
+        <div class="section-title">Win Rate</div>
+        <div class="donut">
+          <div class="pie" id="winPie" style="--p:0%;"></div>
+          <div class="winrate-num" id="winNum">0%</div>
+        </div>
+        <div class="muted" style="margin-top:6px">wins vs losses (closed trades)</div>
+      </section>
+
+      <section class="card" style="grid-column: span 4;">
+        <div class="section-title">Avg Win vs Avg Loss</div>
+        <div class="bar-block">
+          <div>
+            <div class="muted">Average Win</div>
+            <div class="hbar"><div class="fill win" id="barWin"></div></div>
+          </div>
+          <div>
+            <div class="muted">Average Loss</div>
+            <div class="hbar"><div class="fill loss" id="barLoss"></div></div>
+          </div>
+          <div class="legend">
+            <span><span class="chip" style="background:var(--green)"></span>Avg Win PNL %</span>
+            <span><span class="chip" style="background:var(--red)"></span>Avg Loss PNL %</span>
+            <span id="barVals" class="muted">0.00% vs 0.00%</span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Current Holdings -->
+    <section class="card" style="margin-top:14px;">
+      <div class="section-title">Current Holdings</div>
+      <table>
+        <thead>
+          <tr><th>Symbol</th><th>Qty</th><th>% of Portfolio</th><th>% Since Buy</th><th>Current Value</th><th>Value at Buy</th></tr>
+        </thead>
+        <tbody id="holdingsBody"></tbody>
+      </table>
+      <div class="muted" style="margin-top:6px;">Values use the last known trade price per symbol unless live quotes are provided.</div>
+    </section>
+
+    <!-- Closed Trades (sells only) with buy/sell/hold times -->
+    <section class="card" style="margin-top:14px;">
+      <div class="section-title">Closed Trades</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Buy Time</th>
+            <th>Sell Time</th>
+            <th>Hold Time</th>
+            <th>Symbol</th>
+            <th>Qty</th>
+            <th>PNL %</th>
+            <th>Price</th>
+            <th>Balance After</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody id="closedBody"></tbody>
+      </table>
+    </section>
+
+    <!-- Expandables (bottom, closed by default) -->
+    {% if portfolio_analysis %}
+    <details style="margin-top:14px;">
+      <summary>Portfolio Analysis</summary>
+      <div class="inner"><pre>{{ portfolio_analysis }}</pre></div>
+    </details>
+    {% endif %}
+
+    {% if prompt_text %}
+    <details style="margin-top:12px;">
+      <summary>Prompt</summary>
+      <div class="inner"><pre>{{ prompt_text }}</pre></div>
+    </details>
+    {% endif %}
+
+    {% if response_text %}
+    <details style="margin-top:12px;">
+      <summary>Response</summary>
+      <div class="inner"><pre>{{ response_text }}</pre></div>
+    </details>
+    {% endif %}
+  </div>
+
+  <script>
+    // server-provided data
+    window.TRADES = {{ trades | tojson }};
+    const BAL = {{ balance_series_json | safe }};
+
+    const fmtMoney = v => (v==null ? "—" : "$"+Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}));
+    const fmtPct   = v => (v==null ? "—" : (v*100).toFixed(2)+"%");
+    const fmtTime  = iso => {
+      if(!iso) return "—";
+      const d = new Date(iso);
+      const MM = String(d.getMonth()+1).padStart(2,'0');
+      const DD = String(d.getDate()).padStart(2,'0');
+      const YY = String(d.getFullYear()).slice(-2);
+      const hh = String(d.getHours()).padStart(2,'0');
+      const mm = String(d.getMinutes()).padStart(2,'0');
+      return `${MM}:${DD}:${YY} ${hh}:${mm}`;
+    };
+    const fmtHold  = (ms) => {
+      if(!ms || ms<0) return "—";
+      const d = Math.floor(ms/86400000);
+      ms %= 86400000;
+      const h = Math.floor(ms/3600000);
+      ms %= 3600000;
+      const m = Math.floor(ms/60000);
+      return (d?`${d}d `:"")+`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+    };
+
+    // Build holdings & closed sells (FIFO with buy-time capture)
+    function buildPortfolio(trades){
+      const chron = [...trades].sort((a,b)=> (a.time||"").localeCompare(b.time||""));
+      const lots = {};      // sym -> [{qty, price, time}]
+      const lastPrice = {}; // sym -> last known trade price
+      const closed = [];
+
+      for(const t of chron){
+        const side = String(t.side||"").toLowerCase();
+        const sym = t.symbol, qty = Number(t.qty||0), price = Number(t.price||0);
+        if(sym){ if(price>0) lastPrice[sym] = price; else lastPrice[sym] = lastPrice[sym]||0; }
+
+        if(side === "buy" || side === "rebalance"){
+          if(!lots[sym]) lots[sym] = [];
+          if(qty>0 && price>0) lots[sym].push({qty, price, time: t.time});
+        } else if (side === "sell"){
+          let remaining = qty, cost = 0, proceeds = (price||0) * qty;
+          let firstBuyTime = null;
+          if(!lots[sym]) lots[sym] = [];
+          while(remaining > 0 && lots[sym].length){
+            const lot = lots[sym][0];
+            const take = Math.min(remaining, lot.qty);
+            cost += take * lot.price;
+            if(!firstBuyTime) firstBuyTime = lot.time;
+            lot.qty -= take;
+            remaining -= take;
+            if(lot.qty <= 0) lots[sym].shift();
+          }
+          const sellTime = t.time;
+          if(qty > 0 && cost > 0){
+            const pnlPct = (proceeds - cost) / cost;
+            closed.push({
+              buy_time:firstBuyTime, sell_time:sellTime, hold_ms:(firstBuyTime && sellTime) ? (new Date(sellTime)-new Date(firstBuyTime)) : null,
+              symbol:sym, qty, price, balance_after:t.balance_after, notes:t.notes||"", pnl_pct:pnlPct
+            });
+          } else if (t.pnl_pct != null){
+            closed.push({
+              buy_time:firstBuyTime, sell_time:sellTime, hold_ms:(firstBuyTime && sellTime) ? (new Date(sellTime)-new Date(firstBuyTime)) : null,
+              symbol:sym, qty, price, balance_after:t.balance_after, notes:t.notes||"", pnl_pct:Number(t.pnl_pct)
+            });
+          }
+        }
+      }
+
+      // Open holdings
+      const holdings = [];
+      let totalValue = 0;
+      for(const sym of Object.keys(lots)){
+        let qty=0, cost=0;
+        for(const lot of lots[sym]){ qty += lot.qty; cost += lot.qty*lot.price; }
+        if(qty>0){
+          const price = lastPrice[sym] || 0;
+          const cur = qty*price;
+          totalValue += cur;
+          const gainPct = cost>0 ? (cur - cost)/cost : 0;
+          holdings.push({symbol:sym, qty, price, cost, cur, gainPct});
+        }
+      }
+      holdings.sort((a,b)=> b.cur - a.cur);
+      for(const h of holdings){ h.allocPct = totalValue>0 ? h.cur/totalValue : 0; }
+
+      closed.sort((a,b)=> (b.sell_time||"").localeCompare(a.sell_time||""));
+      return {holdings, closed};
+    }
+
+    (function(){
+      const data = buildPortfolio(window.TRADES || []);
+
+      // Win rate & averages from closed
+      const wins = data.closed.filter(x=> x.pnl_pct>0).map(x=> x.pnl_pct);
+      const losses = data.closed.filter(x=> x.pnl_pct<0).map(x=> x.pnl_pct);
+      const total = wins.length + losses.length;
+      const winRate = total ? wins.length/total : 0;
+      const avgWin = wins.length ? wins.reduce((a,b)=>a+b,0)/wins.length : 0;
+      const avgLoss = losses.length ? losses.reduce((a,b)=>a+b,0)/losses.length : 0;
+
+      // Donut + big number (no overlay label)
+      document.getElementById("winPie").style.setProperty("--p",(winRate*100).toFixed(2)+"%");
+      document.getElementById("winNum").textContent = Math.round(winRate*100)+"%";
+
+      // Horizontal bars (scale to max)
+      const mx = Math.max(Math.abs(avgWin), Math.abs(avgLoss), 0.0001);
+      document.getElementById("barWin").style.width = ((Math.abs(avgWin)/mx)*100).toFixed(0)+"%";
+      document.getElementById("barLoss").style.width = ((Math.abs(avgLoss)/mx)*100).toFixed(0)+"%";
+      document.getElementById("barVals").textContent = (avgWin*100).toFixed(2)+"% vs "+(avgLoss*100).toFixed(2)+"%";
+
+      // Holdings
+      const hb = document.getElementById("holdingsBody");
+      hb.innerHTML = data.holdings.length
+        ? data.holdings.map(h=>{
+            const alloc=(h.allocPct*100).toFixed(2)+"%";
+            const gain=(h.gainPct*100).toFixed(2)+"%";
+            const cls = h.gainPct>=0 ? "pct up" : "pct down";
+            return `<tr>
+              <td>${h.symbol}</td><td>${h.qty}</td><td>${alloc}</td>
+              <td class="${cls}">${gain}</td><td>${fmtMoney(h.cur)}</td><td>${fmtMoney(h.cost)}</td>
+            </tr>`;
+          }).join("")
+        : `<tr><td colspan="6" class="note">No open positions.</td></tr>`;
+
+      // Closed trades
+      const cb = document.getElementById("closedBody");
+      cb.innerHTML = data.closed.length
+        ? data.closed.map(t=>{
+            const pnlCls = (t.pnl_pct||0) >= 0 ? "pct up" : "pct down";
+            return `<tr>
+              <td>${fmtTime(t.buy_time)}</td>
+              <td>${fmtTime(t.sell_time)}</td>
+              <td>${fmtHold(t.hold_ms)}</td>
+              <td>${t.symbol}</td>
+              <td>${t.qty}</td>
+              <td class="${pnlCls}">${fmtPct(t.pnl_pct)}</td>
+              <td>${fmtMoney(t.price)}</td>
+              <td>${fmtMoney(t.balance_after)}</td>
+              <td class="note">${t.notes||""}</td>
+            </tr>`;
+          }).join("")
+        : `<tr><td colspan="9" class="note">No closed trades yet.</td></tr>`;
+
+      // Balance chart with axes inside the card
+      (function drawChart(){
+        const cvs = document.getElementById("spark");
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        const wrap = document.getElementById("balanceWrap");
+        const W = Math.floor(wrap.clientWidth * dpr), H = Math.floor(160 * dpr);
+        cvs.width = W; cvs.height = H;
+
+        const ctx = cvs.getContext("2d");
+        const xs = BAL.t || [], ys = BAL.v || [];
+        if(!ctx || xs.length===0 || ys.length===0) return;
+
+        // scale helpers
+        const padL=50*dpr, padR=10*dpr, padT=15*dpr, padB=25*dpr;
+        const minY = Math.min(...ys), maxY = Math.max(...ys), spanY = Math.max(1e-9, maxY-minY);
+        const n = ys.length;
+
+        ctx.clearRect(0,0,W,H);
+        ctx.save();
+        ctx.translate(0.5,0.5);
+
+        // axes
+        ctx.strokeStyle = "rgba(255,255,255,.25)";
+        ctx.lineWidth = 1;
+        // y-axis
+        ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H-padB); ctx.stroke();
+        // x-axis
+        ctx.beginPath(); ctx.moveTo(padL, H-padB); ctx.lineTo(W-padR, H-padB); ctx.stroke();
+
+        // y ticks (min, mid, max)
+        ctx.fillStyle = "rgba(255,255,255,.6)";
+        ctx.font = `${12*dpr}px system-ui, sans-serif`;
+        const yVals = [minY, minY + spanY/2, maxY];
+        yVals.forEach((v,i)=>{
+          const y = H - padB - (H-padT-padB)*((v-minY)/spanY);
+          ctx.strokeStyle = "rgba(255,255,255,.08)";
+          ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W-padR, y); ctx.stroke();
+          ctx.fillText("$"+v.toFixed(0), 6*dpr, y+4*dpr);
+        });
+
+        // line
+        ctx.strokeStyle = "#7dd3fc";
+        ctx.lineWidth = 2*dpr; ctx.beginPath();
+        for(let i=0;i<n;i++){
+          const x = padL + (W-padL-padR) * (i/(n-1));
+          const y = H - padB - (H-padT-padB) * ((ys[i]-minY)/spanY);
+          if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+        }
+        ctx.stroke();
+
+        // x labels (first, mid, last)
+        const labels = [0, Math.floor((n-1)/2), n-1];
+        ctx.fillStyle = "rgba(255,255,255,.6)";
+        labels.forEach(idx=>{
+          const dd = new Date(xs[idx]);
+          const lab = `${String(dd.getMonth()+1).padStart(2,"0")}:${String(dd.getDate()).padStart(2,"0")}`;
+          const x = padL + (W-padL-padR) * (idx/(n-1));
+          ctx.fillText(lab, x-12*dpr, H-7*dpr);
+        });
+
+        ctx.restore();
+      })();
+    })();
+  </script>
+</body>
+</html>

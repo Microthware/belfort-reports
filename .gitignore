@@ -1,0 +1,8 @@
+# secrets
+.env
+
+# build artifacts / scratch
+__pycache__/
+history/
+report/
+*.log

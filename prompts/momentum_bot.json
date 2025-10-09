@@ -1,0 +1,15 @@
+{
+    "model_name": "Momentum Bot",
+    "universe": ["SPY", "QQQ", "NVDA"],
+    "starting_balance": 10000.0,
+    "portfolio_analysis": "Seeded history for UI: some wins, some losses, and one open position.",
+    "trades": [
+      {"time":"2025-09-30T14:30:00Z","symbol":"NVDA","side":"buy","qty":8,"price":120.00,"pnl_pct":0.0,"balance_after":10000.0,"notes":"Breakout entry"},
+      {"time":"2025-09-30T19:55:00Z","symbol":"NVDA","side":"sell","qty":8,"price":123.60,"balance_after":10300.0,"notes":"Exit into strength"},
+      {"time":"2025-10-01T14:31:00Z","symbol":"AAPL","side":"buy","qty":40,"price":225.00,"balance_after":10300.0,"notes":"Momentum re-entry"},
+      {"time":"2025-10-01T20:00:00Z","symbol":"AAPL","side":"sell","qty":40,"price":222.75,"balance_after":10100.0,"notes":"Stop-out"},
+      {"time":"2025-10-02T14:30:00Z","symbol":"QQQ","side":"buy","qty":5,"price":450.00,"balance_after":10100.0,"notes":"Trend continuation"},
+      {"time":"2025-10-03T14:40:00Z","symbol":"QQQ","side":"buy","qty":3,"price":452.00,"balance_after":10100.0,"notes":"Add on strength"}
+    ]
+  }
+  

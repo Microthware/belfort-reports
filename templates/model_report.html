@@ -62,27 +62,28 @@
       <section class="card" style="grid-column: span 3;">
         <div class="section-title">Win Rate</div>
         <div class="donut">
-          <div class="pie" id="winPie" style="--p:0%;"></div>
-          <div class="winrate-num" id="winNum">0%</div>
+          <div class="pie" style="--p: {{ (win_rate_num*100)|round(2) }}%;"></div>
+          <div class="winrate-num">{{ (win_rate_num*100)|round(0) }}%</div>
         </div>
         <div class="muted" style="margin-top:6px">wins vs losses (closed trades)</div>
       </section>
 
+      {% set _mx = [ (avg_win_num|abs), (avg_loss_num|abs), 0.0001 ] | max %}
       <section class="card" style="grid-column: span 4;">
         <div class="section-title">Avg Win vs Avg Loss</div>
         <div class="bar-block">
           <div>
             <div class="muted">Average Win</div>
-            <div class="hbar"><div class="fill win" id="barWin"></div></div>
+            <div class="hbar"><div class="fill win" style="width: {{ ( (avg_win_num|abs / _mx) * 100 )|round(0) }}%;"></div></div>
           </div>
           <div>
             <div class="muted">Average Loss</div>
-            <div class="hbar"><div class="fill loss" id="barLoss"></div></div>
+            <div class="hbar"><div class="fill loss" style="width: {{ ( (avg_loss_num|abs / _mx) * 100 )|round(0) }}%;"></div></div>
           </div>
           <div class="legend">
             <span><span class="chip" style="background:var(--green)"></span>Avg Win PNL %</span>
             <span><span class="chip" style="background:var(--red)"></span>Avg Loss PNL %</span>
-            <span id="barVals" class="muted">0.00% vs 0.00%</span>
+            <span class="muted">{{ (avg_win_num*100)|round(2) }}% vs {{ (avg_loss_num*100)|round(2) }}%</span>
           </div>
         </div>
       </section>
@@ -200,18 +201,11 @@
             if(lot.qty <= 0) lots[sym].shift();
           }
           const sellTime = t.time;
-          if(qty > 0 && cost > 0){
-            const pnlPct = (proceeds - cost) / cost;
-            closed.push({
-              buy_time:firstBuyTime, sell_time:sellTime, hold_ms:(firstBuyTime && sellTime) ? (new Date(sellTime)-new Date(firstBuyTime)) : null,
-              symbol:sym, qty, price, balance_after:t.balance_after, notes:t.notes||"", pnl_pct:pnlPct
-            });
-          } else if (t.pnl_pct != null){
-            closed.push({
-              buy_time:firstBuyTime, sell_time:sellTime, hold_ms:(firstBuyTime && sellTime) ? (new Date(sellTime)-new Date(firstBuyTime)) : null,
-              symbol:sym, qty, price, balance_after:t.balance_after, notes:t.notes||"", pnl_pct:Number(t.pnl_pct)
-            });
-          }
+          const pnlPct = cost>0 ? (proceeds - cost)/cost : (t.pnl_pct_num ?? null);
+          closed.push({
+            buy_time:firstBuyTime, sell_time:sellTime, hold_ms:(firstBuyTime && sellTime) ? (new Date(sellTime)-new Date(firstBuyTime)) : null,
+            symbol:sym, qty, price, balance_after:t.balance_after, notes:t.notes||"", pnl_pct:pnlPct
+          });
         }
       }
 
@@ -238,24 +232,6 @@
 
     (function(){
       const data = buildPortfolio(window.TRADES || []);
-
-      // Win rate & averages from closed
-      const wins = data.closed.filter(x=> x.pnl_pct>0).map(x=> x.pnl_pct);
-      const losses = data.closed.filter(x=> x.pnl_pct<0).map(x=> x.pnl_pct);
-      const total = wins.length + losses.length;
-      const winRate = total ? wins.length/total : 0;
-      const avgWin = wins.length ? wins.reduce((a,b)=>a+b,0)/wins.length : 0;
-      const avgLoss = losses.length ? losses.reduce((a,b)=>a+b,0)/losses.length : 0;
-
-      // Donut + big number (no overlay label)
-      document.getElementById("winPie").style.setProperty("--p",(winRate*100).toFixed(2)+"%");
-      document.getElementById("winNum").textContent = Math.round(winRate*100)+"%";
-
-      // Horizontal bars (scale to max)
-      const mx = Math.max(Math.abs(avgWin), Math.abs(avgLoss), 0.0001);
-      document.getElementById("barWin").style.width = ((Math.abs(avgWin)/mx)*100).toFixed(0)+"%";
-      document.getElementById("barLoss").style.width = ((Math.abs(avgLoss)/mx)*100).toFixed(0)+"%";
-      document.getElementById("barVals").textContent = (avgWin*100).toFixed(2)+"% vs "+(avgLoss*100).toFixed(2)+"%";
 
       // Holdings
       const hb = document.getElementById("holdingsBody");

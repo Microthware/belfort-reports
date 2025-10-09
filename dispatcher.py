@@ -172,18 +172,74 @@ def _ending_balance(b: BotDay) -> float | None:
             return t.balance_after
     return b.starting_balance
 
-def _stats_from_trades(trades: List[Trade]) -> Dict[str, float]:
-    wins, losses = [], []
-    for t in trades:
-        if t.pnl_pct is None:
+# ---------- NEW: unified FIFO stats (wins/losses from closed sells) ----------
+def _compute_fifo_stats(trades: List[Trade]) -> Dict[str, float]:
+    """
+    Closed-trade stats using FIFO cost basis.
+    Returns:
+      - win_rate_num (0..1),
+      - avg_win_num, avg_loss_num (fractions; e.g., 0.0123 == 1.23%),
+      - trades_count (total actions),
+      - closed_sells (list of dicts)  -- not used by overview, handy for debugging.
+    """
+    chron = sorted(trades, key=lambda x: x.time or "")
+    lots: Dict[str, List[Dict[str, Any]]] = {}
+    closed = []
+
+    for t in chron:
+        side = (t.side or "").lower()
+        sym = t.symbol
+        qty = int(t.qty or 0)
+        price = float(t.price or 0.0)
+        if not sym or qty <= 0:
             continue
-        if t.pnl_pct > 0: wins.append(t.pnl_pct)
-        elif t.pnl_pct < 0: losses.append(t.pnl_pct)
-    total = len(wins) + len(losses)
-    win_rate = (len(wins)/total) if total else 0.0
-    avg_win = sum(wins)/len(wins) if wins else 0.0
-    avg_loss = sum(losses)/len(losses) if losses else 0.0
-    return {"trades": total, "win_rate": win_rate, "avg_win": avg_win, "avg_loss": avg_loss}
+
+        if side in ("buy", "rebalance") and price > 0:
+            lots.setdefault(sym, []).append({"qty": qty, "price": price, "time": t.time})
+        elif side == "sell":
+            remaining = qty
+            cost = 0.0
+            proceeds = price * qty
+            first_buy_time = None
+            while remaining > 0 and lots.get(sym):
+                lot = lots[sym][0]
+                take = min(remaining, lot["qty"])
+                cost += take * lot["price"]
+                if first_buy_time is None:
+                    first_buy_time = lot.get("time")
+                lot["qty"] -= take
+                remaining -= take
+                if lot["qty"] <= 0:
+                    lots[sym].pop(0)
+            pnl_pct = None
+            if cost > 0:
+                pnl_pct = (proceeds - cost) / cost
+            elif t.pnl_pct is not None:
+                pnl_pct = t.pnl_pct
+            closed.append({
+                "buy_time": first_buy_time,
+                "sell_time": t.time,
+                "symbol": sym,
+                "qty": qty,
+                "price": price,
+                "balance_after": t.balance_after,
+                "notes": t.notes,
+                "pnl_pct": pnl_pct,
+            })
+
+    wins   = [c["pnl_pct"] for c in closed if c["pnl_pct"] is not None and c["pnl_pct"] > 0]
+    losses = [c["pnl_pct"] for c in closed if c["pnl_pct"] is not None and c["pnl_pct"] < 0]
+    total  = len(wins) + len(losses)
+    win_rate_num = (len(wins) / total) if total else 0.0
+    avg_win_num  = (sum(wins) / len(wins)) if wins else 0.0
+    avg_loss_num = (sum(losses) / len(losses)) if losses else 0.0
+    return {
+        "win_rate_num": win_rate_num,
+        "avg_win_num": avg_win_num,
+        "avg_loss_num": avg_loss_num,
+        "trades_count": len(trades),
+        "closed_sells": closed,
+    }
 
 # ------------------------------------------------------------------
 # Candidates (stock.py preferred; Finviz + leaders fallback)
@@ -377,7 +433,7 @@ def _aggregate_history(model_slug: str, latest_bot: BotDay) -> BotDay:
 def _render_overview(env, bots_rows: List[Dict[str, Any]]):
     tpl = env.get_template("overview.html")
     gen_time = time.strftime("%m/%d/%y %H:%M")
-    total_trades = sum(r["trades"] for r in bots_rows)
+    total_trades = sum(r.get("total_actions", r["trades"]) for r in bots_rows)
     avg_win_rate = sum(r["win_rate_num"] for r in bots_rows)/len(bots_rows) if bots_rows else 0.0
     html = tpl.render(
         gen_time=gen_time,
@@ -388,24 +444,33 @@ def _render_overview(env, bots_rows: List[Dict[str, Any]]):
     )
     open(os.path.join(REPORT_DIR,"overview.html"),"w",encoding="utf-8").write(html)
 
-def _render_model(env, b: BotDay, prompt_text: str = "", response_text: str = ""):
+def _render_model(env, b: BotDay, stats: Dict[str, Any], prompt_text: str = "", response_text: str = ""):
     tpl = env.get_template("model_report.html")
     series = {"t":[], "v":[]}
     chron = list(sorted(b.trades, key=lambda x: x.time))
-    for t in chron:
-        if t.balance_after is not None:
-            series["t"].append(t.time)
-            series["v"].append(float(t.balance_after))
+    carry = b.starting_balance or 0.0
+    if not chron:
+        # still draw something
+        series["t"].append(datetime.now(timezone.utc).isoformat())
+        series["v"].append(float(carry))
+    else:
+        for t in chron:
+            if t.balance_after is not None:
+                series["t"].append(t.time)
+                series["v"].append(float(t.balance_after))
+                carry = t.balance_after
+
     bal_text = f"${_ending_balance(b):,.2f}" if _ending_balance(b) is not None else "—"
-    stats = _stats_from_trades(b.trades)
+
     html = tpl.render(
         model_name=b.model_name,
         gen_time=time.strftime("%m/%d/%y %H:%M"),
         tz=TZ,
         balance_text=bal_text,
-        win_rate_text=f"{stats['win_rate']*100:.2f}%",
-        avg_win_text=f"{stats['avg_win']*100:.2f}%",
-        avg_loss_text=f"{stats['avg_loss']*100:.2f}%",
+        # unified numbers (fractions)
+        win_rate_num=stats.get("win_rate_num", 0.0),
+        avg_win_num=stats.get("avg_win_num", 0.0),
+        avg_loss_num=stats.get("avg_loss_num", 0.0),
         symbols=(", ".join(b.universe) if isinstance(b.universe, list) and b.universe else (b.universe if isinstance(b.universe, str) else "—")),
         trades=[{
             "time": t.time,
@@ -481,7 +546,6 @@ def _build_prompt(base_prompt: str, yesterday: Dict[str,Any], candidates_note: s
 
 def query_model(model_name: str, prompt_text: str) -> str:
     api_key = os.environ.get("OPENAI_API_KEY")
-    print(api_key)
     model = os.environ.get("OPENAI_MODEL", "gpt-5")
 
     def dev_sample():
@@ -548,21 +612,6 @@ def query_model(model_name: str, prompt_text: str) -> str:
         if DEBUG: print("[openai] fallback -> dev sample")
         return dev_sample()
 
-    try:
-        from openai import OpenAI  # lazy import
-        client = OpenAI(api_key=api_key)
-        if DEBUG: print(f"[openai] request -> model={model}, prompt_len={len(prompt_text)}")
-        resp = client.responses.create(model=model, input=prompt_text, temperature=0.2)
-        text = resp.output_text
-        if DEBUG: print("[openai] response chars:", len(text))
-        return text
-    except Exception as e:
-        if DEBUG: print("[openai] error:", repr(e))
-        sample_path = os.path.join(PROMPTS_DIR, f"{model_name}.json")
-        if os.path.exists(sample_path):
-            return open(sample_path,"r",encoding="utf-8").read()
-        return dev_sample()
-
 # ------------------------------------------------------------------
 # Main
 # ------------------------------------------------------------------
@@ -586,7 +635,7 @@ def main():
     bots_rows = []
 
     # Scan candidates & prices once per run
-    # buckets = _scan_candidates()
+    # buckets = _scan_candidates()  # enable when desired
     buckets = {}
     candidates_note = _format_candidates_for_prompt(buckets)
     uniq: List[str] = sorted({t.upper() for arr in buckets.values() for t in arr})
@@ -654,9 +703,15 @@ def main():
 
         _save_history(slug, {"prompt": full_prompt, "response": raw}, latest)
 
+        # Aggregate full history for display & stats parity across runs
         agg = _aggregate_history(slug, latest)
-        page = _render_model(env, agg, prompt_text=full_prompt, response_text=raw)
-        stats = _stats_from_trades(agg.trades)
+
+        # ---------- unified stats (used by both pages) ----------
+        stats = _compute_fifo_stats(agg.trades)
+
+        # Render model page (pass unified numbers)
+        page = _render_model(env, agg, stats, prompt_text=full_prompt, response_text=raw)
+
         end_bal = _ending_balance(agg) or 0.0
         start_bal = agg.starting_balance or 0.0
 
@@ -668,18 +723,19 @@ def main():
             symbols_text = "—"
 
         if DEBUG:
-            print(f"[stats] win_rate={stats['win_rate']:.2%} avg_win={stats['avg_win']:.2%} avg_loss={stats['avg_loss']:.2%} end_bal={end_bal:.2f}")
+            print(f"[stats] win_rate={stats['win_rate_num']:.2%} avg_win={stats['avg_win_num']:.2%} avg_loss={stats['avg_loss_num']:.2%} end_bal={end_bal:.2f}")
 
         bots_rows.append({
             "name": agg.model_name,
             "symbols": symbols_text,
-            "win_rate": f"{stats['win_rate']*100:.2f}%",
-            "win_rate_num": stats["win_rate"],
-            "avg_win": f"{stats['avg_win']*100:.2f}%",
-            "avg_loss": f"{stats['avg_loss']*100:.2f}%",
+            "win_rate": f"{stats['win_rate_num']*100:.2f}%",
+            "win_rate_num": stats["win_rate_num"],
+            "avg_win": f"{stats['avg_win_num']*100:.2f}%",
+            "avg_loss": f"{stats['avg_loss_num']*100:.2f}%",
             "balance": f"${end_bal:,.2f}" if end_bal else "—",
             "balance_dir": 1 if end_bal >= start_bal else -1,
-            "trades": stats["trades"],
+            "trades": len(agg.trades),            # show total actions
+            "total_actions": len(agg.trades),
             "updated": time.strftime("%m/%d/%y %H:%M"),
             "link": page,
         })

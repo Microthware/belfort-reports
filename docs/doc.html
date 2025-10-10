@@ -47,7 +47,7 @@
   <div class="wrap">
     <header>
       <h1>Doc — Report</h1>
-      <div class="updated">Updated 10/09/25 21:29</div>
+      <div class="updated">Updated 10/10/25 21:28</div>
     </header>
 
     <!-- Top grid: Balance (with axes) / Win donut / Avg Win vs Loss -->
@@ -134,7 +134,7 @@
     
     <details style="margin-top:14px;">
       <summary>Portfolio Analysis</summary>
-      <div class="inner"><pre>Concentrated into 3 higher-liquidity momentum names from today&#39;s candidates (gap/pivot). Avoided sub-$5 tickers; near-fully invested to capture trend continuation.</pre></div>
+      <div class="inner"><pre>First run. Concentrated into 4 high-momentum candidates (gap-ups/pivots) to be ~fully invested: PTGX (gap strength), OKLO (pivot/high relative strength), MP (liquid momentum), GLUE (gap continuation). Minimal residual cash due to rounding.</pre></div>
     </details>
     
 
@@ -145,7 +145,7 @@
 
 - Starting balance for a new/first run: 10000.0.
 
-- Include only NEW actions since yesterday but ensure the final &#39;balance_after&#39; reflects current balance.
+- Include only NEW actions since 2025-10-09T14:32:00Z but ensure the final &#39;balance_after&#39; reflects current balance.
 
 - You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with &#39;balance_after&#39;.
 
@@ -163,13 +163,13 @@
 
 PRICES_TODAY (USD):
 
-APGE=53.21, BYRN=27.63, CABA=2.85, CSIQ=15.97, DPRO=13.22, IVVD=1.89, LAES=6.09, LPTH=9.60, LWLG=5.95, LXRX=1.64, NKTX=2.36, NUAI=2.83, PATH=18.51, PRSO=1.62, PYXS=3.83, SERV=17.68, SGMT=8.62, SYRE=21.17, TE=3.83, WWR=1.98
+ABAT=6.75, ATLX=6.30, CATX=4.86, DGXX=3.05, GLUE=10.04, MP=78.34, NAMS=37.05, NVX=2.94, OKLL=101.39, OKLO=147.16, ONMD=3.14, PPTA=25.79, PTGX=87.00, SOAR=2.49, UEC=14.65
 
 CANDIDATES_TODAY:
 
-- gap_ups: NUAI, PYXS, LAES, TE, SYRE, CABA, SERV, WWR, PATH, PRSO, NKTX, APGE
-- pivots: NUAI, PYXS, LAES, TE, SYRE, CABA, SERV, IVVD, SGMT, WWR, LWLG, DPRO, LXRX, PATH, PRSO, BYRN, LPTH, CSIQ, NKTX, APGE
-(total candidates: 32)
+- gap_ups: PTGX, NVX, GLUE, CATX
+- pivots: PTGX, NVX, GLUE, CATX, OKLL, SOAR, DGXX, NAMS, ONMD, OKLO, ABAT, ATLX, MP, UEC, PPTA
+(total candidates: 19)
 
 Schema:
 
@@ -237,40 +237,50 @@ Example HOLD:
     <details style="margin-top:12px;">
       <summary>Response</summary>
       <div class="inner"><pre>{
-  &#34;model_name&#34;: &#34;AggroMomentumV1&#34;,
+  &#34;model_name&#34;: &#34;aggressive-momo-v1&#34;,
   &#34;universe&#34;: &#34;ALL&#34;,
   &#34;starting_balance&#34;: 10000.0,
-  &#34;portfolio_analysis&#34;: &#34;Concentrated into 3 higher-liquidity momentum names from today&#39;s candidates (gap/pivot). Avoided sub-$5 tickers; near-fully invested to capture trend continuation.&#34;,
+  &#34;portfolio_analysis&#34;: &#34;First run. Concentrated into 4 high-momentum candidates (gap-ups/pivots) to be ~fully invested: PTGX (gap strength), OKLO (pivot/high relative strength), MP (liquid momentum), GLUE (gap continuation). Minimal residual cash due to rounding.&#34;,
   &#34;trades&#34;: [
     {
-      &#34;time&#34;: &#34;2025-10-09T14:30:00Z&#34;,
-      &#34;symbol&#34;: &#34;PATH&#34;,
+      &#34;time&#34;: &#34;2025-10-10T14:35:00Z&#34;,
+      &#34;symbol&#34;: &#34;PTGX&#34;,
       &#34;side&#34;: &#34;buy&#34;,
-      &#34;qty&#34;: 270.1400,
-      &#34;price&#34;: 18.51,
+      &#34;qty&#34;: 45.977011,
+      &#34;price&#34;: 87.0,
       &#34;pnl_pct&#34;: null,
       &#34;balance_after&#34;: 10000.0,
-      &#34;notes&#34;: &#34;Top momentum from candidates with solid liquidity; core position.&#34;
+      &#34;notes&#34;: &#34;Allocate ~40% on gap-up momentum leader.&#34;
     },
     {
-      &#34;time&#34;: &#34;2025-10-09T14:31:00Z&#34;,
-      &#34;symbol&#34;: &#34;CSIQ&#34;,
+      &#34;time&#34;: &#34;2025-10-10T14:35:05Z&#34;,
+      &#34;symbol&#34;: &#34;OKLO&#34;,
       &#34;side&#34;: &#34;buy&#34;,
-      &#34;qty&#34;: 188.0000,
-      &#34;price&#34;: 15.97,
+      &#34;qty&#34;: 16.9883,
+      &#34;price&#34;: 147.16,
       &#34;pnl_pct&#34;: null,
       &#34;balance_after&#34;: 10000.0,
-      &#34;notes&#34;: &#34;Pivot continuation in solar; mid-cap with improving multi-timeframe momentum.&#34;
+      &#34;notes&#34;: &#34;Allocate ~25% on strong pivot/RS.&#34;
     },
     {
-      &#34;time&#34;: &#34;2025-10-09T14:32:00Z&#34;,
-      &#34;symbol&#34;: &#34;APGE&#34;,
+      &#34;time&#34;: &#34;2025-10-10T14:35:10Z&#34;,
+      &#34;symbol&#34;: &#34;MP&#34;,
       &#34;side&#34;: &#34;buy&#34;,
-      &#34;qty&#34;: 37.5300,
-      &#34;price&#34;: 53.21,
+      &#34;qty&#34;: 31.9120,
+      &#34;price&#34;: 78.34,
       &#34;pnl_pct&#34;: null,
       &#34;balance_after&#34;: 10000.0,
-      &#34;notes&#34;: &#34;Strong gap-up candidate with relative strength; smaller allocation due to volatility.&#34;
+      &#34;notes&#34;: &#34;Allocate ~25% to liquid momentum name.&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-10T14:35:15Z&#34;,
+      &#34;symbol&#34;: &#34;GLUE&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 99.6015,
+      &#34;price&#34;: 10.04,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 10000.0,
+      &#34;notes&#34;: &#34;Allocate ~10% on gap continuation.&#34;
     }
   ]
 }</pre></div>
@@ -280,8 +290,8 @@ Example HOLD:
 
   <script>
     // server-provided data
-    window.TRADES = [{"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Strong gap-up candidate with relative strength; smaller allocation due to volatility.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "53.210000", "price_num": 53.21, "qty": "37.53", "qty_num": 37.53, "side": "buy", "symbol": "APGE", "time": "2025-10-09T14:32:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Pivot continuation in solar; mid-cap with improving multi-timeframe momentum.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "15.970000", "price_num": 15.97, "qty": "188", "qty_num": 188.0, "side": "buy", "symbol": "CSIQ", "time": "2025-10-09T14:31:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Top momentum from candidates with solid liquidity; core position.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "18.510000", "price_num": 18.51, "qty": "270.14", "qty_num": 270.14, "side": "buy", "symbol": "PATH", "time": "2025-10-09T14:30:00Z"}];
-    const BAL = {"t":["2025-10-09T14:30:00Z","2025-10-09T14:31:00Z","2025-10-09T14:32:00Z"],"v":[10000.0,10000.0,10000.0]};
+    window.TRADES = [{"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Allocate ~10% on gap continuation.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "10.040000", "price_num": 10.04, "qty": "99.6015", "qty_num": 99.6015, "side": "buy", "symbol": "GLUE", "time": "2025-10-10T14:35:15Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Allocate ~25% to liquid momentum name.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "78.340000", "price_num": 78.34, "qty": "31.912", "qty_num": 31.912, "side": "buy", "symbol": "MP", "time": "2025-10-10T14:35:10Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Allocate ~25% on strong pivot/RS.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "147.160000", "price_num": 147.16, "qty": "16.9883", "qty_num": 16.9883, "side": "buy", "symbol": "OKLO", "time": "2025-10-10T14:35:05Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Allocate ~40% on gap-up momentum leader.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "87.000000", "price_num": 87.0, "qty": "45.977011", "qty_num": 45.977011, "side": "buy", "symbol": "PTGX", "time": "2025-10-10T14:35:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Strong gap-up candidate with relative strength; smaller allocation due to volatility.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "53.210000", "price_num": 53.21, "qty": "37.53", "qty_num": 37.53, "side": "buy", "symbol": "APGE", "time": "2025-10-09T14:32:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Pivot continuation in solar; mid-cap with improving multi-timeframe momentum.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "15.970000", "price_num": 15.97, "qty": "188", "qty_num": 188.0, "side": "buy", "symbol": "CSIQ", "time": "2025-10-09T14:31:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Top momentum from candidates with solid liquidity; core position.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "18.510000", "price_num": 18.51, "qty": "270.14", "qty_num": 270.14, "side": "buy", "symbol": "PATH", "time": "2025-10-09T14:30:00Z"}];
+    const BAL = {"t":["2025-10-09T14:30:00Z","2025-10-09T14:31:00Z","2025-10-09T14:32:00Z","2025-10-10T14:35:00Z","2025-10-10T14:35:05Z","2025-10-10T14:35:10Z","2025-10-10T14:35:15Z"],"v":[10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0]};
 
     const fmtMoney = v => (v==null ? "—" : "$"+Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}));
     const fmtPct   = v => (v==null ? "—" : (v*100).toFixed(2)+"%");

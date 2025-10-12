@@ -1,0 +1,41 @@
+{
+  "slug": "sneezy",
+  "version": 1,
+  "runs": [
+    {
+      "saved_at": "2025-10-12T16:00:49.364683Z",
+      "ending_balance": 10000.0,
+      "last_trade_time": "2025-10-12T13:32:00Z",
+      "raw": "{\n  \"model_name\": \"AlphaAggressiveV1\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"Concentrating into 2 high-quality candidates: PTGX (gap + momentum) and MP (liquid mid-cap trend). Deploying ~100% capital while avoiding penny names.\",\n  \"trades\": [\n    {\n      \"time\": \"2025-10-12T13:31:00Z\",\n      \"symbol\": \"PTGX\",\n      \"side\": \"buy\",\n      \"qty\": 60,\n      \"price\": 87.0,\n      \"pnl_pct\": null,\n      \"balance_after\": 10000.0,\n      \"notes\": \"Initiate core on gap-and-go biotech leader; risk-adjusted momentum leadership.\"\n    },\n    {\n      \"time\": \"2025-10-12T13:32:00Z\",\n      \"symbol\": \"MP\",\n      \"side\": \"buy\",\n      \"qty\": 61,\n      \"price\": 78.34,\n      \"pnl_pct\": null,\n      \"balance_after\": 10000.0,\n      \"notes\": \"Add liquid trend name from pivots for diversification; fully invested with minimal idle cash.\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 10000.0.\n\n- Include only NEW actions since yesterday but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nABAT=6.75, ATLX=6.30, CATX=4.86, DGXX=3.05, GLUE=10.04, MP=78.34, NAMS=37.05, NVX=2.94, OKLL=101.39, OKLO=147.16, ONMD=3.14, PPTA=25.79, PTGX=87.00, SOAR=2.49, UEC=14.65\n\nCANDIDATES_TODAY:\n\n- gap_ups: PTGX, NVX, GLUE, CATX\n- pivots: PTGX, NVX, GLUE, CATX, OKLL, SOAR, DGXX, NAMS, ONMD, OKLO, ABAT, ATLX, MP, UEC, PPTA\n(total candidates: 19)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 10000.00\nOPEN_POSITIONS: []\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take low risk approach and concentrate the entire portfolio in 1\u20132 stocks at all times.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 1\u20132 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 1\u20132 names (e.g., 100% in 1 name, or 60/40, etc.). It\u2019s OK to be 100% in one.\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "sneezy",
+        "universe": "ALL",
+        "starting_balance": 10000.0,
+        "trades": [
+          {
+            "time": "2025-10-12T13:32:00Z",
+            "symbol": "MP",
+            "side": "buy",
+            "qty": 61.0,
+            "price": 78.34,
+            "pnl_pct": null,
+            "balance_after": 10000.0,
+            "notes": "Add liquid trend name from pivots for diversification; fully invested with minimal idle cash."
+          },
+          {
+            "time": "2025-10-12T13:31:00Z",
+            "symbol": "PTGX",
+            "side": "buy",
+            "qty": 60.0,
+            "price": 87.0,
+            "pnl_pct": null,
+            "balance_after": 10000.0,
+            "notes": "Initiate core on gap-and-go biotech leader; risk-adjusted momentum leadership."
+          }
+        ],
+        "portfolio_analysis": "Concentrating into 2 high-quality candidates: PTGX (gap + momentum) and MP (liquid mid-cap trend). Deploying ~100% capital while avoiding penny names."
+      }
+    }
+  ]
+}

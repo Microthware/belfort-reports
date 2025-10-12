@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Doc — Report</title>
+  <title>Sleepy — Report</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root{--bg:#0b0f14;--card:#11161d;--muted:#8ea0b3;--text:#e7eef7;--green:#16a34a;--red:#dc2626;--border:#223142;--barbg:#2c3238}
@@ -46,8 +46,8 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>Doc — Report</h1>
-      <div class="updated">Updated 10/12/25 15:56</div>
+      <h1>Sleepy — Report</h1>
+      <div class="updated">Updated 10/12/25 16:00</div>
     </header>
 
     <!-- Top grid: Balance (with axes) / Win donut / Avg Win vs Loss -->
@@ -134,7 +134,7 @@
     
     <details style="margin-top:14px;">
       <summary>Portfolio Analysis</summary>
-      <div class="inner"><pre>Deploying capital into strongest momentum/pivot names with adequate liquidity: PTGX (gap-up momentum leader), MP (liquid materials name breaking out), and GLUE (gap/pivot continuation). Concentrated, high-beta tilt; small residual cash due to whole-share sizing.</pre></div>
+      <div class="inner"><pre>Deploying capital across 5 liquid candidates showing momentum/pivot strength while avoiding sub-$5 names. Near-fully invested with minimal residual cash to maintain flexibility.</pre></div>
     </details>
     
 
@@ -200,19 +200,19 @@ Schema:
 === STRATEGY CONTEXT ===
 
 Objective
-- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.
-- You take high risk and concentrate the entire portfolio in 1–4 stocks at all times.
+- You have an patient trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.
+- You take low risk approach and concentrate the entire portfolio in 5-10 stocks at all times.
 
 Universe
 - Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set &#34;universe&#34; to &#34;ALL&#34; or a short representative list you actively monitored.
 
 Daily mandate
-- End each day holding 1–4 positions and be fully invested unless explicitly holding cash is optimal.
+- End each day holding 5-10 positions and be fully invested unless explicitly holding cash is optimal.
 - If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a “notes” explanation).
 
 Selection &amp; sizing
 - Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.
-- Allocate across 1–4 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.). It’s OK to be 100% in one.
+- Allocate across 5-10 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.).
 - Use whole-share quantities; reflect the resulting balance_after after each action.
 
 Trade cadence
@@ -242,40 +242,60 @@ Example HOLD:
     <details style="margin-top:12px;">
       <summary>Response</summary>
       <div class="inner"><pre>{
-  &#34;model_name&#34;: &#34;aggressive_momo_v1&#34;,
+  &#34;model_name&#34;: &#34;patient-allcap-v1&#34;,
   &#34;universe&#34;: &#34;ALL&#34;,
   &#34;starting_balance&#34;: 10000.0,
-  &#34;portfolio_analysis&#34;: &#34;Deploying capital into strongest momentum/pivot names with adequate liquidity: PTGX (gap-up momentum leader), MP (liquid materials name breaking out), and GLUE (gap/pivot continuation). Concentrated, high-beta tilt; small residual cash due to whole-share sizing.&#34;,
+  &#34;portfolio_analysis&#34;: &#34;Deploying capital across 5 liquid candidates showing momentum/pivot strength while avoiding sub-$5 names. Near-fully invested with minimal residual cash to maintain flexibility.&#34;,
   &#34;trades&#34;: [
     {
-      &#34;time&#34;: &#34;2025-10-12T14:31:00Z&#34;,
+      &#34;time&#34;: &#34;2025-10-12T14:30:00Z&#34;,
       &#34;symbol&#34;: &#34;PTGX&#34;,
       &#34;side&#34;: &#34;buy&#34;,
-      &#34;qty&#34;: 46,
+      &#34;qty&#34;: 28,
       &#34;price&#34;: 87.0,
       &#34;pnl_pct&#34;: null,
       &#34;balance_after&#34;: 10000.0,
-      &#34;notes&#34;: &#34;Initiated core in gap-up leader; momentum + pivot alignment.&#34;
+      &#34;notes&#34;: &#34;Gap-up and pivot candidate; initiate core position (~24%).&#34;
     },
     {
-      &#34;time&#34;: &#34;2025-10-12T14:32:00Z&#34;,
+      &#34;time&#34;: &#34;2025-10-12T14:31:00Z&#34;,
       &#34;symbol&#34;: &#34;MP&#34;,
       &#34;side&#34;: &#34;buy&#34;,
-      &#34;qty&#34;: 45,
+      &#34;qty&#34;: 32,
       &#34;price&#34;: 78.34,
       &#34;pnl_pct&#34;: null,
       &#34;balance_after&#34;: 10000.0,
-      &#34;notes&#34;: &#34;Added liquid breakout for diversification within strong materials trend.&#34;
+      &#34;notes&#34;: &#34;Materials leader with strong trend; add (~25%).&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-12T14:32:00Z&#34;,
+      &#34;symbol&#34;: &#34;UEC&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 136,
+      &#34;price&#34;: 14.65,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 10000.0,
+      &#34;notes&#34;: &#34;Uranium momentum, better liquidity vs small caps; add (~20%).&#34;
     },
     {
       &#34;time&#34;: &#34;2025-10-12T14:33:00Z&#34;,
-      &#34;symbol&#34;: &#34;GLUE&#34;,
+      &#34;symbol&#34;: &#34;PPTA&#34;,
       &#34;side&#34;: &#34;buy&#34;,
-      &#34;qty&#34;: 246,
-      &#34;price&#34;: 10.04,
+      &#34;qty&#34;: 58,
+      &#34;price&#34;: 25.79,
       &#34;pnl_pct&#34;: null,
       &#34;balance_after&#34;: 10000.0,
-      &#34;notes&#34;: &#34;Rounded out exposure with gap/pivot continuation; high relative strength.&#34;
+      &#34;notes&#34;: &#34;Pivot candidate with constructive strength; add (~15%).&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-12T14:34:00Z&#34;,
+      &#34;symbol&#34;: &#34;OKLL&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 14,
+      &#34;price&#34;: 101.39,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 10000.0,
+      &#34;notes&#34;: &#34;Higher-priced pivot candidate to diversify factor exposure (~14%).&#34;
     }
   ]
 }</pre></div>
@@ -285,8 +305,8 @@ Example HOLD:
 
   <script>
     // server-provided data
-    window.TRADES = [{"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Rounded out exposure with gap/pivot continuation; high relative strength.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "10.040000", "price_num": 10.04, "qty": "246", "qty_num": 246.0, "side": "buy", "symbol": "GLUE", "time": "2025-10-12T14:33:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Added liquid breakout for diversification within strong materials trend.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "78.340000", "price_num": 78.34, "qty": "45", "qty_num": 45.0, "side": "buy", "symbol": "MP", "time": "2025-10-12T14:32:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Initiated core in gap-up leader; momentum + pivot alignment.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "87.000000", "price_num": 87.0, "qty": "46", "qty_num": 46.0, "side": "buy", "symbol": "PTGX", "time": "2025-10-12T14:31:00Z"}];
-    const BAL = {"t":["2025-10-12T14:31:00Z","2025-10-12T14:32:00Z","2025-10-12T14:33:00Z"],"v":[10000.0,10000.0,10000.0]};
+    window.TRADES = [{"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Higher-priced pivot candidate to diversify factor exposure (~14%).", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "101.390000", "price_num": 101.39, "qty": "14", "qty_num": 14.0, "side": "buy", "symbol": "OKLL", "time": "2025-10-12T14:34:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Pivot candidate with constructive strength; add (~15%).", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "25.790000", "price_num": 25.79, "qty": "58", "qty_num": 58.0, "side": "buy", "symbol": "PPTA", "time": "2025-10-12T14:33:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Uranium momentum, better liquidity vs small caps; add (~20%).", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "14.650000", "price_num": 14.65, "qty": "136", "qty_num": 136.0, "side": "buy", "symbol": "UEC", "time": "2025-10-12T14:32:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Materials leader with strong trend; add (~25%).", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "78.340000", "price_num": 78.34, "qty": "32", "qty_num": 32.0, "side": "buy", "symbol": "MP", "time": "2025-10-12T14:31:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Gap-up and pivot candidate; initiate core position (~24%).", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "87.000000", "price_num": 87.0, "qty": "28", "qty_num": 28.0, "side": "buy", "symbol": "PTGX", "time": "2025-10-12T14:30:00Z"}];
+    const BAL = {"t":["2025-10-12T14:30:00Z","2025-10-12T14:31:00Z","2025-10-12T14:32:00Z","2025-10-12T14:33:00Z","2025-10-12T14:34:00Z"],"v":[10000.0,10000.0,10000.0,10000.0,10000.0]};
 
     const fmtMoney = v => (v==null ? "—" : "$"+Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}));
     const fmtPct   = v => (v==null ? "—" : (v*100).toFixed(2)+"%");

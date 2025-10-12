@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os, json, shutil, time, glob, re, sys
+import os, json, shutil, time, glob, re, sys, copy
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Tuple, Optional
@@ -237,6 +237,87 @@ def _ending_balance(b: BotDay) -> float | None:
             return t.balance_after
     return b.starting_balance
 
+# ------------------------------------------------------------------
+# Reconstruct carried portfolio (cash + FIFO lots) from history
+# ------------------------------------------------------------------
+def _read_consolidated_runs(model_slug: str) -> List[Dict[str, Any]]:
+    path = os.path.join(HISTORY_DIR, f"{model_slug}.json")
+    if not os.path.exists(path):
+        return []
+    try:
+        doc = json.load(open(path, "r", encoding="utf-8"))
+        return doc.get("runs") or []
+    except Exception:
+        return []
+
+def _reconstruct_portfolio_state(model_slug: str, prices_today: Dict[str, float]) -> Dict[str, Any]:
+    """Return {'cash': float, 'lots': {sym: [{'qty':q,'price':p,'time':t},...]}, 'last_px': {sym:px}}."""
+    runs = _read_consolidated_runs(model_slug)
+    # Find earliest starting balance
+    start_cash = None
+    all_trades: List[Dict[str, Any]] = []
+    for run in runs:
+        parsed = run.get("parsed") or {}
+        if start_cash is None and parsed.get("starting_balance") is not None:
+            try:
+                start_cash = float(parsed["starting_balance"])
+            except Exception:
+                pass
+        for td in (parsed.get("trades") or []):
+            all_trades.append(td)
+
+    if start_cash is None:
+        start_cash = DEFAULT_START_BAL
+
+    chron = sorted(all_trades, key=lambda x: str(x.get("time") or ""))
+
+    cash = float(start_cash)
+    lots: Dict[str, List[Dict[str, float]]] = {}
+    last_px: Dict[str, float] = {}
+
+    for t in chron:
+        side = str(t.get("side") or "").lower()
+        sym  = str(t.get("symbol") or "")
+        qty  = float(t.get("qty") or 0)
+        px   = float(t.get("price") or 0)
+        if sym and px > 0:
+            last_px[sym] = px
+
+        if side in ("buy","rebalance"):
+            if qty > 0 and px > 0:
+                cash -= qty * px
+                lots.setdefault(sym, []).append({"qty": qty, "price": px, "time": str(t.get("time") or "")})
+        elif side == "sell":
+            if qty > 0 and px > 0:
+                # FIFO reduce
+                held = lots.get(sym, [])
+                remaining = qty
+                while remaining > 0 and held:
+                    take = min(remaining, held[0]["qty"])
+                    held[0]["qty"] -= take
+                    if held[0]["qty"] <= 1e-12:
+                        held.pop(0)
+                    remaining -= take
+                cash += qty * px
+                lots[sym] = [l for l in lots.get(sym, []) if l["qty"] > 1e-12]
+
+    # Drop any empty symbols
+    lots = {s:[l for l in L if l["qty"]>1e-12] for s,L in lots.items() if any(l["qty"]>1e-12 for l in L)}
+
+    # Keep last_px fallback from history if no price today
+    for sym in list(lots.keys()):
+        if sym not in prices_today and sym not in last_px:
+            last_px[sym] = 0.0
+
+    if DEBUG:
+        tot_qty = {s: sum(l["qty"] for l in L) for s,L in lots.items()}
+        if lots:
+            print("[carry] lots:", {k: round(v,6) for k,v in tot_qty.items()}, "| cash:", round(cash,2))
+        else:
+            print("[carry] no open lots | cash:", round(cash,2))
+
+    return {"cash": cash, "lots": lots, "last_px": last_px}
+
 # ---------- unified FIFO stats ----------
 def _compute_fifo_stats(trades: List[Trade]) -> Dict[str, float]:
     chron = sorted(trades, key=lambda x: x.time or "")
@@ -298,14 +379,19 @@ def _compute_fifo_stats(trades: List[Trade]) -> Dict[str, float]:
         "closed_sells": closed,
     }
 
-# ---------- validator (no mutation) ----------
-def _validate_trades_budget(trades: List[Trade], starting_balance: float, prices_today: Dict[str,float]) -> List[str]:
+# ---------- validator WITH carried state (no mutation of original) ----------
+def _validate_trades_budget_with_state(
+    trades: List[Trade],
+    init_cash: float,
+    init_lots: Dict[str, List[Dict[str, float]]],
+    prices_today: Dict[str,float]
+) -> List[str]:
     issues: List[str] = []
     EPS_BAL = 0.015  # 1.5% tolerance for balance_after checks
 
     chron = sorted(trades, key=lambda x: x.time or "")
-    cash = float(starting_balance or 0.0)
-    lots: Dict[str, List[Dict[str, float]]] = {}   # sym -> [{qty,price}]
+    cash = float(init_cash or 0.0)
+    lots: Dict[str, List[Dict[str, float]]] = copy.deepcopy(init_lots)  # deep copy; don't mutate input
     last_px: Dict[str, float] = {}
 
     def port_value() -> float:
@@ -372,15 +458,22 @@ def _validate_trades_budget(trades: List[Trade], starting_balance: float, prices
 
     return issues
 
-def _build_correction_prompt(original_full_prompt: str, previous_json_text: str, issues: List[str]) -> str:
+# Backwards-compatible wrapper (no prior state)
+def _validate_trades_budget(trades: List[Trade], starting_balance: float, prices_today: Dict[str,float]) -> List[str]:
+    return _validate_trades_budget_with_state(trades, starting_balance, {}, prices_today)
+
+def _build_correction_prompt(original_full_prompt: str, previous_json_text: str, issues: List[str], carry_note: str = "") -> str:
     lines = []
     lines.append(original_full_prompt)
+    if carry_note:
+        lines.append("\n--- CURRENT_PORTFOLIO_STATE (must honor) ---\n")
+        lines.append(carry_note)
     lines.append("\n--- PREVIOUS JSON (for reference; fix it) ---\n")
     lines.append(previous_json_text.strip())
     lines.append("\n--- VALIDATION ERRORS (you must fix ALL) ---")
     for it in issues[:20]:  # cap to avoid ballooning
         lines.append(f"- {it}")
-    lines.append("\nRe-output STRICT JSON ONLY (no commentary, no code fences), obeying all budget/qty rules and including 'balance_after' for EVERY action.")
+    lines.append("\nRe-output STRICT JSON ONLY (no commentary, no code fences), obeying all budget/share rules, NEVER exceeding available cash, NEVER selling more than held, and including 'balance_after' after EVERY action.")
     return "\n".join(lines)
 
 # ------------------------------------------------------------------
@@ -693,7 +786,24 @@ def _load_prompts() -> Dict[str, str]:
         print("[prompts] found:", list(prompts.keys()))
     return prompts
 
-def _build_prompt(base_prompt: str, yesterday: Dict[str,Any], candidates_note: str, prices_note: str) -> str:
+def _format_carry_for_prompt(carry_state: Dict[str, Any], prices_today: Dict[str,float]) -> str:
+    lots = carry_state.get("lots") or {}
+    cash = float(carry_state.get("cash") or 0.0)
+    # Collapse lots per symbol for shorter context (sum qty; show a ref price)
+    lines = []
+    lines.append(f"AVAILABLE_CASH_USD: {cash:.2f}")
+    if lots:
+        lines.append("OPEN_POSITIONS:")
+        for sym, L in lots.items():
+            qty = sum(l["qty"] for l in L)
+            ref_px = prices_today.get(sym.upper(), (L[-1]["price"] if L else 0.0))
+            first_time = L[0].get("time") if L else None
+            lines.append(f"- {sym}: qty={qty:.6f}, ref_price={ref_px:.4f}, first_buy_time={first_time}")
+    else:
+        lines.append("OPEN_POSITIONS: []")
+    return "\n".join(lines)
+
+def _build_prompt(base_prompt: str, yesterday: Dict[str,Any], candidates_note: str, prices_note: str, carry_note: str) -> str:
     carry = yesterday.get("balance")
     last = yesterday.get("last_time")
     start_balance_hint = carry if carry is not None else DEFAULT_START_BAL
@@ -702,17 +812,19 @@ def _build_prompt(base_prompt: str, yesterday: Dict[str,Any], candidates_note: s
     parts.append("You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.")
     parts.append(f"- Starting balance for a new/first run: {start_balance_hint}.")
     parts.append(f"- Include only NEW actions since {last or 'yesterday'} but ensure the final 'balance_after' reflects current balance.")
+    parts.append("- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).")
     parts.append("- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.")
-    parts.append("- Allocate ~100% of capital across 1–4 positions using PRICES_TODAY (USD). Buys may be **fractional shares** (qty can be decimal, ≥ 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.")
+    parts.append("- Allocate ~100% of capital across 1–4 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, ≥ 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.")
     parts.append("- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.")
     parts.append("- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.")
     parts.append("- Keep numbers raw (no % signs in 'pnl_pct').")
-    parts.append("- HARD BUDGET: Do NOT exceed available cash. Sum(qty*price) across BUYS must be ≤ available cash at that step. SELL 'qty' must be ≤ currently held shares (FIFO). If your draft violates any rule, recalc before you answer.")
     parts.append("- End-of-day you may hold 1–4 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.")
     parts.append("PRICES_TODAY (USD):")
     parts.append(prices_note)
     parts.append("CANDIDATES_TODAY:")
     parts.append(candidates_note)
+    parts.append("CURRENT_PORTFOLIO_STATE:")
+    parts.append(carry_note)
     parts.append("Schema:")
     parts.append(SCHEMA_SNIPPET)
     parts.append("=== STRATEGY CONTEXT ===")
@@ -835,11 +947,16 @@ def main():
 
     for fname, base_prompt in prompts.items():
         slug = _slug(fname)
+
+        # Carry-forward state from history (cash + lots) BEFORE building the prompt
+        carry_state = _reconstruct_portfolio_state(slug, prices)
+        carry_note = _format_carry_for_prompt(carry_state, prices)
+
         yest = _load_yesterday_state(slug)
-        full_prompt = _build_prompt(base_prompt, yest, candidates_note, prices_note)
+        full_prompt = _build_prompt(base_prompt, yest, candidates_note, prices_note, carry_note)
 
         if DEBUG:
-            print(f"\n[bot] {fname} | slug={slug} | carry={yest.get('balance')} | last={yest.get('last_time')}")
+            print(f"\n[bot] {fname} | slug={slug} | carry_balance_hint={yest.get('balance')} | last={yest.get('last_time')}")
             print("[prompt] length:", len(full_prompt))
             print("[prompt] head:\n", full_prompt[:800])
 
@@ -862,19 +979,29 @@ def main():
         if DEBUG:
             print(f"[parsed] trades={len(latest.trades)} starting_balance={latest.starting_balance}")
 
-        # Validate (do not modify). If invalid, ask the model to correct itself.
-        issues = _validate_trades_budget(latest.trades, latest.starting_balance or DEFAULT_START_BAL, prices)
+        # Validate AGAINST carried state (cash + lots)
+        issues = _validate_trades_budget_with_state(
+            latest.trades,
+            carry_state.get("cash", DEFAULT_START_BAL),
+            carry_state.get("lots", {}),
+            prices
+        )
         if issues:
             if DEBUG:
                 print("[validate] issues found:", len(issues))
-                for e in issues[:10]:
+                for e in issues[:12]:
                     print("  -", e)
-            correction_prompt = _build_correction_prompt(full_prompt, raw, issues)
+            correction_prompt = _build_correction_prompt(full_prompt, raw, issues, carry_note=carry_note)
             raw2 = query_model(fname, correction_prompt)
             try:
                 data2 = _parse_ai_json(raw2)
                 latest2 = _coerce_bot_day(data2, yest.get("balance"), canonical_name=fname)
-                issues2 = _validate_trades_budget(latest2.trades, latest2.starting_balance or DEFAULT_START_BAL, prices)
+                issues2 = _validate_trades_budget_with_state(
+                    latest2.trades,
+                    carry_state.get("cash", DEFAULT_START_BAL),
+                    carry_state.get("lots", {}),
+                    prices
+                )
                 if not issues2 and len(latest2.trades) > 0:
                     if DEBUG: print("[validate] correction succeeded")
                     latest = latest2
@@ -887,7 +1014,7 @@ def main():
 
         # Retry once if empty
         if len(latest.trades) == 0:
-            retry_prompt = full_prompt + " IMPORTANT: Your previous response contained no trades. Use PRICES_TODAY to buy 1–4 names from CANDIDATES_TODAY, compute whole-share qty, and include 'balance_after'. If you truly must hold, emit a single HOLD with 'balance_after'."
+            retry_prompt = full_prompt + " IMPORTANT: Your previous response contained no trades. Use PRICES_TODAY and CURRENT_PORTFOLIO_STATE to produce 1–4 justified actions without exceeding AVAILABLE_CASH_USD, and include 'balance_after'. If you must hold, emit a single HOLD with 'balance_after'."
             raw2 = query_model(fname, retry_prompt)
             try:
                 data2 = _parse_ai_json(raw2)

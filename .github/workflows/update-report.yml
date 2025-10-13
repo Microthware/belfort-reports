@@ -1,85 +1,85 @@
 name: Update Report (5pm New York, Mon–Fri)
 
 on:
-  workflow_dispatch: {}
   schedule:
-    - cron: "0 21 * * 1-5"
-    - cron: "0 22 * * 1-5"
+    - cron: '0 21 * * 1-5'   # 21:00 UTC; we still gate by NY time below
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build_and_publish:
+  build:
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      LOCAL_TZ: America/New_York
+      CONSOLIDATE_HISTORY: '1'
+      DISABLE_SYNTH_HOLD: '1'
+      USE_SCAN: '1'
 
     steps:
-      - name: "Gate: run at 5pm NY on schedule; always run on manual"
+      - name: "Gate: only continue if it's 5pm in New York (manual runs always proceed)"
         id: gate
+        shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "run_ok=true" >> $GITHUB_OUTPUT
+            echo "run=yes" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          NY_HOUR=$(TZ=America/New_York date +%H)
+          NY_DOW=$(TZ=America/New_York date +%u) # 1=Mon..7=Sun
+          if [ "$NY_DOW" -ge 1 ] && [ "$NY_DOW" -le 5 ] && [ "$NY_HOUR" -eq 17 ]; then
+            echo "run=yes" >> "$GITHUB_OUTPUT"
           else
-            hour=$(TZ="America/New_York" date +%H)
-            if [ "$hour" = "17" ]; then
-              echo "run_ok=true" >> $GITHUB_OUTPUT
-            else
-              echo "run_ok=false" >> $GITHUB_OUTPUT
-            fi
+            echo "run=no" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Checkout
-        if: steps.gate.outputs.run_ok == 'true'
+      - name: Checkout repository
+        if: steps.gate.outputs.run == 'yes'
         uses: actions/checkout@v4
 
+      - name: Assert we are in a git repo
+        if: steps.gate.outputs.run == 'yes'
+        run: |
+          echo "PWD=$(pwd)"
+          git rev-parse --is-inside-work-tree
+
       - name: Set up Python
-        if: steps.gate.outputs.run_ok == 'true'
+        if: steps.gate.outputs.run == 'yes'
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-          cache: "pip"
-          cache-dependency-path: requirements.txt
+          python-version: '3.11'
 
       - name: Install dependencies
-        if: steps.gate.outputs.run_ok == 'true'
+        if: steps.gate.outputs.run == 'yes'
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Build report (runs dispatcher.py)
-        if: steps.gate.outputs.run_ok == 'true'
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: gpt-5
-          DEBUG: "0"
-          PUBLIC: "1"    # set "0" if you want Prompt/Response shown publicly
-        run: |
-          python dispatcher.py
-          cp -f report/overview.html report/index.html || true
-          touch report/.nojekyll
-          echo "::group::report dir listing"
-          ls -la report
-          echo "::endgroup::"
+      - name: Run dispatcher
+        if: steps.gate.outputs.run == 'yes'
+        run: python dispatcher.py
 
-      - name: Mirror report/ to docs/
-        if: steps.gate.outputs.run_ok == 'true'
+      - name: Publish report to docs/
+        if: steps.gate.outputs.run == 'yes'
+        shell: bash
         run: |
-          rm -rf docs/*
           mkdir -p docs
-          cp -r report/* docs/
-          echo "::group::docs AFTER"
-          ls -la docs
-          echo "::endgroup::"
+          rsync -av --delete report/ docs/ || { rm -rf docs/*; cp -R report/* docs/; }
+          touch docs/.nojekyll
 
       - name: Commit & push site + history
+        if: steps.gate.outputs.run == 'yes'
+        shell: bash
+        working-directory: ${{ github.workspace }}
         run: |
           git config user.email "actions@github.com"
           git config user.name "github-actions"
-          git add docs report history || true
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git commit -m "Auto: report & history $(date -u +'%Y-%m-%d %H:%M')"
+          git add docs history report || true
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "Auto: report & history $(TZ=UTC date +'%Y-%m-%d %H:%M:%S')"
             git push
           else
             echo "No changes to commit."
           fi
-        shell: bash

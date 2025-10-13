@@ -1,24 +1,24 @@
-name: Evening Report (5pm NY)
+name: Morning Gap-Ups (7am NY)
 
 on:
   workflow_dispatch:
   schedule:
-    # Run every 15 minutes on weekdays; we gate for 5pm New York below
+    # Run every 15 minutes on weekdays; we gate for 7am New York below
     - cron: "*/15 * * * 1-5"
 
 jobs:
-  report:
+  gapups:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Gate: only continue if it's 5pm in New York (manual runs always proceed)
+      - name: Gate: only continue if it's 7am in New York (manual runs always proceed)
         if: github.event_name == 'schedule'
         run: |
           NY_HOUR=$(TZ="America/New_York" date +%H)
-          if [ "$NY_HOUR" != "17" ]; then
-            echo "Not 5pm in New York. Exiting."
+          if [ "$NY_HOUR" != "07" ]; then
+            echo "Not 7am in New York. Exiting."
             exit 0
           fi
 
@@ -33,22 +33,21 @@ jobs:
           pip install -r requirements.txt || true
           pip install yfinance beautifulsoup4 lxml jinja2 python-dotenv
 
-      - name: Run dispatcher (skip gap-ups)
+      - name: Run dispatcher (GAPUPS_ONLY)
         env:
-          SKIP_GAPUPS: "1"
+          GAPUPS_ONLY: "1"
         run: |
           python dispatcher.py
 
-      - name: Publish report to docs (do NOT touch gapups.html)
+      - name: Publish report to docs (includes gapups.html)
         run: |
-          # Exclude gapups.html so morning page stays intact
-          rsync -av --delete --exclude 'gapups.html' report/ docs/
+          rsync -av --delete report/ docs/
 
-      - name: Commit and push changes (bots + other pages)
+      - name: Commit and push changes (gapups + history)
         run: |
           git config user.name "actions"
           git config user.email "actions@github.com"
-          git add docs/ || true
-          git add history/*.json || true
-          git commit -m "Evening report update $(date -u +%F)" || echo "No changes"
+          git add docs/gapups.html || true
+          git add history/gapups-history.csv || true
+          git commit -m "Morning gap-ups update $(date -u +%F)" || echo "No changes"
           git push

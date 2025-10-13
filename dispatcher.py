@@ -708,6 +708,7 @@ def _render_overview(env, bots_rows: List[Dict[str, Any]]):
         avg_win_rate=f"{avg_win_rate*100:.2f}%",
     )
     open(os.path.join(REPORT_DIR,"overview.html"),"w",encoding="utf-8").write(html)
+    open(os.path.join(REPORT_DIR,"index.html"),"w",encoding="utf-8").write(html)
 
 def _render_model(env, b: BotDay, stats: Dict[str, Any], prompt_text: str = "", response_text: str = "", file_slug: Optional[str] = None):
     tpl = env.get_template("model_report.html")

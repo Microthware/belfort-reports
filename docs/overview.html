@@ -2,189 +2,265 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>AI Trading Bots — Overview</title>
+  <title>Overview — Daily Reports</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    :root{--bg:#0b0f14;--card:#11161d;--muted:#8ea0b3;--text:#e7eef7;--green:#16a34a;--red:#dc2626;--row-hover:#1a222d;--border:#223142}
+    :root{--bg:#0b0f14;--card:#11161d;--muted:#8ea0b3;--text:#e7eef7;--green:#16a34a;--red:#dc2626;--border:#223142}
     html,body{background:var(--bg);color:var(--text);margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
-    .wrap{max-width:1100px;margin:32px auto 24px;padding:0 16px}
-    h1{font-size:22px;margin:0 0 8px;letter-spacing:.3px}
-    .hint{color:var(--muted);margin:8px 0 16px}
-    .table-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+    .wrap{max-width:1100px;margin:28px auto 56px;padding:0 16px}
+    h1{font-size:22px;margin:0 0 12px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
+    .section-title{font-size:14px;font-weight:700;margin:6px 0 12px;letter-spacing:.3px;color:#cfe1f7}
+    .muted{color:var(--muted);font-size:12px}
+    a{color:#9ecbff;text-decoration:none}
+    a:hover{text-decoration:underline}
     table{width:100%;border-collapse:collapse}
-    thead th{padding:12px 14px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);text-align:left;font-weight:600;font-size:13px;color:var(--muted)}
-    tbody td{padding:14px;border-bottom:1px solid var(--border);font-size:14px}
-    tbody tr{cursor:pointer}
-    tbody tr:hover{background:var(--row-hover)}
-    .model{display:flex;align-items:center;gap:10px;font-weight:600}
-    .badge{font-weight:500;color:var(--muted);font-size:12px}
-    .money.up{color:var(--green);font-weight:600}
-    .money.down{color:var(--red);font-weight:600}
-    .winrate{display:flex;align-items:center;gap:10px}
-    .pie{--p:50%;width:44px;height:44px;border-radius:50%;background:conic-gradient(var(--green) var(--p),var(--red) 0);-webkit-mask:radial-gradient(farthest-side,#0000 58%,#000 60%);mask:radial-gradient(farthest-side,#0000 58%,#000 60%);box-shadow:0 0 0 1px var(--border) inset}
-    .winrate-text{font-weight:800}
-    .footer{margin-top:16px;display:flex;justify-content:flex-end;color:var(--muted);font-size:12px}
+    th,td{padding:10px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap; vertical-align:middle}
+    thead th{color:var(--muted);font-size:12px}
+    .pill{display:inline-block;padding:2px 8px;border:1px solid var(--border);border-radius:999px;font-size:12px;margin-left:8px}
+    .up{color:var(--green);border-color:rgba(22,163,74,.35)}
+    .down{color:var(--red);border-color:rgba(220,38,38,.35)}
+    /* circular win rate */
+    .ring{width:40px;height:40px;display:inline-block;position:relative}
+    .ring svg{width:40px;height:40px;display:block}
+    .ring .txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px}
+    .footer-updated{position:fixed;right:12px;bottom:10px;color:var(--muted);font-size:12px}
+    .bots-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .summary{display:flex;gap:16px;align-items:center}
+    .summary .label{font-size:12px;color:var(--muted)}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>AI Trading Bots — Overview</h1>
-    <div class="hint">Click a row to open that bot's detailed report.</div>
+    <h1>Overview</h1>
 
-    <div class="table-card">
+    <!-- Section 1: Bots (includes summary) -->
+    <section class="card">
+      <div class="bots-header">
+        <div class="section-title" style="margin:0">Bots</div>
+        <div class="summary">
+          <div class="label">Total actions: <strong>25</strong></div>
+          <div class="label">Avg win rate: <strong>0.00%</strong></div>
+        </div>
+      </div>
       <table>
         <thead>
           <tr>
-            <th>Model</th><th>Win Rate</th><th>Balance</th><th>Avg Win %</th><th>Avg Loss %</th><th>Trades</th><th>Last Update</th>
+            <th>Bot</th>
+            <th>Universe</th>
+            <th>Win Rate</th>
+            <th>Avg Win</th>
+            <th>Avg Loss</th>
+            <th>Balance</th>
+            <th>Trades</th>
+            <th>Updated</th>
           </tr>
         </thead>
         <tbody>
           
-          <tr onclick="location.href='bubbles.html'">
+          
+          <tr>
+            <td><a href="bubbles.html"><strong>Bubbles</strong></a></td>
+            <td class="muted">ALL</td>
             <td>
-              <div class="model">
-                <span>Bubbles</span>
-                <span class="badge">ALL</span>
+              <div class="ring" title="0.00%">
+                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
+                  <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
+                  
+                  <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
+                          stroke-dasharray="100.53" stroke-dashoffset="100.53"
+                          transform="rotate(-90 20 20)"></circle>
+                </svg>
+                <div class="txt">0.00%</div>
               </div>
             </td>
+            <td>0.00%</td>
+            <td>0.00%</td>
             <td>
-              <div class="winrate">
-                <div class="pie" style="--p: 0.0%;"></div>
-                <span class="winrate-text">0.0%</span>
-              </div>
+              $10,000.00
+              
+                <span class="pill up">▲</span>
+              
             </td>
-            <td><span class="money up">$10,000.00</span></td>
-            <td>0.00%</td>
-            <td>0.00%</td>
             <td>3</td>
-            <td>10/13/25 15:15</td>
+            <td class="muted">10/13/25 19:50</td>
           </tr>
           
-          <tr onclick="location.href='cory.html'">
+          <tr>
+            <td><a href="cory.html"><strong>Cory</strong></a></td>
+            <td class="muted">ALL</td>
             <td>
-              <div class="model">
-                <span>Cory</span>
-                <span class="badge">ALL</span>
+              <div class="ring" title="0.00%">
+                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
+                  <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
+                  
+                  <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
+                          stroke-dasharray="100.53" stroke-dashoffset="100.53"
+                          transform="rotate(-90 20 20)"></circle>
+                </svg>
+                <div class="txt">0.00%</div>
               </div>
             </td>
+            <td>0.00%</td>
+            <td>0.00%</td>
             <td>
-              <div class="winrate">
-                <div class="pie" style="--p: 0.0%;"></div>
-                <span class="winrate-text">0.0%</span>
-              </div>
+              $10,000.00
+              
+                <span class="pill up">▲</span>
+              
             </td>
-            <td><span class="money up">$10,000.00</span></td>
-            <td>0.00%</td>
-            <td>0.00%</td>
             <td>3</td>
-            <td>10/13/25 15:15</td>
+            <td class="muted">10/13/25 19:50</td>
           </tr>
           
-          <tr onclick="location.href='julian.html'">
+          <tr>
+            <td><a href="julian.html"><strong>Julian</strong></a></td>
+            <td class="muted">ALL</td>
             <td>
-              <div class="model">
-                <span>Julian</span>
-                <span class="badge">ALL</span>
+              <div class="ring" title="0.00%">
+                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
+                  <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
+                  
+                  <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
+                          stroke-dasharray="100.53" stroke-dashoffset="100.53"
+                          transform="rotate(-90 20 20)"></circle>
+                </svg>
+                <div class="txt">0.00%</div>
               </div>
             </td>
+            <td>0.00%</td>
+            <td>0.00%</td>
             <td>
-              <div class="winrate">
-                <div class="pie" style="--p: 0.0%;"></div>
-                <span class="winrate-text">0.0%</span>
-              </div>
+              $10,000.00
+              
+                <span class="pill up">▲</span>
+              
             </td>
-            <td><span class="money up">$10,000.00</span></td>
-            <td>0.00%</td>
-            <td>0.00%</td>
             <td>4</td>
-            <td>10/13/25 15:16</td>
+            <td class="muted">10/13/25 19:50</td>
           </tr>
           
-          <tr onclick="location.href='lahey.html'">
+          <tr>
+            <td><a href="lahey.html"><strong>Lahey</strong></a></td>
+            <td class="muted">ALL</td>
             <td>
-              <div class="model">
-                <span>Lahey</span>
-                <span class="badge">ALL</span>
+              <div class="ring" title="0.00%">
+                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
+                  <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
+                  
+                  <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
+                          stroke-dasharray="100.53" stroke-dashoffset="100.53"
+                          transform="rotate(-90 20 20)"></circle>
+                </svg>
+                <div class="txt">0.00%</div>
               </div>
             </td>
+            <td>0.00%</td>
+            <td>0.00%</td>
             <td>
-              <div class="winrate">
-                <div class="pie" style="--p: 0.0%;"></div>
-                <span class="winrate-text">0.0%</span>
-              </div>
+              $10,000.00
+              
+                <span class="pill up">▲</span>
+              
             </td>
-            <td><span class="money up">$10,000.00</span></td>
-            <td>0.00%</td>
-            <td>0.00%</td>
             <td>4</td>
-            <td>10/13/25 15:17</td>
+            <td class="muted">10/13/25 19:50</td>
           </tr>
           
-          <tr onclick="location.href='randy.html'">
+          <tr>
+            <td><a href="randy.html"><strong>Randy</strong></a></td>
+            <td class="muted">ALL</td>
             <td>
-              <div class="model">
-                <span>Randy</span>
-                <span class="badge">ALL</span>
+              <div class="ring" title="0.00%">
+                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
+                  <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
+                  
+                  <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
+                          stroke-dasharray="100.53" stroke-dashoffset="100.53"
+                          transform="rotate(-90 20 20)"></circle>
+                </svg>
+                <div class="txt">0.00%</div>
               </div>
             </td>
+            <td>0.00%</td>
+            <td>0.00%</td>
             <td>
-              <div class="winrate">
-                <div class="pie" style="--p: 0.0%;"></div>
-                <span class="winrate-text">0.0%</span>
-              </div>
+              $10,000.00
+              
+                <span class="pill up">▲</span>
+              
             </td>
-            <td><span class="money up">$10,000.00</span></td>
-            <td>0.00%</td>
-            <td>0.00%</td>
             <td>5</td>
-            <td>10/13/25 15:18</td>
+            <td class="muted">10/13/25 19:50</td>
           </tr>
           
-          <tr onclick="location.href='ricky.html'">
+          <tr>
+            <td><a href="ricky.html"><strong>Ricky</strong></a></td>
+            <td class="muted">ALL</td>
             <td>
-              <div class="model">
-                <span>Ricky</span>
-                <span class="badge">ALL</span>
+              <div class="ring" title="0.00%">
+                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
+                  <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
+                  
+                  <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
+                          stroke-dasharray="100.53" stroke-dashoffset="100.53"
+                          transform="rotate(-90 20 20)"></circle>
+                </svg>
+                <div class="txt">0.00%</div>
               </div>
             </td>
+            <td>0.00%</td>
+            <td>0.00%</td>
             <td>
-              <div class="winrate">
-                <div class="pie" style="--p: 0.0%;"></div>
-                <span class="winrate-text">0.0%</span>
-              </div>
+              $10,000.00
+              
+                <span class="pill up">▲</span>
+              
             </td>
-            <td><span class="money up">$10,000.00</span></td>
-            <td>0.00%</td>
-            <td>0.00%</td>
             <td>4</td>
-            <td>10/13/25 15:19</td>
+            <td class="muted">10/13/25 19:50</td>
           </tr>
           
-          <tr onclick="location.href='trevor.html'">
+          <tr>
+            <td><a href="trevor.html"><strong>Trevor</strong></a></td>
+            <td class="muted">ALL</td>
             <td>
-              <div class="model">
-                <span>Trevor</span>
-                <span class="badge">ALL</span>
+              <div class="ring" title="0.00%">
+                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
+                  <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
+                  
+                  <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
+                          stroke-dasharray="100.53" stroke-dashoffset="100.53"
+                          transform="rotate(-90 20 20)"></circle>
+                </svg>
+                <div class="txt">0.00%</div>
               </div>
             </td>
+            <td>0.00%</td>
+            <td>0.00%</td>
             <td>
-              <div class="winrate">
-                <div class="pie" style="--p: 0.0%;"></div>
-                <span class="winrate-text">0.0%</span>
-              </div>
+              $10,000.00
+              
+                <span class="pill up">▲</span>
+              
             </td>
-            <td><span class="money up">$10,000.00</span></td>
-            <td>0.00%</td>
-            <td>0.00%</td>
             <td>2</td>
-            <td>10/13/25 15:19</td>
+            <td class="muted">10/13/25 19:50</td>
           </tr>
           
         </tbody>
       </table>
-    </div>
+    </section>
 
-    <div class="footer">Updated 10/13/25 15:19</div>
+    <!-- Section 2: Market Studies (at bottom) -->
+    <section class="card" style="margin-top:14px;">
+      <div class="section-title">Market Studies</div>
+      <ul style="margin:6px 0 0; padding-left:16px; line-height:1.9;">
+        <li><a href="gapups.html">Gap-Up History &amp; Outcomes</a></li>
+      </ul>
+    </section>
   </div>
+
+  <div class="footer-updated">Updated 10/13/25 19:50</div>
 </body>
 </html>

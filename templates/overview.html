@@ -7,46 +7,42 @@
   <style>
     :root{--bg:#0b0f14;--card:#11161d;--muted:#8ea0b3;--text:#e7eef7;--green:#16a34a;--red:#dc2626;--border:#223142}
     html,body{background:var(--bg);color:var(--text);margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
-    .wrap{max-width:1100px;margin:28px auto 20px;padding:0 16px}
-    header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:12px}
-    h1{font-size:22px;margin:0}
-    .updated{color:var(--muted);font-size:12px}
+    .wrap{max-width:1100px;margin:28px auto 56px;padding:0 16px}
+    h1{font-size:22px;margin:0 0 12px}
     .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
-    .section-title{font-size:14px;font-weight:700;margin:6px 0 10px;letter-spacing:.3px;color:#cfe1f7}
+    .section-title{font-size:14px;font-weight:700;margin:6px 0 12px;letter-spacing:.3px;color:#cfe1f7}
     .muted{color:var(--muted);font-size:12px}
     a{color:#9ecbff;text-decoration:none}
     a:hover{text-decoration:underline}
     table{width:100%;border-collapse:collapse}
-    th,td{padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+    th,td{padding:10px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap; vertical-align:middle}
     thead th{color:var(--muted);font-size:12px}
     .pill{display:inline-block;padding:2px 8px;border:1px solid var(--border);border-radius:999px;font-size:12px;margin-left:8px}
     .up{color:var(--green);border-color:rgba(22,163,74,.35)}
     .down{color:var(--red);border-color:rgba(220,38,38,.35)}
+    /* circular win rate */
+    .ring{width:40px;height:40px;display:inline-block;position:relative}
+    .ring svg{width:40px;height:40px;display:block}
+    .ring .txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px}
+    .footer-updated{position:fixed;right:12px;bottom:10px;color:var(--muted);font-size:12px}
+    .bots-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+    .summary{display:flex;gap:16px;align-items:center}
+    .summary .label{font-size:12px;color:var(--muted)}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <header>
-      <h1>Overview</h1>
-      <div class="updated">Updated {{ gen_time }} ({{ tz }})</div>
-    </header>
+    <h1>Overview</h1>
 
+    <!-- Section 1: Bots (includes summary) -->
     <section class="card">
-      <div class="section-title">Summary</div>
-      <div class="muted">Total actions across bots: <strong>{{ total_trades }}</strong></div>
-      <div class="muted" style="margin-top:6px;">Average win rate: <strong>{{ avg_win_rate }}</strong></div>
-    </section>
-
-    <!-- New: separate section from bots -->
-    <section class="card" style="margin-top:14px;">
-      <div class="section-title">Market Studies</div>
-      <ul style="margin:6px 0 0; padding-left:16px; line-height:1.9;">
-        <li><a href="gapups.html">Gap-Up History &amp; Outcomes</a></li>
-      </ul>
-    </section>
-
-    <section class="card" style="margin-top:14px;">
-      <div class="section-title">Bots</div>
+      <div class="bots-header">
+        <div class="section-title" style="margin:0">Bots</div>
+        <div class="summary">
+          <div class="label">Total actions: <strong>{{ total_trades }}</strong></div>
+          <div class="label">Avg win rate: <strong>{{ avg_win_rate }}</strong></div>
+        </div>
+      </div>
       <table>
         <thead>
           <tr>
@@ -61,11 +57,23 @@
           </tr>
         </thead>
         <tbody>
+          {% set circ = 100.53 %}
           {% for b in bots %}
           <tr>
             <td><a href="{{ b.link }}"><strong>{{ b.name }}</strong></a></td>
             <td class="muted">{{ b.symbols }}</td>
-            <td>{{ b.win_rate }}</td>
+            <td>
+              <div class="ring" title="{{ b.win_rate }}">
+                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate {{ b.win_rate }}">
+                  <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
+                  {% set offset = 100.53 * (1 - (b.win_rate_num or 0)) %}
+                  <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
+                          stroke-dasharray="100.53" stroke-dashoffset="{{ offset|round(2) }}"
+                          transform="rotate(-90 20 20)"></circle>
+                </svg>
+                <div class="txt">{{ b.win_rate }}</div>
+              </div>
+            </td>
             <td>{{ b.avg_win }}</td>
             <td>{{ b.avg_loss }}</td>
             <td>
@@ -83,6 +91,16 @@
         </tbody>
       </table>
     </section>
+
+    <!-- Section 2: Market Studies (at bottom) -->
+    <section class="card" style="margin-top:14px;">
+      <div class="section-title">Market Studies</div>
+      <ul style="margin:6px 0 0; padding-left:16px; line-height:1.9;">
+        <li><a href="gapups.html">Gap-Up History &amp; Outcomes</a></li>
+      </ul>
+    </section>
   </div>
+
+  <div class="footer-updated">Updated {{ gen_time }}</div>
 </body>
 </html>

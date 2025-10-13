@@ -1,0 +1,51 @@
+{
+  "slug": "cory",
+  "version": 1,
+  "runs": [
+    {
+      "saved_at": "2025-10-13T15:15:58.049755Z",
+      "ending_balance": 10000.0,
+      "last_trade_time": "2025-10-13T14:31:10Z",
+      "raw": "{\n  \"model_name\": \"alpha-momo-v1\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"Concentrating into high-liquidity momentum names from today\u2019s candidates: MP and REMX for rare-earths exposure and diversification, plus FLNC for strong energy-storage momentum. Deploying ~100% with minimal idle cash.\",\n  \"trades\": [\n    {\n      \"time\": \"2025-10-13T14:31:00Z\",\n      \"symbol\": \"MP\",\n      \"side\": \"buy\",\n      \"qty\": 51,\n      \"price\": 97.76,\n      \"pnl_pct\": null,\n      \"balance_after\": 10000.0,\n      \"notes\": \"Initial allocation to liquid rare-earth leader from both gap-up and pivot lists; core momentum position.\"\n    },\n    {\n      \"time\": \"2025-10-13T14:31:05Z\",\n      \"symbol\": \"REMX\",\n      \"side\": \"buy\",\n      \"qty\": 37,\n      \"price\": 79.68,\n      \"pnl_pct\": null,\n      \"balance_after\": 10000.0,\n      \"notes\": \"ETF diversification within the same thematic strength; supports risk control and breadth.\"\n    },\n    {\n      \"time\": \"2025-10-13T14:31:10Z\",\n      \"symbol\": \"FLNC\",\n      \"side\": \"buy\",\n      \"qty\": 127,\n      \"price\": 16.17,\n      \"pnl_pct\": null,\n      \"balance_after\": 10000.0,\n      \"notes\": \"Strong momentum/pivot setup with adequate liquidity; complements materials exposure with grid-scale energy.\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 10000.0.\n\n- Include only NEW actions since yesterday but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nABAT=9.36, ALM=8.57, ASPI=12.25, CRML=20.49, ELBM=5.78, EOSE=17.04, FLNC=16.17, GWH=7.13, IMAB=5.87, LTBR=25.50, MP=97.76, MVST=5.24, NAK=2.51, NB=11.07, QS=17.15, QSI=1.90, REMX=79.68, RGTI=50.89, RGTX=396.00, SOAR=2.87, STI=14.84, TMC=10.22, UAMY=15.82, USAR=41.78, WTI=2.45, WWR=2.37\n\nCANDIDATES_TODAY:\n\n- gap_ups: ELBM, ABAT, CRML, GWH, WTI, MVST, MP, TMC, ASPI, NAK, QSI, STI, UAMY, USAR, WWR, NB, REMX, ALM\n- pivots: ELBM, ABAT, CRML, IMAB, GWH, RGTX, FLNC, WTI, MVST, MP, LTBR, SOAR, QS, TMC, ASPI, EOSE, NAK, QSI, STI, RGTI\n(total candidates: 38)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 10000.00\nOPEN_POSITIONS: []\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an patient trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take high risk approach and concentrate the entire portfolio in 1\u20134 stocks at all times. Your stock selections are well researched and you have high confidence in them.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 1\u20134 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 1\u20134 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.). It\u2019s OK to be 100% in one.\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "cory",
+        "universe": "ALL",
+        "starting_balance": 10000.0,
+        "trades": [
+          {
+            "time": "2025-10-13T14:31:10Z",
+            "symbol": "FLNC",
+            "side": "buy",
+            "qty": 127.0,
+            "price": 16.17,
+            "pnl_pct": null,
+            "balance_after": 10000.0,
+            "notes": "Strong momentum/pivot setup with adequate liquidity; complements materials exposure with grid-scale energy."
+          },
+          {
+            "time": "2025-10-13T14:31:05Z",
+            "symbol": "REMX",
+            "side": "buy",
+            "qty": 37.0,
+            "price": 79.68,
+            "pnl_pct": null,
+            "balance_after": 10000.0,
+            "notes": "ETF diversification within the same thematic strength; supports risk control and breadth."
+          },
+          {
+            "time": "2025-10-13T14:31:00Z",
+            "symbol": "MP",
+            "side": "buy",
+            "qty": 51.0,
+            "price": 97.76,
+            "pnl_pct": null,
+            "balance_after": 10000.0,
+            "notes": "Initial allocation to liquid rare-earth leader from both gap-up and pivot lists; core momentum position."
+          }
+        ],
+        "portfolio_analysis": "Concentrating into high-liquidity momentum names from today\u2019s candidates: MP and REMX for rare-earths exposure and diversification, plus FLNC for strong energy-storage momentum. Deploying ~100% with minimal idle cash."
+      }
+    }
+  ]
+}

@@ -2,8 +2,11 @@ name: Evening Report (5pm NY)
 
 on:
   schedule:
-    - cron: "*/10 * * * 1-5"  # UTC; we gate to 17:00 America/New_York below
+    - cron: "*/10 * * * 1-5"  # UTC; gate to 17:00 America/New_York below
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 concurrency:
   group: evening-report
@@ -11,6 +14,7 @@ concurrency:
 
 jobs:
   report:
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -49,9 +53,11 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git config user.name "actions"
-          git config user.email "actions@github.com"
+          BRANCH="${{ github.ref_name }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/ || true
           git add history/*.json || true
           git commit -m "Evening report update $(date -u +%F)" || echo "No changes"
-          git push
+          git pull --rebase origin "$BRANCH" || true
+          git push origin HEAD:"$BRANCH"

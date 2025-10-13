@@ -2,8 +2,11 @@ name: Morning Gap-Ups (7am NY)
 
 on:
   schedule:
-    - cron: "*/10 * * * 1-5"  # UTC; we gate to 07:00 America/New_York below
+    - cron: "*/10 * * * 1-5"  # UTC; gate to 07:00 America/New_York below
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 concurrency:
   group: morning-gapups
@@ -11,6 +14,7 @@ concurrency:
 
 jobs:
   gapups:
+    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -49,9 +53,11 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git config user.name "actions"
-          git config user.email "actions@github.com"
+          BRANCH="${{ github.ref_name }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/gapups.html || true
           git add history/gapups-history.csv || true
           git commit -m "Morning gap-ups update $(date -u +%F)" || echo "No changes"
-          git push
+          git pull --rebase origin "$BRANCH" || true
+          git push origin HEAD:"$BRANCH"

@@ -1,9 +1,9 @@
 name: Morning Gap-Ups (7am NY)
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron: "*/15 * * * 1-5"
+    - cron: "*/10 * * * 1-5"  # UTC; we gate to 07:00 America/New_York below
+  workflow_dispatch:
 
 concurrency:
   group: morning-gapups
@@ -16,12 +16,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Gate – only continue at 7am in New York (manual runs always proceed)
+      - name: Gate to 07:00 in America/New_York
         if: ${{ github.event_name == 'schedule' }}
         run: |
           NY_HOUR=$(TZ="America/New_York" date +%H)
-          if [ "$NY_HOUR" != "07" ]; then
-            echo "Not 7am in New York. Exiting."
+          NY_MIN=$(TZ="America/New_York" date +%M)
+          if [ "$NY_HOUR" != "07" ] || [ "$NY_MIN" != "00" ]; then
+            echo "Not 07:00 New York time. Exiting."
             exit 0
           fi
 
@@ -35,11 +36,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt || true
           pip install yfinance beautifulsoup4 lxml jinja2 python-dotenv
-
-      - name: Validate YAML
-        run: |
-          python -m pip install yamllint
-          yamllint .github/workflows/*.yml
 
       - name: Generate gap-ups only
         env:

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Gap-Up History</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{--bg:#0b0f14;--card:#11161d;--muted:#9bb1c8;--text:#e8f0fa;--green:#16a34a;--red:#dc2626;--border:#223142;--amber:#f59e0b}
+    html,body{background:var(--bg);color:var(--text);margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .wrap{max-width:1200px;margin:28px auto;padding:0 16px}
+    header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px}
+    h1{font-size:22px;margin:0}
+    .updated{color:var(--muted);font-size:12px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
+    table{width:100%;border-collapse:collapse}
+    thead th{text-align:left;font-weight:600;font-size:13px;color:var(--muted);padding:10px 12px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);position:sticky;top:0}
+    tbody td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:14px;white-space:nowrap}
+    .pct.up{color:var(--green);font-weight:600}
+    .pct.down{color:var(--red);font-weight:600}
+    .chips{display:flex;gap:6px;flex-wrap:wrap}
+    .chip{border:1px solid var(--border);border-radius:999px;padding:2px 8px;font-size:12px}
+    .streak{margin-left:8px;border:1px dashed rgba(245,158,11,.4);color:var(--amber);border-radius:999px;padding:1px 6px;font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Gap-Up History</h1>
+      <div class="updated">Updated 10/13/25 19:49</div>
+    </header>
+
+    <section class="card">
+      <table id="tbl">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Next Day Price</th>
+            <th>Next Day %</th>
+            <th>Week-Later Price</th>
+            <th>Week-Later %</th>
+            <th>Month-Later Price</th>
+            <th>Month-Later %</th>
+            <th>Market Conditions (D / W / M)</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </div>
+
+  <script>
+    const ROWS = [{"date":"2025-10-13","name":"Westwater Resources, Inc.","symbol":"WWR","price":"2.5699","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"W&T Offshore, Inc.","symbol":"WTI","price":"2.5000","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"Solidion Technology, Inc.","symbol":"STI","price":"21.2411","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"Snow Lake Resources Ltd.","symbol":"LITM","price":"6.0300","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"Electra Battery Materials Corpo","symbol":"ELBM","price":"7.4500","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"ESS Tech, Inc.","symbol":"GWH","price":"9.2010","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"Critical Metals Corp.","symbol":"CRML","price":"22.2950","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"American Resources Corporation","symbol":"AREC","price":"4.9888","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"American Battery Technology Com","symbol":"ABAT","price":"8.9648","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""}];
+    function money(v){ if(v===""||v==null) return "—"; const n=Number(v); return isFinite(n) ? "$"+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:4}) : "—"; }
+    function pct(v){ if(v===""||v==null) return "—"; const n=Number(v); if(!isFinite(n)) return "—"; const cls=n>=0?"pct up":"pct down"; return `<span class="${cls}">${(n*100).toFixed(2)}%</span>`; }
+    function chip(label,v){ if(v===""||v==null) return `<span class="chip">${label}: —</span>`; const n=Number(v); const cls=n>=0?"pct up":"pct down"; return `<span class="chip ${cls}">${label}: ${(n*100).toFixed(2)}%</span>`; }
+    function streakPill(r){
+      const n = Number(r.streak || 0);
+      if(!n || n < 2) return "";
+      return `<span class="streak">${n}d</span>`;
+    }
+    const tbody=document.querySelector("#tbl tbody");
+    tbody.innerHTML = ROWS.map(r=>`
+      <tr>
+        <td>${r.date}</td>
+        <td>${r.name}${streakPill(r)}</td>
+        <td>${money(r.price)}</td>
+        <td>${money(r.next_day_price)}</td>
+        <td>${pct(r.next_day_pct)}</td>
+        <td>${money(r.week_later_price)}</td>
+        <td>${pct(r.week_later_pct)}</td>
+        <td>${money(r.month_later_price)}</td>
+        <td>${pct(r.month_later_pct)}</td>
+        <td><div class="chips">
+          ${chip("D", r.mkt_day_pct)}
+          ${chip("W", r.mkt_week_pct)}
+          ${chip("M", r.mkt_month_pct)}
+        </div></td>
+      </tr>`).join("");
+  </script>
+</body>
+</html>

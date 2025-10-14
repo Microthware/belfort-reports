@@ -1,4 +1,4 @@
-name: Evening Report (5pm NY)
+name: Bot Report (5pm)
 
 on:
   schedule:

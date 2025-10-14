@@ -2,51 +2,50 @@ name: Evening Report (5pm NY)
 
 on:
   schedule:
-    - cron: "*/10 * * * 1-5"  # UTC; gate to 17:00 America/New_York below
+    # 5pm ET = 21:00 UTC during EDT, 22:00 UTC during EST
+    - cron: "0 21 * * 1-5"
+    - cron: "0 22 * * 1-5"
   workflow_dispatch:
 
 permissions:
   contents: write
 
+# keep your existing concurrency group name if you like
 concurrency:
   group: evening-report
   cancel-in-progress: true
 
 jobs:
-  report:
-    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+  gate:
+    name: Gate (run only at 5pm New York or manual)
     runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Gate to 17:00 in America/New_York
-        if: ${{ github.event_name == 'schedule' }}
+      - id: check
+        shell: bash
         run: |
-          NY_HOUR=$(TZ="America/New_York" date +%H)
-          NY_MIN=$(TZ="America/New_York" date +%M)
-          if [ "$NY_HOUR" != "17" ] || [ "$NY_MIN" != "00" ]; then
-            echo "Not 17:00 New York time. Exiting."
+          # Manual runs always proceed
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          # Check local New York time
+          wd=$(TZ=America/New_York date +%u)  # 1=Mon .. 7=Sun
+          hr=$(TZ=America/New_York date +%H)  # 00..23
+          if [ "$wd" -ge 1 ] && [ "$wd" -le 5 ] && [ "$hr" = "17" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
-          pip install yfinance beautifulsoup4 lxml jinja2 python-dotenv
-
-      - name: Run dispatcher (skip gap-ups)
-        env:
-          SKIP_GAPUPS: "1"
-        run: |
-          python dispatcher.py
-
+  report:
+    name: Build & publish evening report
+    needs: gate
+    if: ${{ needs.gate.outputs.should_run == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: Publish report to docs (excluding gapups.html)
         run: |
           rsync -av --delete --exclude 'gapups.html' report/ docs/

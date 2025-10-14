@@ -2,7 +2,9 @@ name: Morning Gap-Ups (7am NY)
 
 on:
   schedule:
-    - cron: "*/10 * * * 1-5"  # UTC; gate to 07:00 America/New_York below
+    # 7am ET = 11:00 UTC during EDT, 12:00 UTC during EST
+    - cron: "0 11 * * 1-5"
+    - cron: "0 12 * * 1-5"
   workflow_dispatch:
 
 permissions:
@@ -13,40 +15,34 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  gapups:
-    if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+  gate:
+    name: Gate (run only at 7am New York or manual)
     runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Gate to 07:00 in America/New_York
-        if: ${{ github.event_name == 'schedule' }}
+      - id: check
+        shell: bash
         run: |
-          NY_HOUR=$(TZ="America/New_York" date +%H)
-          NY_MIN=$(TZ="America/New_York" date +%M)
-          if [ "$NY_HOUR" != "07" ] || [ "$NY_MIN" != "00" ]; then
-            echo "Not 07:00 New York time. Exiting."
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
+          wd=$(TZ=America/New_York date +%u)
+          hr=$(TZ=America/New_York date +%H)
+          if [ "$wd" -ge 1 ] && [ "$wd" -le 5 ] && [ "$hr" = "07" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
-          pip install yfinance beautifulsoup4 lxml jinja2 python-dotenv
-
-      - name: Generate gap-ups only
-        env:
-          GAPUPS_ONLY: "1"
-        run: |
-          python dispatcher.py
-
+  gapups:
+    name: Build & publish morning gap-ups
+    needs: gate
+    if: ${{ needs.gate.outputs.should_run == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
       - name: Publish report to docs
         run: |
           rsync -av --delete report/ docs/

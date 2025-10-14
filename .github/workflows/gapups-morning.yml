@@ -2,9 +2,8 @@ name: Morning Gap-Ups (7am NY)
 
 on:
   schedule:
-    # 7am ET = 11:00 UTC during EDT, 12:00 UTC during EST
-    - cron: "0 11 * * 1-5"
-    - cron: "0 12 * * 1-5"
+    - cron: "0 11 * * 1-5"   # 7am ET during EDT
+    - cron: "0 12 * * 1-5"   # 7am ET during EST
   workflow_dispatch:
 
 permissions:
@@ -25,9 +24,7 @@ jobs:
         shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "should_run=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+            echo "should_run=true" >> "$GITHUB_OUTPUT"; exit 0; fi
           wd=$(TZ=America/New_York date +%u)
           hr=$(TZ=America/New_York date +%H)
           if [ "$wd" -ge 1 ] && [ "$wd" -le 5 ] && [ "$hr" = "07" ]; then
@@ -43,17 +40,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Publish report to docs
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps (if any)
+        shell: bash
         run: |
-          rsync -av --delete report/ docs/
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run dispatcher (generates report/)
+        run: |
+          python dispatcher.py
+
+      - name: "Debug: list output"
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 2 -type d -print
+          [ -d report ] && ls -la report || true
+
+      - name: Publish report to docs (all pages)
+        shell: bash
+        run: |
+          mkdir -p docs
+          if [ -d report ] && [ "$(ls -A report)" ]; then
+            rsync -av --delete report/ docs/
+          else
+            echo "No report/ (or empty). Skipping rsync."
+          fi
 
       - name: Commit and push changes
+        shell: bash
         run: |
           BRANCH="${{ github.ref_name }}"
-          git config user.name "github-actions[bot]"
+          git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/gapups.html || true
-          git add history/gapups-history.csv || true
-          git commit -m "Morning gap-ups update $(date -u +%F)" || echo "No changes"
+          git add docs/ history/* || true
+          git diff --staged --quiet || git commit -m "Morning gap-ups update $(date -u +%F)"
           git pull --rebase origin "$BRANCH" || true
           git push origin HEAD:"$BRANCH"

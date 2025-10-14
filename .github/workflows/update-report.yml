@@ -2,15 +2,13 @@ name: Evening Report (5pm NY)
 
 on:
   schedule:
-    # 5pm ET = 21:00 UTC during EDT, 22:00 UTC during EST
-    - cron: "0 21 * * 1-5"
-    - cron: "0 22 * * 1-5"
+    - cron: "0 21 * * 1-5"   # 5pm ET during EDT
+    - cron: "0 22 * * 1-5"   # 5pm ET during EST
   workflow_dispatch:
 
 permissions:
   contents: write
 
-# keep your existing concurrency group name if you like
 concurrency:
   group: evening-report
   cancel-in-progress: true
@@ -25,14 +23,10 @@ jobs:
       - id: check
         shell: bash
         run: |
-          # Manual runs always proceed
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "should_run=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          # Check local New York time
-          wd=$(TZ=America/New_York date +%u)  # 1=Mon .. 7=Sun
-          hr=$(TZ=America/New_York date +%H)  # 00..23
+            echo "should_run=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          wd=$(TZ=America/New_York date +%u)
+          hr=$(TZ=America/New_York date +%H)
           if [ "$wd" -ge 1 ] && [ "$wd" -le 5 ] && [ "$hr" = "17" ]; then
             echo "should_run=true" >> "$GITHUB_OUTPUT"
           else
@@ -46,17 +40,47 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Publish report to docs (excluding gapups.html)
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps (if any)
+        shell: bash
         run: |
-          rsync -av --delete --exclude 'gapups.html' report/ docs/
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run dispatcher (generates report/)
+        run: |
+          python dispatcher.py
+
+      - name: "Debug: list output"
+        run: |
+          pwd
+          ls -la
+          find . -maxdepth 2 -type d -print
+          [ -d report ] && ls -la report || true
+
+      - name: Publish report to docs (exclude gapups)
+        shell: bash
+        run: |
+          mkdir -p docs
+          if [ -d report ] && [ "$(ls -A report)" ]; then
+            rsync -av --delete --exclude 'gapups.html' report/ docs/
+          else
+            echo "No report/ (or empty). Skipping rsync."
+          fi
 
       - name: Commit and push changes
+        shell: bash
         run: |
           BRANCH="${{ github.ref_name }}"
-          git config user.name "github-actions[bot]"
+          git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/ || true
-          git add history/*.json || true
-          git commit -m "Evening report update $(date -u +%F)" || echo "No changes"
+          git add docs/ history/* || true
+          # ensure gapups.html (from morning) isn't removed if nothing new replaces it
+          git reset docs/gapups.html || true
+          git diff --staged --quiet || git commit -m "Evening report update $(date -u +%F)"
           git pull --rebase origin "$BRANCH" || true
           git push origin HEAD:"$BRANCH"

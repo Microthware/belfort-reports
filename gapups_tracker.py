@@ -1,217 +1,171 @@
 
 from __future__ import annotations
-import csv
-from pathlib import Path
-from datetime import datetime, timezone, timedelta
-from typing import Iterable, Dict, List, Optional
-
+import csv, os, re
+from datetime import datetime, timedelta
+from typing import List, Dict, Optional
 try:
     import yfinance as yf  # type: ignore
 except Exception:
     yf = None
 
-HISTORY_DIR = Path("history")
-HISTORY_DIR.mkdir(parents=True, exist_ok=True)
-CSV_PATH = HISTORY_DIR / "gapups-history.csv"
-
+HISTORY_DIR = "history"
+CSV_PATH = os.path.join(HISTORY_DIR, "gapups-history.csv")
 CSV_HEADERS = [
-    "date", "name", "symbol", "price",
-    "next_day_price", "next_day_pct",
-    "week_later_price", "week_later_pct",
-    "month_later_price", "month_later_pct",
-    "mkt_day_pct", "mkt_week_pct", "mkt_month_pct",
+    "date","symbol","price",
+    "next_day_price","next_day_pct",
+    "week_price","week_pct",
+    "month_price","month_pct",
+    "mkt_day_pct","mkt_week_pct","mkt_month_pct",
+    "streak"
 ]
 
-TRADING_OFFSETS = {"day": 1, "week": 5, "month": 21}
-
-def _ensure_csv():
-    if not CSV_PATH.exists():
-        with CSV_PATH.open("w", newline="", encoding="utf-8") as f:
+def _ensure():
+    os.makedirs(HISTORY_DIR, exist_ok=True)
+    if not os.path.exists(CSV_PATH):
+        with open(CSV_PATH, "w", newline="", encoding="utf-8") as f:
             csv.writer(f).writerow(CSV_HEADERS)
 
-def _today_iso_local() -> str:
-    return datetime.now(timezone.utc).astimezone().date().isoformat()
+def _read_rows() -> List[Dict[str,str]]:
+    if not os.path.exists(CSV_PATH):
+        return []
+    with open(CSV_PATH, "r", encoding="utf-8") as f:
+        return list(csv.DictReader(f))
 
-def _fetch_series(symbol: str, start: str, end: Optional[str] = None):
+def _write_rows(rows: List[Dict[str,str]]):
+    with open(CSV_PATH, "w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=CSV_HEADERS); w.writeheader()
+        for r in rows: w.writerow(r)
+
+def _last_close(symbol: str, on_date: str) -> Optional[float]:
     if yf is None:
         return None
     try:
-        hist = yf.Ticker(symbol).history(start=start, end=end or None, auto_adjust=False)
+        d0 = datetime.fromisoformat(on_date)
+        # fetch +/- 3 days to find nearest close on/after date
+        start = (d0 - timedelta(days=2)).date().isoformat()
+        end = (d0 + timedelta(days=7)).date().isoformat()
+        hist = yf.Ticker(symbol).history(start=start, end=end, auto_adjust=False)
         if hist is None or hist.empty:
             return None
-        return [(ts.date().isoformat(), float(c)) for ts, c in hist["Close"].items() if float(c) > 0]
+        # choose first close on or after d0.date()
+        for ts, row in hist.iterrows():
+            d = ts.date().isoformat()
+            if d >= on_date:
+                px = float(row["Close"])
+                if px > 0: return px
+        # fallback latest
+        px = float(hist["Close"].iloc[-1])
+        return px if px>0 else None
     except Exception:
         return None
 
-def _idx_forward(dates: List[str], base_date: str, offset: int) -> Optional[int]:
-    if base_date in dates:
-        i0 = dates.index(base_date)
-    else:
-        i0 = next((i for i,d in enumerate(dates) if d > base_date), None)
-        if i0 is None:
-            return None
-    i = i0 + offset
-    return i if 0 <= i < len(dates) else None
-
-def _pct(a: Optional[float], b: Optional[float]) -> Optional[float]:
-    if a is None or b is None or a == 0:
-        return None
-    return (b / a) - 1.0
-
-def record_today_from_finviz(tickers: Iterable[str], names: Optional[Dict[str,str]] = None, run_date_iso: Optional[str] = None) -> None:
-    """Append today's Finviz gap-ups that were already scraped elsewhere this run."""
-    _ensure_csv()
-    date_str = run_date_iso or _today_iso_local()
-
-    existing = set()
-    rows = []
-    with CSV_PATH.open("r", encoding="utf-8") as f:
-        r = csv.DictReader(f)
-        for row in r:
-            rows.append(row)
-            existing.add((row["date"], row["symbol"]))
-
-    tickers = [ (t or "").upper().strip() for t in (tickers or []) if t ]
-    if not tickers:
-        with CSV_PATH.open("w", newline="", encoding="utf-8") as f:
-            w = csv.DictWriter(f, fieldnames=CSV_HEADERS); w.writeheader()
-            for row in rows: w.writerow(row)
-        return
-
-    start = (datetime.fromisoformat(date_str) - timedelta(days=3)).date().isoformat()
-    end   = (datetime.fromisoformat(date_str) + timedelta(days=2)).date().isoformat()
-
+def record_today_from_finviz(tickers: List[str], today: Optional[str] = None):
+    """Append today's tickers with entry price (close on or after today). Dedup by (date,symbol)."""
+    _ensure()
+    today = today or datetime.utcnow().date().isoformat()
+    rows = _read_rows()
+    seen = {(r["date"], r["symbol"]) for r in rows}
     for sym in tickers:
-        if (date_str, sym) in existing:
+        sym = sym.strip().upper()
+        key = (today, sym)
+        if key in seen:
             continue
-        nm = (names or {}).get(sym)
-        if nm is None and yf is not None:
-            try:
-                info = getattr(yf.Ticker(sym), "get_info", None)
-                nm = (info() or {}).get("shortName") if callable(info) else None
-            except Exception:
-                nm = None
-        nm = nm or sym
-
-        series = _fetch_series(sym, start=start, end=end) or []
-        dates = [d for d,_ in series]
-        if not dates:
-            continue
-        base_idx = dates.index(date_str) if date_str in dates else max([i for i,d in enumerate(dates) if d < date_str], default=None)
-        if base_idx is None:
-            continue
-        base_price = series[base_idx][1]
-
+        price = _last_close(sym, today)
         rows.append({
-            "date": date_str, "name": nm, "symbol": sym, "price": f"{base_price:.4f}",
+            "date": today, "symbol": sym, "price": f"{price:.6f}" if price else "",
             "next_day_price":"", "next_day_pct":"",
-            "week_later_price":"", "week_later_pct":"",
-            "month_later_price":"", "month_later_pct":"",
-            "mkt_day_pct":"", "mkt_week_pct":"", "mkt_month_pct":""
+            "week_price":"", "week_pct":"",
+            "month_price":"", "month_pct":"",
+            "mkt_day_pct":"", "mkt_week_pct":"", "mkt_month_pct":"",
+            "streak": "1",
         })
+        seen.add(key)
+    _write_rows(rows)
 
-    with CSV_PATH.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=CSV_HEADERS); w.writeheader()
-        for row in rows: w.writerow(row)
+def _series(symbol: str, start: str, end: Optional[str] = None):
+    if yf is None: return []
+    try:
+        hist = yf.Ticker(symbol).history(start=start, end=end or None, auto_adjust=False)
+        if hist is None or hist.empty: return []
+        return [(ts.date().isoformat(), float(c)) for ts,c in hist["Close"].items() if float(c)>0]
+    except Exception:
+        return []
 
-def backfill_outcomes() -> None:
-    """Fill forward outcomes (T+1/T+5/T+21) and SPY D/W/M market context where blank."""
-    _ensure_csv()
-    rows = list(csv.DictReader(CSV_PATH.open("r", encoding="utf-8")))
-    if not rows or yf is None:
+def _idx_on_or_after(dates: List[str], d0: str) -> Optional[int]:
+    if d0 in dates: return dates.index(d0)
+    for i,d in enumerate(dates):
+        if d > d0: return i
+    return None
+
+def backfill_outcomes():
+    """Compute T+1, T+5, T+21 outcomes and SPY market context. Also recompute streaks."""
+    _ensure()
+    rows = _read_rows()
+    if not rows:
         return
-
-    all_dates = sorted({r["date"] for r in rows})
-    if not all_dates:
-        return
-    start = (datetime.fromisoformat(all_dates[0]) - timedelta(days=3)).date().isoformat()
-    end   = (datetime.fromisoformat(all_dates[-1]) + timedelta(days=40)).date().isoformat()
-
-    spy = _fetch_series("SPY", start=start, end=end) or []
-    spy_dates = [d for d,_ in spy]
-
+    earliest = min(r["date"] for r in rows if r.get("date"))
+    end = (datetime.utcnow().date() + timedelta(days=1)).isoformat()
+    # preload SPY and all symbols
+    spy_ser = _series("SPY", earliest, end)
+    spy_dates = [d for d,_ in spy_ser]
     cache: Dict[str, List[tuple]] = {}
-
     for r in rows:
         sym = r["symbol"]
         if sym not in cache:
-            cache[sym] = _fetch_series(sym, start=start, end=end) or []
-        ser = cache[sym]
+            cache[sym] = _series(sym, earliest, end)
+    # compute outcomes
+    for r in rows:
+        d0 = r.get("date"); sym = r.get("symbol"); p0 = float(r.get("price") or 0) or None
+        ser = cache.get(sym, [])
         dates = [d for d,_ in ser]
-        if not dates:
-            continue
-
-        d = r["date"]
-        try:
-            base = float(r["price"])
-        except Exception:
-            base = None
-
-        def fill(off_key: str, price_key: str, pct_key: str):
-            if r.get(pct_key) and r.get(price_key):
-                return
-            idx = _idx_forward(dates, d, TRADING_OFFSETS[off_key])
-            if idx is None or base is None:
-                return
-            fwd = ser[idx][1]
-            r[price_key] = f"{fwd:.4f}"
-            r[pct_key]   = f"{_pct(base, fwd):.6f}"
-
-        fill("day",   "next_day_price",   "next_day_pct")
-        fill("week",  "week_later_price", "week_later_pct")
-        fill("month", "month_later_price","month_later_pct")
-
-        def fill_spy(off_key: str, key: str):
-            if r.get(key):
-                return
-            # find base index on or before d
-            if d in spy_dates:
-                i0 = spy_dates.index(d)
+        i0 = _idx_on_or_after(dates, d0) if d0 else None
+        if i0 is not None and p0:
+            # T+1, +5, +21 (approx trg days)
+            for k, off in (("next_day",1), ("week",5), ("month",21)):
+                idx = i0 + off
+                if idx < len(ser):
+                    px = ser[idx][1]
+                    r[f"{k}_price"] = f"{px:.6f}"
+                    r[f"{k}_pct"] = f"{(px/p0 - 1.0):.6f}"
+        # market context from SPY
+        if d0 and spy_dates:
+            j0 = _idx_on_or_after(spy_dates, d0)
+            if j0 is not None:
+                for k, off, fld in (("day",1,"mkt_day_pct"), ("week",5,"mkt_week_pct"), ("month",21,"mkt_month_pct")):
+                    j = j0 + off
+                    if j < len(spy_ser):
+                        sp0 = spy_ser[j0][1]; sp1 = spy_ser[j][1]
+                        r[fld] = f"{(sp1/sp0 - 1.0):.6f}"
+    # recompute streaks (consecutive days)
+    by_sym: Dict[str, List[str]] = {}
+    for r in rows:
+        by_sym.setdefault(r["symbol"], []).append(r["date"])
+    for sym, dates in by_sym.items():
+        dates.sort(reverse=True)
+        # compute streaks descending
+        prev = None; cnt = 0
+        streak_map = {}
+        for d in dates:
+            if prev is None:
+                cnt = 1
             else:
-                i0 = max([i for i,sd in enumerate(spy_dates) if sd < d], default=None)
-            if i0 is None:
-                return
-            base_spy = spy[i0][1]
-            i1 = i0 + TRADING_OFFSETS[off_key]
-            if 0 <= i1 < len(spy):
-                r[key] = f"{_pct(base_spy, spy[i1][1]):.6f}"
+                # if today's date is exactly previous -1 day (calendar), increment; else reset
+                dd = datetime.fromisoformat(prev).date() - timedelta(days=1)
+                if d == dd.isoformat():
+                    cnt += 1
+                else:
+                    cnt = 1
+            streak_map[d] = cnt
+            prev = d
+        # assign back
+        for r in rows:
+            if r["symbol"]==sym:
+                r["streak"] = str(streak_map.get(r["date"], 1))
+    _write_rows(rows)
 
-        fill_spy("day",   "mkt_day_pct")
-        fill_spy("week",  "mkt_week_pct")
-        fill_spy("month", "mkt_month_pct")
-
-    with CSV_PATH.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=CSV_HEADERS); w.writeheader()
-        for row in rows: w.writerow(row)
-
-def load_rows_for_render() -> List[Dict[str,str]]:
-    """Return newest-first rows with a computed 'streak' (>=2 shows 2d/3d/...)."""
-    _ensure_csv()
-    rows = list(csv.DictReader(CSV_PATH.open("r", encoding="utf-8")))
-    for r in rows:
-        for k in CSV_HEADERS:
-            r[k] = r.get(k, "") or ""
-
-    # Compute streaks based on consecutive *appearance days* per symbol.
-    # Build date ladder (newest -> oldest) from the dataset (trading days we captured).
-    unique_dates_desc = sorted({r["date"] for r in rows}, reverse=True)
-    date_idx = {d:i for i,d in enumerate(unique_dates_desc)}
-    by_sym = {}
-    for r in rows:
-        by_sym.setdefault(r["symbol"], set()).add(r["date"])
-
-    for r in rows:
-        sym = r["symbol"]
-        if not sym or r["date"] == "":
-            r["streak"] = ""
-            continue
-        sdates = by_sym.get(sym, set())
-        j = date_idx.get(r["date"], 0)
-        streak = 1
-        while (j+1) < len(unique_dates_desc) and unique_dates_desc[j+1] in sdates:
-            streak += 1
-            j += 1
-        r["streak"] = str(streak) if streak >= 2 else ""
-
-    rows.sort(key=lambda x: (x["date"], x["name"]), reverse=True)
+def load_rows_for_render() -> List[Dict[str, str]]:
+    _ensure()
+    rows = _read_rows()
+    # sort newest first
+    rows.sort(key=lambda x: (x.get("date") or ""), reverse=True)
     return rows

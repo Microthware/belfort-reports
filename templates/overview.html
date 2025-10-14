@@ -20,10 +20,12 @@
     .pill{display:inline-block;padding:2px 8px;border:1px solid var(--border);border-radius:999px;font-size:12px;margin-left:8px}
     .up{color:var(--green);border-color:rgba(22,163,74,.35)}
     .down{color:var(--red);border-color:rgba(220,38,38,.35)}
-    /* circular win rate */
+
+    /* circular win-rate */
     .ring{width:40px;height:40px;display:inline-block;position:relative}
     .ring svg{width:40px;height:40px;display:block}
     .ring .txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px}
+
     .footer-updated{position:fixed;right:12px;bottom:10px;color:var(--muted);font-size:12px}
     .bots-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
     .summary{display:flex;gap:16px;align-items:center}
@@ -57,7 +59,6 @@
           </tr>
         </thead>
         <tbody>
-          {% set circ = 100.53 %}
           {% for b in bots %}
           <tr>
             <td><a href="{{ b.link }}"><strong>{{ b.name }}</strong></a></td>
@@ -66,9 +67,11 @@
               <div class="ring" title="{{ b.win_rate }}">
                 <svg viewBox="0 0 40 40" role="img" aria-label="Win rate {{ b.win_rate }}">
                   <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
-                  {% set offset = 100.53 * (1 - (b.win_rate_num or 0)) %}
+                  {% set circumference = 100.53 %}
+                  {% set fraction = b.win_rate_num or 0 %}
+                  {% set offset = circumference * (1 - fraction) %}
                   <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
-                          stroke-dasharray="100.53" stroke-dashoffset="{{ offset|round(2) }}"
+                          stroke-dasharray="{{ circumference }}" stroke-dashoffset="{{ offset|round(2) }}"
                           transform="rotate(-90 20 20)"></circle>
                 </svg>
                 <div class="txt">{{ b.win_rate }}</div>
@@ -97,6 +100,12 @@
       <div class="section-title">Market Studies</div>
       <ul style="margin:6px 0 0; padding-left:16px; line-height:1.9;">
         <li><a href="gapups.html">Gap-Up History &amp; Outcomes</a></li>
+      </ul>
+    </section>
+    <section class="card" style="margin-top:14px;">
+      <div class="section-title">High Profile Portfolios</div>
+      <ul style="margin:6px 0 0; padding-left:16px; line-height:1.9;">
+        <li><a href="portfolios.html">Pelosi</a></li>
       </ul>
     </section>
   </div>

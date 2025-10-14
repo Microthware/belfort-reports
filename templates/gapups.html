@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Gap-Up History</title>
+  <title>Gap-Up History & Outcomes</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    :root{--bg:#0b0f14;--card:#11161d;--muted:#9bb1c8;--text:#e8f0fa;--green:#16a34a;--red:#dc2626;--border:#223142;--amber:#f59e0b}
+    :root{--bg:#0b0f14;--card:#11161d;--muted:#9bb1c8;--text:#e8f0fa;--green:#16a34a;--red:#dc2626;--border:#223142}
     html,body{background:var(--bg);color:var(--text);margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
     .wrap{max-width:1200px;margin:28px auto;padding:0 16px}
-    header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
     h1{font-size:22px;margin:0}
     .updated{color:var(--muted);font-size:12px}
     .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
@@ -17,15 +17,19 @@
     tbody td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:14px;white-space:nowrap}
     .pct.up{color:var(--green);font-weight:600}
     .pct.down{color:var(--red);font-weight:600}
-    .chips{display:flex;gap:6px;flex-wrap:wrap}
-    .chip{border:1px solid var(--border);border-radius:999px;padding:2px 8px;font-size:12px}
-    .streak{margin-left:8px;border:1px dashed rgba(245,158,11,.4);color:var(--amber);border-radius:999px;padding:1px 6px;font-size:12px}
+    a{color:#9ecbff;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .chip{border:1px solid var(--border);border-radius:999px;padding:1px 8px;font-size:12px;color:var(--muted)}
+    .footer-updated{position:fixed;right:12px;bottom:10px;color:var(--muted);font-size:12px}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <h1>Gap-Up History</h1>
+      <div style="display:flex;align-items:center;gap:12px">
+        <a class="back" href="overview.html" style="color:#9ecbff;text-decoration:none">&larr; Back</a>
+        <h1>Gap-Up History & Outcomes</h1>
+      </div>
       <div class="updated">Updated {{ gen_time }}</div>
     </header>
 
@@ -34,15 +38,16 @@
         <thead>
           <tr>
             <th>Date</th>
-            <th>Name</th>
+            <th>Symbol</th>
             <th>Price</th>
-            <th>Next Day Price</th>
-            <th>Next Day %</th>
-            <th>Week-Later Price</th>
-            <th>Week-Later %</th>
-            <th>Month-Later Price</th>
-            <th>Month-Later %</th>
-            <th>Market Conditions (D / W / M)</th>
+            <th>Next&nbsp;Day</th>
+            <th>Next&nbsp;Day&nbsp;%</th>
+            <th>Week</th>
+            <th>Week&nbsp;%</th>
+            <th>Month</th>
+            <th>Month&nbsp;%</th>
+            <th>Market D/W/M</th>
+            <th>Streak</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -50,33 +55,26 @@
     </section>
   </div>
 
+  <div class="footer-updated">Updated {{ gen_time }}</div>
+
   <script>
     const ROWS = {{ rows_json | safe }};
-    function money(v){ if(v===""||v==null) return "—"; const n=Number(v); return isFinite(n) ? "$"+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:4}) : "—"; }
-    function pct(v){ if(v===""||v==null) return "—"; const n=Number(v); if(!isFinite(n)) return "—"; const cls=n>=0?"pct up":"pct down"; return `<span class="${cls}">${(n*100).toFixed(2)}%</span>`; }
-    function chip(label,v){ if(v===""||v==null) return `<span class="chip">${label}: —</span>`; const n=Number(v); const cls=n>=0?"pct up":"pct down"; return `<span class="chip ${cls}">${label}: ${(n*100).toFixed(2)}%</span>`; }
-    function streakPill(r){
-      const n = Number(r.streak || 0);
-      if(!n || n < 2) return "";
-      return `<span class="streak">${n}d</span>`;
-    }
+    function money(v){ if(!v) return "—"; const n=Number(v); return isFinite(n)?"$"+n.toFixed(2):String(v); }
+    function pct(v){ if(!v) return "—"; const n=Number(v); if(!isFinite(n)) return "—"; const cls=n>=0?"pct up":"pct down"; return `<span class="${cls}">${(n*100).toFixed(2)}%</span>`; }
     const tbody=document.querySelector("#tbl tbody");
     tbody.innerHTML = ROWS.map(r=>`
       <tr>
-        <td>${r.date}</td>
-        <td>${r.name}${streakPill(r)}</td>
+        <td>${r.date||"—"}</td>
+        <td><strong>${r.symbol||"—"}</strong></td>
         <td>${money(r.price)}</td>
         <td>${money(r.next_day_price)}</td>
         <td>${pct(r.next_day_pct)}</td>
-        <td>${money(r.week_later_price)}</td>
-        <td>${pct(r.week_later_pct)}</td>
-        <td>${money(r.month_later_price)}</td>
-        <td>${pct(r.month_later_pct)}</td>
-        <td><div class="chips">
-          ${chip("D", r.mkt_day_pct)}
-          ${chip("W", r.mkt_week_pct)}
-          ${chip("M", r.mkt_month_pct)}
-        </div></td>
+        <td>${money(r.week_price)}</td>
+        <td>${pct(r.week_pct)}</td>
+        <td>${money(r.month_price)}</td>
+        <td>${pct(r.month_pct)}</td>
+        <td>${[pct(r.mkt_day_pct), pct(r.mkt_week_pct), pct(r.mkt_month_pct)].join(" / ")}</td>
+        <td>${(Number(r.streak||"1")>=2)? `<span class="chip">${r.streak}d</span>` : "—"}</td>
       </tr>`).join("");
   </script>
 </body>

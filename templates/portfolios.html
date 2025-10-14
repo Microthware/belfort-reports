@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Public Portfolios</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{--bg:#0b0f14;--card:#11161d;--muted:#9bb1c8;--text:#e8f0fa;--green:#16a34a;--red:#dc2626;--border:#223142}
+    html,body{background:var(--bg);color:var(--text);margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .wrap{max-width:1200px;margin:28px auto;padding:0 16px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+    h1{font-size:22px;margin:0}
+    .updated{color:var(--muted);font-size:12px}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
+    table{width:100%;border-collapse:collapse}
+    thead th{text-align:left;font-weight:600;font-size:13px;color:var(--muted);padding:10px 12px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);position:sticky;top:0}
+    tbody td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:14px;white-space:nowrap}
+    a{color:#9ecbff;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .pct.up{color:var(--green);font-weight:600}
+    .pct.down{color:var(--red);font-weight:600}
+    details{margin-bottom:12px}
+    summary{list-style:none;display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:700;color:#cfe1f7}
+    summary::-webkit-details-marker{display:none}
+    summary::marker{content:""}
+    summary .arrow{font-size:14px;color:var(--muted)}
+    details[open] > summary .arrow{transform:rotate(180deg)}
+    .footer-updated{position:fixed;right:12px;bottom:10px;color:var(--muted);font-size:12px}
+    .muted{color:var(--muted);font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;align-items:center;gap:12px">
+        <a class="back" href="overview.html" style="color:#9ecbff;text-decoration:none">&larr; Back</a>
+        <h1>Public Portfolios</h1>
+      </div>
+      <div class="updated">Updated {{ gen_time }}</div>
+    </header>
+
+    <section class="card">
+      {% for sec in sections %}
+      <details {{ 'open' if loop.first else '' }}>
+        <summary><span class="arrow">▾</span> {{ sec.name }}</summary>
+        <div style="margin:10px 0 6px" class="muted">Total trades: {{ sec.rows|length }}</div>
+        <div style="overflow:auto; border:1px solid var(--border); border-radius:10px;">
+          <table>
+            <thead>
+              <tr>
+                <th>Published</th>
+                <th>Traded</th>
+                <th>Ticker</th>
+                <th>Issuer</th>
+                <th>Type</th>
+                <th>Size</th>
+                <th>Price</th>
+                <th>Shares</th>
+                <th>Since Trade %</th>
+                <th>SPY %</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody id="tb-{{ sec.slug }}"></tbody>
+          </table>
+        </div>
+      </details>
+      {% endfor %}
+      <div style="margin-top:8px" class="muted">
+        Sources: third-party aggregators (e.g., CapitolTrades) and official PTR PDFs. Intended for informational display only.
+      </div>
+    </section>
+  </div>
+
+  <div class="footer-updated">Updated {{ gen_time }}</div>
+
+  <script>
+    const SECTIONS = {{ sections_json | safe }};
+
+    function money(v){ if(v===""||v==null) return "—"; const s=String(v).replace(/^\$/,""); const n=Number(s.replace(/,/g,"")); return isFinite(n) ? "$"+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) : String(v); }
+    function pct(v){ if(v===""||v==null) return "—"; const n=Number(v); if(!isFinite(n)) return "—"; const cls=n>=0?"pct up":"pct down"; return `<span class="${cls}">${(n*100).toFixed(2)}%</span>`; }
+
+    function rowHtml(r){
+      const src = r.pdf_url ? `<a href="${r.pdf_url}" target="_blank" rel="noopener">PTR PDF</a>` : (r.detail_url ? `<a href="${r.detail_url}" target="_blank" rel="noopener">Detail</a>` : "—");
+      return `<tr>
+        <td>${r.published_date || "—"}</td>
+        <td>${r.traded_date || "—"}</td>
+        <td>${r.ticker || "—"}</td>
+        <td>${r.issuer || "—"}</td>
+        <td>${(r.type||"").toUpperCase() || "—"}</td>
+        <td>${r.size_range || "—"}</td>
+        <td>${money(r.price)}</td>
+        <td>${r.shares || "—"}</td>
+        <td>${pct(r.since_trade_pct)}</td>
+        <td>${pct(r.since_trade_spy_pct)}</td>
+        <td>${src}</td>
+      </tr>`;
+    }
+
+    for(const sec of SECTIONS){
+      const tbody = document.querySelector("#tb-"+sec.slug);
+      if(!tbody) continue;
+      tbody.innerHTML = (sec.rows || []).map(rowHtml).join("");
+    }
+  </script>
+</body>
+</html>

@@ -1,11 +1,31 @@
 #!/usr/bin/env python3
 import os, json, shutil, time, glob, re, sys, copy
+import argparse
+
+# === Run-mode argument parsing (CLI only) ===
+_ap = argparse.ArgumentParser(add_help=False)
+_ap.add_argument("--only", type=str, help="Comma list of sections to run, e.g. gapups,portfolios")
+_ap.add_argument("--gapups-only", action="store_true")
+_ap.add_argument("--portfolios-only", action="store_true")
+_ap.add_argument("--all", action="store_true", help="Explicitly run everything (same as no flags)")
+_ap.add_argument("--skip-gapups", action="store_true")
+_ap.add_argument("--skip-portfolios", action="store_true")
+_ARGS, _ = _ap.parse_known_args()
+
+RUN_ONLY = [s.strip().lower() for s in (_ARGS.only.split(",") if _ARGS.only else []) if s.strip()]
+RUN_GAPUPS_ONLY = bool(_ARGS.gapups_only)
+RUN_PORTFOLIOS_ONLY = bool(_ARGS.portfolios_only)
+RUN_ALL = bool(_ARGS.all)
+RUN_SKIP_GAPUPS = bool(_ARGS.skip_gapups)
+RUN_SKIP_PORTFOLIOS = bool(_ARGS.skip_portfolios)
+
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from typing import List, Dict, Any, Tuple, Optional
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from dotenv import load_dotenv
 from gapups_tracker import record_today_from_finviz, backfill_outcomes, load_rows_for_render
+from portfolios_tracker import fetch_and_update_all as port_fetch, compute_returns_all as port_compute, load_sections_for_render as port_sections
 
 # ------------------------------------------------------------------
 # Debug & runtime flags
@@ -13,8 +33,6 @@ from gapups_tracker import record_today_from_finviz, backfill_outcomes, load_row
 DEBUG = True
 DISABLE_SYNTH_HOLD = os.environ.get("DISABLE_SYNTH_HOLD", "1") == "1"
 HIST_CONSOLIDATE = os.getenv("CONSOLIDATE_HISTORY", "1") == "1"  # consolidated per-bot file default ON
-SKIP_GAPUPS = os.getenv("SKIP_GAPUPS","0") == "1"
-GAPUPS_ONLY  = (os.getenv("GAPUPS_ONLY","0") == "1") or ("--gapups-only" in sys.argv)
 
 # Make sure local folder is importable (so stock.py works no matter CWD)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -203,14 +221,16 @@ def _save_history(model_slug: str, payload: Dict[str, Any], parsed: BotDay):
 # Parse & coerce
 # ------------------------------------------------------------------
 def _parse_ai_json(txt: str) -> Dict[str, Any]:
+    # Find the first JSON object in the response
     m = re.search(r"\{.*\}", txt, flags=re.S)
     if not m:
         raise ValueError("No JSON object found in response.")
     return json.loads(m.group(0))
 
+# Anchor identity to prompt file if provided
 def _coerce_bot_day(d: Dict[str, Any], carry_balance: float | None, canonical_name: Optional[str] = None) -> BotDay:
     response_name = d.get("model_name") or d.get("name") or "Unnamed Bot"
-    name = canonical_name or response_name
+    name = canonical_name or response_name  # anchor identity to prompt file if provided
 
     uni = d.get("universe") or d.get("symbols") or []
     starting = d.get("starting_balance")
@@ -229,7 +249,7 @@ def _coerce_bot_day(d: Dict[str, Any], carry_balance: float | None, canonical_na
             balance_after=(float(t.get("balance_after")) if t.get("balance_after") is not None else None),
             notes=str(t.get("notes") or ""),
         ))
-    trades.sort(key=lambda x: x.time, reverse=True)
+    trades.sort(key=lambda x: x.time, reverse=True)  # newest first
     return BotDay(name, uni, starting, trades, portfolio_analysis=portfolio)
 
 def _ending_balance(b: BotDay) -> float | None:
@@ -252,7 +272,9 @@ def _read_consolidated_runs(model_slug: str) -> List[Dict[str, Any]]:
         return []
 
 def _reconstruct_portfolio_state(model_slug: str, prices_today: Dict[str, float]) -> Dict[str, Any]:
+    """Return {'cash': float, 'lots': {sym: [{'qty':q,'price':p,'time':t},...]}, 'last_px': {sym:px}}."""
     runs = _read_consolidated_runs(model_slug)
+    # Find earliest starting balance
     start_cash = None
     all_trades: List[Dict[str, Any]] = []
     for run in runs:
@@ -288,6 +310,7 @@ def _reconstruct_portfolio_state(model_slug: str, prices_today: Dict[str, float]
                 lots.setdefault(sym, []).append({"qty": qty, "price": px, "time": str(t.get("time") or "")})
         elif side == "sell":
             if qty > 0 and px > 0:
+                # FIFO reduce
                 held = lots.get(sym, [])
                 remaining = qty
                 while remaining > 0 and held:
@@ -299,8 +322,10 @@ def _reconstruct_portfolio_state(model_slug: str, prices_today: Dict[str, float]
                 cash += qty * px
                 lots[sym] = [l for l in lots.get(sym, []) if l["qty"] > 1e-12]
 
+    # Drop any empty symbols
     lots = {s:[l for l in L if l["qty"]>1e-12] for s,L in lots.items() if any(l["qty"]>1e-12 for l in L)}
 
+    # Keep last_px fallback from history if no price today
     for sym in list(lots.keys()):
         if sym not in prices_today and sym not in last_px:
             last_px[sym] = 0.0
@@ -383,11 +408,11 @@ def _validate_trades_budget_with_state(
     prices_today: Dict[str,float]
 ) -> List[str]:
     issues: List[str] = []
-    EPS_BAL = 0.015
+    EPS_BAL = 0.015  # 1.5% tolerance for balance_after checks
 
     chron = sorted(trades, key=lambda x: x.time or "")
     cash = float(init_cash or 0.0)
-    lots: Dict[str, List[Dict[str, float]]] = copy.deepcopy(init_lots)
+    lots: Dict[str, List[Dict[str, float]]] = copy.deepcopy(init_lots)  # deep copy; don't mutate input
     last_px: Dict[str, float] = {}
 
     def port_value() -> float:
@@ -402,7 +427,7 @@ def _validate_trades_budget_with_state(
     for t in chron:
         side = (t.side or "").lower()
         sym  = t.symbol
-        qty  = float(t.qty or 0)
+        qty  = float(t.qty or 0)   # allow fractional
         px   = float(t.price or 0.0)
         if sym and px > 0:
             last_px[sym] = px
@@ -442,6 +467,7 @@ def _validate_trades_budget_with_state(
                         if abs((t.pnl_pct or 0) - exp) > 0.005:
                             issues.append(f"{t.time} {sym} SELL pnl_pct {t.pnl_pct:.4f} != FIFO {exp:.4f} (tolerance 0.005).")
 
+        # balance_after required & sanity check
         if t.balance_after is None:
             issues.append(f"{t.time} {sym or ''} missing balance_after.")
         else:
@@ -453,6 +479,7 @@ def _validate_trades_budget_with_state(
 
     return issues
 
+# Backwards-compatible wrapper (no prior state)
 def _validate_trades_budget(trades: List[Trade], starting_balance: float, prices_today: Dict[str,float]) -> List[str]:
     return _validate_trades_budget_with_state(trades, starting_balance, {}, prices_today)
 
@@ -465,7 +492,7 @@ def _build_correction_prompt(original_full_prompt: str, previous_json_text: str,
     lines.append("\n--- PREVIOUS JSON (for reference; fix it) ---\n")
     lines.append(previous_json_text.strip())
     lines.append("\n--- VALIDATION ERRORS (you must fix ALL) ---")
-    for it in issues[:20]:
+    for it in issues[:20]:  # cap to avoid ballooning
         lines.append(f"- {it}")
     lines.append("\nRe-output STRICT JSON ONLY (no commentary, no code fences), obeying all budget/share rules, NEVER exceeding available cash, NEVER selling more than held, and including 'balance_after' after EVERY action.")
     return "\n".join(lines)
@@ -478,18 +505,22 @@ def _get_candidates_from_stock_py() -> Optional[Dict[str, List[str]]]:
         if DEBUG: print("[stock.py] not available")
         return None
     buckets: Dict[str, List[str]] = {}
+    # gap_ups
     try:
         gaps = stockmod.Get_Stock_List(stockmod.gap_ups, "a", "tab-link") or []
         if gaps: buckets["gap_ups"] = gaps
         if DEBUG: print(f"[stock.py] gap_ups -> {len(gaps)} tickers: {', '.join(gaps[:10])}")
     except Exception as e:
         if DEBUG: print("[stock.py] gap_ups error:", repr(e))
+    # pivots
     try:
         pivs = stockmod.Get_Stock_List(stockmod.pivots, "a", "tab-link") or []
         if pivs: buckets["pivots"] = pivs
         if DEBUG: print(f"[stock.py] pivots  -> {len(pivs)} tickers: {', '.join(pivs[:10])}")
     except Exception as e:
         if DEBUG: print("[stock.py] pivots error:", repr(e))
+    if not buckets and DEBUG:
+        print("[stock.py] no buckets returned")
     return buckets or None
 
 def _fetch_finviz_tickers(url: str) -> List[str]:
@@ -640,6 +671,7 @@ def _aggregate_history(model_slug: str, latest_bot: BotDay) -> BotDay:
             if DEBUG: print("[agg] consolidated read failed:", repr(e))
 
     else:
+        # legacy timestamped history
         for path in _history_files_for(model_slug):
             try:
                 blob = json.load(open(path, "r", encoding="utf-8"))
@@ -698,8 +730,8 @@ def _aggregate_history(model_slug: str, latest_bot: BotDay) -> BotDay:
 def _render_overview(env, bots_rows: List[Dict[str, Any]]):
     tpl = env.get_template("overview.html")
     gen_time = time.strftime("%m/%d/%y %H:%M")
-    total_trades = sum(r.get("total_actions", r.get("trades",0)) for r in bots_rows)
-    avg_win_rate = sum(r.get("win_rate_num",0) for r in bots_rows)/len(bots_rows) if bots_rows else 0.0
+    total_trades = sum(r.get("total_actions", r["trades"]) for r in bots_rows)
+    avg_win_rate = sum(r["win_rate_num"] for r in bots_rows)/len(bots_rows) if bots_rows else 0.0
     html = tpl.render(
         gen_time=gen_time,
         tz=TZ,
@@ -708,14 +740,15 @@ def _render_overview(env, bots_rows: List[Dict[str, Any]]):
         avg_win_rate=f"{avg_win_rate*100:.2f}%",
     )
     open(os.path.join(REPORT_DIR,"overview.html"),"w",encoding="utf-8").write(html)
-    open(os.path.join(REPORT_DIR,"index.html"),"w",encoding="utf-8").write(html)
 
+# Accept file_slug for stable filenames
 def _render_model(env, b: BotDay, stats: Dict[str, Any], prompt_text: str = "", response_text: str = "", file_slug: Optional[str] = None):
     tpl = env.get_template("model_report.html")
     series = {"t":[], "v":[]}
     chron = list(sorted(b.trades, key=lambda x: x.time))
     carry = b.starting_balance or 0.0
     if not chron:
+        # still draw something
         series["t"].append(datetime.now(timezone.utc).isoformat())
         series["v"].append(float(carry))
     else:
@@ -740,7 +773,7 @@ def _render_model(env, b: BotDay, stats: Dict[str, Any], prompt_text: str = "", 
             "time": t.time,
             "symbol": t.symbol,
             "side": t.side,
-            "qty": f"{t.qty:.6f}".rstrip("0").rstrip("."),
+            "qty": f"{t.qty:.6f}".rstrip("0").rstrip("."),   # more precision for fractional shares
             "qty_num": float(t.qty),
             "price": f"{t.price:.6f}",
             "price_num": float(t.price),
@@ -762,39 +795,72 @@ def _render_model(env, b: BotDay, stats: Dict[str, Any], prompt_text: str = "", 
     open(os.path.join(REPORT_DIR, fname),"w",encoding="utf-8").write(html)
     return fname
 
+
+# ------------------------------------------------------------------
+# Gap-Ups page renderer
+# ------------------------------------------------------------------
 def _render_gapups(env):
-    """Render the Gap-Up History page from templates/gapups.html -> report/gapups.html"""
     try:
         rows = load_rows_for_render()
     except Exception as e:
-        if DEBUG:
-            print("[gapups] load_rows_for_render error:", repr(e))
+        if DEBUG: print("[gapups] load_rows_for_render failed:", repr(e))
         rows = []
     try:
         tpl = env.get_template("gapups.html")
     except Exception as e:
-        if DEBUG:
-            print("[gapups] template gapups.html missing:", repr(e))
+        if DEBUG: print("[gapups] missing template:", repr(e))
         return None
-    html = tpl.render(
-        gen_time=time.strftime("%m/%d/%y %H:%M"),
-        rows_json=json.dumps(rows, separators=(",",":")),
-    )
-    out_path = os.path.join(REPORT_DIR, "gapups.html")
-    open(out_path, "w", encoding="utf-8").write(html)
-    if DEBUG:
-        print("[gapups] rendered ->", out_path)
+    html = tpl.render(gen_time=time.strftime("%m/%d/%y %H:%M"), rows_json=json.dumps(rows, separators=(",",":")), rows=rows)
+    out = os.path.join(REPORT_DIR, "gapups.html")
+    open(out, "w", encoding="utf-8").write(html)
+    if DEBUG: print("[gapups] rendered ->", out)
     return "gapups.html"
+
+
+# ------------------------------------------------------------------
+# Public Portfolios page renderer
+# ------------------------------------------------------------------
+def _render_portfolios(env):
+    try:
+        port_fetch(max_pages=3)
+        port_compute()
+    except Exception as e:
+        if DEBUG: print("[portfolios] fetch/compute error:", repr(e))
+    try:
+        tpl = env.get_template("portfolios.html")
+    except Exception as e:
+        if DEBUG: print("[portfolios] missing template:", repr(e))
+        return None
+    sections = port_sections()
+    html = tpl.render(gen_time=time.strftime("%m/%d/%y %H:%M"), sections=sections, sections_json=json.dumps(sections, separators=(",",":")))
+    out = os.path.join(REPORT_DIR, "portfolios.html")
+    open(out, "w", encoding="utf-8").write(html)
+    if DEBUG: print("[portfolios] rendered ->", out)
+    return "portfolios.html"
+
+
+
+def _run_gapups_section(env, buckets):
+    try:
+        gap_up_tickers = []
+        if isinstance(buckets, dict):
+            gap_up_tickers = buckets.get("gap_ups", []) or []
+        if gap_up_tickers:
+            if DEBUG: print(f"[gapups] recording {len(gap_up_tickers)} Finviz tickers")
+            record_today_from_finviz(gap_up_tickers)
+        backfill_outcomes()
+    except Exception as e:
+        if DEBUG: print("[gapups] record/backfill failed:", repr(e))
+    _render_gapups(env)
 
 # ------------------------------------------------------------------
 # Prompts & querying
 # ------------------------------------------------------------------
 def _load_prompts() -> Dict[str, str]:
     prompts = {}
-    if os.path.isdir(PROMPTS_DIR):
-        for p in sorted(glob.glob(os.path.join(PROMPTS_DIR, "*.txt"))):
-            name = os.path.splitext(os.path.basename(p))[0]
-            prompts[name] = open(p,"r",encoding="utf-8").read()
+    for p in sorted(glob.glob(os.path.join(PROMPTS_DIR, "*.txt"))):
+        name = os.path.splitext(os.path.basename(p))[0]
+        prompts[name] = open(p,"r",encoding="utf-8").read()
     if DEBUG:
         print("[prompts] found:", list(prompts.keys()))
     return prompts
@@ -802,6 +868,7 @@ def _load_prompts() -> Dict[str, str]:
 def _format_carry_for_prompt(carry_state: Dict[str, Any], prices_today: Dict[str,float]) -> str:
     lots = carry_state.get("lots") or {}
     cash = float(carry_state.get("cash") or 0.0)
+    # Collapse lots per symbol for shorter context (sum qty; show a ref price)
     lines = []
     lines.append(f"AVAILABLE_CASH_USD: {cash:.2f}")
     if lots:
@@ -869,6 +936,7 @@ def query_model(model_name: str, prompt_text: str) -> str:
             "trades": []
         })
 
+    # No key: use dev mode (or local sample if present)
     if not api_key or (isinstance(api_key, str) and api_key.strip() == ""):
         sample_path = os.path.join(PROMPTS_DIR, f"{model_name}.json")
         if os.path.exists(sample_path):
@@ -881,10 +949,12 @@ def query_model(model_name: str, prompt_text: str) -> str:
         from openai import OpenAI
         client = OpenAI(api_key=api_key)
 
+        # First try: Responses API without temperature (some models reject it)
         if DEBUG: print(f"[openai] responses.create model={model} len={len(prompt_text)}")
-        resp = client.responses.create(model=model, input=prompt_text)
+        resp = client.responses.create(model=model, input=prompt_text)  # no temperature
         text = getattr(resp, "output_text", None)
         if not text:
+            # Build text from content parts if output_text missing
             try:
                 parts = []
                 for item in resp.output[0].content:
@@ -899,11 +969,13 @@ def query_model(model_name: str, prompt_text: str) -> str:
     except Exception as e:
         if DEBUG: print("[openai] responses.create error:", repr(e))
 
+        # Fallback: try Chat Completions API
         try:
             if DEBUG: print(f"[openai] chat.completions.create model={model}")
             chat = client.chat.completions.create(
                 model=model,
                 messages=[{"role": "user", "content": prompt_text}],
+                # don't set temperature; some models disallow
             )
             text = chat.choices[0].message.content or ""
             if DEBUG: print("[openai] chat.completions ok -> chars:", len(text))
@@ -911,6 +983,7 @@ def query_model(model_name: str, prompt_text: str) -> str:
         except Exception as e2:
             if DEBUG: print("[openai] chat.completions error:", repr(e2))
 
+        # Local sample fallback
         sample_path = os.path.join(PROMPTS_DIR, f"{model_name}.json")
         if os.path.exists(sample_path):
             if DEBUG: print("[openai] fallback -> using local sample", sample_path)
@@ -921,7 +994,7 @@ def query_model(model_name: str, prompt_text: str) -> str:
 # ------------------------------------------------------------------
 # Main
 # ------------------------------------------------------------------
-def main():
+def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUPS, RUN_SKIP_PORTFOLIOS):
     load_dotenv()
 
     # Clean report dir
@@ -937,7 +1010,10 @@ def main():
 
     env = Environment(loader=FileSystemLoader(TEMPLATES_DIR), autoescape=select_autoescape(["html"]))
 
-    # --- Candidate scan (used for bots; also gives us gap_ups list)
+    prompts = _load_prompts()
+    bots_rows = []
+
+    # Scan candidates & prices once per run (toggle with USE_SCAN, default ON)
     USE_SCAN = os.getenv("USE_SCAN", "1") == "1"
     buckets = _scan_candidates() if USE_SCAN else {}
     candidates_note = _format_candidates_for_prompt(buckets)
@@ -948,43 +1024,51 @@ def main():
         print("[scan] CANDIDATE buckets:", {k: len(v) for k, v in buckets.items()})
         print("[prices] count:", len(prices))
 
-    # === GAP-UP TRACKER ===
-    if not SKIP_GAPUPS:
-        try:
-            gap_up_tickers = []
-            if isinstance(buckets, dict):
-                gap_up_tickers = buckets.get("gap_ups", []) or []
-            if not gap_up_tickers:
-                # fallback: direct stock.py call in case USE_SCAN was off
-                b2 = _get_candidates_from_stock_py() or {}
-                gap_up_tickers = b2.get("gap_ups", []) or []
+    # ---------- CLI gating ----------
+    def _maybe_call(name, *a, **kw):
+        fn = globals().get(name)
+        return fn(*a, **kw) if callable(fn) else None
 
-            if gap_up_tickers:
-                if DEBUG:
-                    print(f"[gapups] recording {len(gap_up_tickers)} Finviz tickers")
-                record_today_from_finviz(gap_up_tickers)
-                backfill_outcomes()
-            _render_gapups(env)
-        except Exception as e:
-            if DEBUG:
-                print("[gapups] error:", repr(e))
-    else:
-        # Still render from existing history so rsync doesn't delete the page unless workflow excludes it
-        _render_gapups(env)
-
-    if GAPUPS_ONLY:
-        if DEBUG: print("[mode] GAPUPS_ONLY active; rendering minimal overview and exiting.")
+    if RUN_ONLY:
+        if ("gapups" in RUN_ONLY) and (not RUN_SKIP_GAPUPS):
+            _maybe_call("_run_gapups_section", env, buckets) or (_render_gapups(env))
+        if ("portfolios" in RUN_ONLY) and (not RUN_SKIP_PORTFOLIOS):
+            _maybe_call("_render_portfolios", env)
         _render_overview(env, bots_rows=[])
-        print("Gap-ups only mode complete.")
         return
 
-    # --- From here down is the normal prompting/run loop (unchanged) ---
-    prompts = _load_prompts()
-    bots_rows = []
+    if RUN_GAPUPS_ONLY and not RUN_SKIP_GAPUPS:
+        _maybe_call("_run_gapups_section", env, buckets) or (_render_gapups(env))
+        _render_overview(env, bots_rows=[])
+        return
+
+    if RUN_PORTFOLIOS_ONLY and not RUN_SKIP_PORTFOLIOS:
+        _maybe_call("_render_portfolios", env)
+        _render_overview(env, bots_rows=[])
+        return
+
+    # RUN_ALL simply falls through into full pipeline below
+
+    # === Gap-Ups & Public Portfolios pages ===
+    try:
+        gap_up_tickers = []
+        if isinstance(buckets, dict):
+            gap_up_tickers = buckets.get("gap_ups", []) or []
+        if gap_up_tickers:
+            if DEBUG: print(f"[gapups] recording {len(gap_up_tickers)} Finviz tickers")
+            record_today_from_finviz(gap_up_tickers)
+        backfill_outcomes()
+    except Exception as e:
+        if DEBUG: print("[gapups] record/backfill failed:", repr(e))
+    _render_gapups(env)
+
+    # Portfolios page
+    _render_portfolios(env)
 
     for fname, base_prompt in prompts.items():
         slug = _slug(fname)
 
+        # Carry-forward state from history (cash + lots) BEFORE building the prompt
         carry_state = _reconstruct_portfolio_state(slug, prices)
         carry_note = _format_carry_for_prompt(carry_state, prices)
 
@@ -1010,10 +1094,12 @@ def main():
                 print("[parse] raw snippet:", raw[:2000])
             data = {"model_name": fname, "universe": [], "starting_balance": yest.get("balance", DEFAULT_START_BAL), "portfolio_analysis": "", "trades": []}
 
+        # Anchor to prompt name
         latest = _coerce_bot_day(data, yest.get("balance"), canonical_name=fname)
         if DEBUG:
             print(f"[parsed] trades={len(latest.trades)} starting_balance={latest.starting_balance}")
 
+        # Validate AGAINST carried state (cash + lots)
         issues = _validate_trades_budget_with_state(
             latest.trades,
             carry_state.get("cash", DEFAULT_START_BAL),
@@ -1046,6 +1132,7 @@ def main():
             except Exception as e:
                 if DEBUG: print("[validate] correction parse failed:", repr(e))
 
+        # Retry once if empty
         if len(latest.trades) == 0:
             retry_prompt = full_prompt + " IMPORTANT: Your previous response contained no trades. Use PRICES_TODAY and CURRENT_PORTFOLIO_STATE to produce 1–4 justified actions without exceeding AVAILABLE_CASH_USD, and include 'balance_after'. If you must hold, emit a single HOLD with 'balance_after'."
             raw2 = query_model(fname, retry_prompt)
@@ -1062,6 +1149,7 @@ def main():
             except Exception as e:
                 if DEBUG: print("[retry] parse failed:", repr(e))
 
+        # Optional synthetic HOLD
         if len(latest.trades) == 0 and not DISABLE_SYNTH_HOLD:
             now = datetime.utcnow().isoformat() + "Z"
             if DEBUG:
@@ -1072,13 +1160,20 @@ def main():
                 "time": now, "symbol": "CASH", "side": "hold", "qty": 0, "price": 0, "pnl_pct": None, "balance_after": latest.starting_balance or 0.0, "notes": "Auto HOLD: no trades returned; maintaining balance."
             }]}, separators=(",",":"))
 
-        # Save & aggregate
-        _save_history(_slug(fname), {"prompt": full_prompt, "response": raw}, latest)
-        agg = _aggregate_history(_slug(fname), latest)
+        _save_history(slug, {"prompt": full_prompt, "response": raw}, latest)
+
+        # Aggregate full history for display & stats parity across runs
+        agg = _aggregate_history(slug, latest)
+
+        # Pretty display name derived from prompt filename (keep slug stable)
         pretty_name = fname.replace("-", " ").replace("_", " ").title()
         agg.model_name = pretty_name
+
+        # unified stats (used by both pages)
         stats = _compute_fifo_stats(agg.trades)
-        page = _render_model(env, agg, stats, prompt_text=full_prompt, response_text=raw, file_slug=_slug(fname))
+
+        # Render model page (stable file name based on prompt slug)
+        page = _render_model(env, agg, stats, prompt_text=full_prompt, response_text=raw, file_slug=slug)
 
         end_bal = _ending_balance(agg) or 0.0
         start_bal = agg.starting_balance or 0.0
@@ -1093,8 +1188,6 @@ def main():
         if DEBUG:
             print(f"[stats] win_rate={stats['win_rate_num']:.2%} avg_win={stats['avg_win_num']:.2%} avg_loss={stats['avg_loss_num']:.2%} end_bal={end_bal:.2f}")
 
-        # Row for overview
-        bots_rows = getattr(main, "_rows", [])
         bots_rows.append({
             "name": agg.model_name,
             "symbols": symbols_text,
@@ -1109,10 +1202,9 @@ def main():
             "updated": time.strftime("%m/%d/%y %H:%M"),
             "link": page,
         })
-        main._rows = bots_rows
 
-    _render_overview(env, getattr(main, "_rows", []))
+    _render_overview(env, bots_rows)
     print("Report generated")
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUPS, RUN_SKIP_PORTFOLIOS)

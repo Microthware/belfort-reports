@@ -17,6 +17,8 @@ jobs:
   gate:
     name: Gate (run only at 7am New York or manual)
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     outputs:
       should_run: ${{ steps.check.outputs.should_run }}
     steps:

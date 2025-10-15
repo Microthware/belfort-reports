@@ -73,6 +73,49 @@ REPORT_DIR = "report"
 PROMPTS_DIR = "prompts"
 HISTORY_DIR = "history"
 DEFAULT_START_BAL = 10000.0
+OVERVIEW_STATE_PATH = os.path.join(HISTORY_DIR, "overview_state.json")
+PORTFOLIO_SECTIONS_JSON = os.path.join(HISTORY_DIR, "portfolios_sections.json")
+
+def _load_overview_state() -> dict:
+    try:
+        if os.path.exists(OVERVIEW_STATE_PATH):
+            return json.load(open(OVERVIEW_STATE_PATH, "r", encoding="utf-8"))
+    except Exception as e:
+        if DEBUG: print("[overview-state] load failed:", repr(e))
+    return {"bots": [], "portfolios_sections": [], "gapups_meta": {}, "updated_at": None}
+
+def _save_overview_state(state: dict):
+    try:
+        os.makedirs(HISTORY_DIR, exist_ok=True)
+        json.dump(state, open(OVERVIEW_STATE_PATH, "w", encoding="utf-8"), indent=2)
+        if DEBUG: print("[overview-state] saved:", OVERVIEW_STATE_PATH)
+    except Exception as e:
+        if DEBUG: print("[overview-state] save failed:", repr(e))
+
+def _load_portfolio_sections_from_file() -> list:
+    """Load mini-donut section data from history/portfolios_sections.json or scrape docs/report portfolios.html."""
+    try:
+        if os.path.exists(PORTFOLIO_SECTIONS_JSON):
+            with open(PORTFOLIO_SECTIONS_JSON, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    return data
+    except Exception as e:
+        if DEBUG: print("[overview] couldn't read portfolios_sections.json:", repr(e))
+    try:
+        # Prefer published file, otherwise local run
+        docs_pf = os.path.join(BASE_DIR, "docs", "portfolios.html")
+        if not os.path.exists(docs_pf):
+            docs_pf = os.path.join(REPORT_DIR, "portfolios.html")
+        if os.path.exists(docs_pf):
+            import re as _re
+            html = open(docs_pf, "r", encoding="utf-8").read()
+            m = _re.search(r"const\s+SECTIONS\s*=\s*(\[.*?\]);", html, _re.S)
+            if m:
+                return json.loads(m.group(1))
+    except Exception as e:
+        if DEBUG: print("[overview] scrape portfolios.html failed:", repr(e))
+    return []
 
 FINVIZ_SOURCES: List[Tuple[str,str]] = [
   ("gap_ups", "https://finviz.com/screener.ashx?v=111&f=sh_avgvol_o500,sh_relvol_o5,ta_changeopen_u5,ta_highlow20d_nh,ta_perf_d10o,ta_sma200_pa&ft=4&o=-changeopen"),
@@ -724,38 +767,127 @@ def _aggregate_history(model_slug: str, latest_bot: BotDay) -> BotDay:
         portfolio_analysis=portfolio_latest
     )
 
+def _slim_sections(sections: list) -> list:
+    """Return a compact [{name, holdings:[{ticker, weight}]}] for overview donuts."""
+    slim = []
+    for s in (sections or []):
+        name = (s.get('name') or s.get('slug') or 'Portfolio')
+        hs = []
+        for h in (s.get('holdings') or []):
+            try:
+                hs.append({'ticker': h.get('ticker'), 'weight': float(h.get('weight') or 0.0)})
+            except Exception:
+                hs.append({'ticker': h.get('ticker'), 'weight': 0.0})
+        slim.append({'name': name, 'holdings': hs})
+    return slim
 # ------------------------------------------------------------------
 # Rendering
 # ------------------------------------------------------------------
-def _render_overview(env, bots_rows: List[Dict[str, Any]]):
+
+# def _render_overview(env, bots_rows: List[Dict[str, Any]]):
+#     # Load prior state so we can preserve sections not updated in this run
+#     state = _load_overview_state()
+
+#     # Determine which sections are being updated in this run
+#     update_bots = True  # if caller passed bots_rows, we merge it; otherwise keep prior
+#     update_ports = (RUN_ALL or RUN_PORTFOLIOS_ONLY or ("portfolios" in RUN_ONLY if RUN_ONLY else False)) and not RUN_SKIP_PORTFOLIOS
+#     update_gapups = (RUN_ALL or RUN_GAPUPS_ONLY or ("gapups" in RUN_ONLY if RUN_ONLY else False)) and not RUN_SKIP_GAPUPS
+
+#     # ---- BOT SECTION ----
+#     if bots_rows:
+#         state["bots"] = bots_rows  # replace with latest computed
+#     # else keep existing bots from prior state
+
+#     # ---- PORTFOLIOS MINI DONUTS ----
+#     # Build compact sections json (reuse portfolios data) *only* if updating; else keep prior
+#     if update_ports:
+#         try:
+#             _secs = port_sections()
+#         except Exception:
+#             _secs = []
+#         _slim = []
+#         for _s in (_secs or []):
+#             _name = (_s.get('name') or _s.get('slug') or 'Portfolio')
+#             _hs = []
+#             for _h in (_s.get('holdings') or []):
+#                 try:
+#                     _hs.append({'ticker': _h.get('ticker'), 'weight': float(_h.get('weight') or 0.0)})
+#                 except Exception:
+#                     _hs.append({'ticker': _h.get('ticker'), 'weight': 0.0})
+#             _slim.append({'name': _name, 'holdings': _hs})
+#         state["portfolios_sections"] = _slim
+
+#     # ---- (Optional) GAPUPS summary placeholder ----
+#     # If your overview.html uses gap-ups metadata, compute and set here.
+#     # For now we just stamp last update time so the section doesn't appear stale.
+#     if update_gapups:
+#         state["gapups_meta"] = {"updated": time.strftime("%m/%d/%y %H:%M")}
+
+#     # Persist merged state for the next partial run
+#     state["updated_at"] = time.strftime("%m/%d/%y %H:%M")
+#     _save_overview_state(state)
+
+#     # ----- Render using merged state -----
+#     tpl = env.get_template("overview.html")
+#     gen_time = time.strftime("%m/%d/%y %H:%M")
+#     bots_eff = state.get("bots") or []
+#     total_trades = sum(r.get("total_actions", r.get("trades", 0)) for r in bots_eff)
+#     avg_win_rate = sum((r.get("win_rate_num") or 0.0) for r in bots_eff)/len(bots_eff) if bots_eff else 0.0
+
+#     sections_json = json.dumps(state.get("portfolios_sections") or [], separators=(',',':'))
+
+#     html = tpl.render(
+#         gen_time=gen_time,
+#         tz=TZ,
+#         bots=bots_eff,
+#         total_trades=total_trades,
+#         avg_win_rate=f"{avg_win_rate*100:.2f}%",
+#         sections_json=sections_json
+#     )
+#     open(os.path.join(REPORT_DIR,"overview.html"),"w",encoding="utf-8").write(html)
+def _render_overview(env, bots_rows: List[Dict[str, Any]], sections_override: list | None = None):
+    # Load last state so partial jobs don't wipe other sections
+    state = _load_overview_state() or {}
+    state_bots = state.get("bots") or []
+    state_sections = state.get("portfolios_sections") or []
+
+    # Replace bots if provided
+    if bots_rows:
+        state_bots = bots_rows
+
+    # Replace sections if override provided (e.g., portfolios-only run)
+    if sections_override is not None:
+        state_sections = _slim_sections(sections_override)
+
+    # If still empty, try to scrape the latest portfolios.html (docs/ or report/)
+    if not state_sections:
+        state_sections = _load_portfolio_sections_from_file()
+
+    # Save merged state for future runs
+    out = {
+        "bots": state_bots,
+        "portfolios_sections": state_sections,
+        "updated_at": time.strftime("%m/%d/%y %H:%M"),
+    }
+    _save_overview_state(out)
+
+    # Render overview from merged state
     tpl = env.get_template("overview.html")
     gen_time = time.strftime("%m/%d/%y %H:%M")
-    total_trades = sum(r.get("total_actions", r["trades"]) for r in bots_rows)
-    avg_win_rate = sum(r["win_rate_num"] for r in bots_rows)/len(bots_rows) if bots_rows else 0.0
-        # Build compact sections json for mini donuts (reuse portfolios data)
-    try:
-        _secs = port_sections()
-    except Exception:
-        _secs = []
-    _slim = []
-    for _s in (_secs or []):
-        _name = (_s.get('name') or _s.get('slug') or 'Portfolio')
-        _hs = []
-        for _h in (_s.get('holdings') or []):
-            try:
-                _hs.append({'ticker': _h.get('ticker'), 'weight': float(_h.get('weight') or 0.0)})
-            except Exception:
-                _hs.append({'ticker': _h.get('ticker'), 'weight': 0.0})
-        _slim.append({'name': _name, 'holdings': _hs})
-    sections_json = json.dumps(_slim, separators=(',',':'))
-
+    total_trades = sum((r.get("trades") or 0) for r in state_bots)
+    avg_win_rate = (
+        sum((r.get("win_rate_num") or 0.0) for r in state_bots)/len(state_bots) if state_bots else 0.0
+    )
     html = tpl.render(
-            gen_time=gen_time,
-            tz=TZ,
-            bots=bots_rows,
-            total_trades=total_trades,
-            avg_win_rate=f"{avg_win_rate*100:.2f}%", sections_json=sections_json)
+        gen_time=gen_time,
+        tz=TZ,
+        bots=state_bots,
+        total_trades=total_trades,
+        avg_win_rate=f"{avg_win_rate*100:.2f}%",
+        sections_json=json.dumps(state_sections, separators=(",",":"))
+    )
     open(os.path.join(REPORT_DIR,"overview.html"),"w",encoding="utf-8").write(html)
+
 
 # Accept file_slug for stable filenames
 def _render_model(env, b: BotDay, stats: Dict[str, Any], prompt_text: str = "", response_text: str = "", file_slug: Optional[str] = None):
@@ -1066,7 +1198,11 @@ def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUP
             _maybe_call("_run_gapups_section", env, buckets) or (_render_gapups(env))
         if ("portfolios" in RUN_ONLY) and (not RUN_SKIP_PORTFOLIOS):
             _maybe_call("_render_portfolios", env)
-        _render_overview(env, bots_rows=[])
+            try:
+                _secs = port_sections()
+            except Exception:
+                _secs = []
+        _render_overview(env, bots_rows=[], sections_override=_secs)
         return
 
     if RUN_GAPUPS_ONLY and not RUN_SKIP_GAPUPS:
@@ -1076,7 +1212,16 @@ def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUP
 
     if RUN_PORTFOLIOS_ONLY and not RUN_SKIP_PORTFOLIOS:
         _maybe_call("_render_portfolios", env)
-        _render_overview(env, bots_rows=[])
+        try:
+            _secs = port_sections()
+        except Exception:
+            _secs = []
+        _render_overview(env, bots_rows=[], sections_override=_secs)
+        try:
+            with open(PORTFOLIO_SECTIONS_JSON, "w", encoding="utf-8") as f:
+                json.dump(_slim_sections(_secs), f, indent=2)
+        except Exception as e:
+            if DEBUG: print("[overview] persist sections failed:", repr(e))
         return
 
     # RUN_ALL simply falls through into full pipeline below
@@ -1236,6 +1381,14 @@ def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUP
         })
 
     _render_overview(env, bots_rows)
+    try:
+        secs = _load_portfolio_sections_from_file()
+        if secs:
+            with open(PORTFOLIO_SECTIONS_JSON, "w", encoding="utf-8") as f:
+                json.dump(secs, f, indent=2)
+            if DEBUG: print("[overview] wrote", PORTFOLIO_SECTIONS_JSON)
+    except Exception as e:
+        if DEBUG: print("[overview] persist sections failed:", repr(e))
     print("Report generated")
 
 if __name__ == '__main__':

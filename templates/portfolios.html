@@ -204,7 +204,7 @@
         </tr>
       `).join("");
 
-      const palette = ['#2b6cb0','#2f855a','#b7791f','#9b2c2c','#4a5568','#6b46c1','#c05621','#22543d','#744210','#1a365d'];
+      const palette = ['#0021A5','#FA4616','#0077c0','#22884C','#D50A0A','#FCD006','#4B2A91','#6B21A8','#0EA5E9','#FF7900','#A855F7','#CA8A04','#34302B','#B1BABf'];
       legend.innerHTML = list.map((x,i)=>`
         <div class="legend-item"><span class="swatch" style="background:${palette[i%palette.length]}"></span> ${x.ticker} — ${pctText(x.weight)}</div>
       `).join("");

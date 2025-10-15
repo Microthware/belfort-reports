@@ -173,7 +173,7 @@
 // portfolios-mini render (no-fetch): uses same SECTIONS strategy as portfolios.html
 (function(){
   const SECTIONS = {{ sections_json | default('[]') | safe }};
-  const palette = ['#8ab4f8','#34d399','#f472b6','#f59e0b','#60a5fa','#a78bfa','#f87171','#22d3ee','#c084fc','#fbbf24'];
+  const palette = ['#0021A5','#FA4616','#0077c0','#22884C','#D50A0A','#FCD006','#4B2A91','#6B21A8','#0EA5E9','#FF7900','#A855F7','#CA8A04','#34302B','#B1BABf'];
   const MAX_HOLDINGS = null; // show all
   const ANGLE_OFFSET = Math.PI/2;
 
@@ -322,7 +322,7 @@
       const x2=cx+r*Math.cos(eA), y2=cy+r*Math.sin(eA);
       const p=document.createElementNS(NS,'path');
       p.setAttribute('d','M '+cx+' '+cy+' L '+x1+' '+y1+' A '+r+' '+r+' 0 '+large+' 1 '+x2+' '+y2+' Z');
-      p.setAttribute('fill', ['#8ab4f8','#34d399','#f472b6','#f59e0b','#60a5fa','#a78bfa','#f87171','#22d3ee','#c084fc','#fbbf24'][i%10]);
+      p.setAttribute('fill', ['#0021A5','#FA4616','#0077c0','#22884C','#D50A0A','#FCD006','#4B2A91','#6B21A8','#0EA5E9','#FF7900','#A855F7','#CA8A04','#34302B','#B1BABf'][i%14]);
       svg.appendChild(p);
       start=end;
     });
@@ -356,7 +356,7 @@
     drawMiniDonut(pie, items);
     items.forEach((x,i)=>{
       const row=document.createElement('div'); row.className='row';
-      const sw=document.createElement('span'); sw.className='sw'; sw.style.background=['#8ab4f8','#34d399','#f472b6','#f59e0b','#60a5fa','#a78bfa','#f87171','#22d3ee','#c084fc','#fbbf24'][i%10];
+      const sw=document.createElement('span'); sw.className='sw'; sw.style.background=['#0021A5','#FA4616','#0077c0','#22884C','#D50A0A','#FCD006','#4B2A91','#6B21A8','#0EA5E9','#FF7900','#A855F7','#CA8A04','#34302B','#B1BABf'][i%14];
       const label=document.createElement('span'); label.innerHTML=(x.ticker||'?')+' — '+pctText(x.weight);
       row.appendChild(sw); row.appendChild(label); legend.appendChild(row);
     });

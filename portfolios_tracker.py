@@ -1,5 +1,5 @@
 from __future__ import annotations
-import re, csv, time, json
+import re, csv, time, json, pdfminer
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -37,6 +37,14 @@ class PortfolioSpec:
 
 PORTFOLIOS: List[PortfolioSpec] = [
     PortfolioSpec(slug="pelosi", name="Nancy Pelosi", source="capitoltrades", identifier="P000197"),
+    # PortfolioSpec(slug="vance", name="J. D. Vance", source="disclosure", identifier="V000137"),
+    PortfolioSpec(slug="tuberville", name="Tommy Tuberville", source="capitoltrades", identifier="T000278"),
+    PortfolioSpec(slug="mccaul", name="Michael McCaul", source="capitoltrades", identifier="M001157"),
+    PortfolioSpec(slug="gottheimer", name="Josh Gottheimer", source="capitoltrades", identifier="G000583"),
+    PortfolioSpec(slug="mark-green", name="Mark E. Green", source="capitoltrades", identifier="G000590"),
+    PortfolioSpec(slug="blumenthal", name="Richard Blumenthal", source="capitoltrades", identifier="B001277"),
+    PortfolioSpec(slug="hern", name="Kevin Hern", source="capitoltrades", identifier="H001082"),
+    PortfolioSpec(slug="john-james", name="John James", source="capitoltrades", identifier="J000307"),
 ]
 
 def _csv_path(slug: str) -> Path:
@@ -80,6 +88,112 @@ def _ct_detail_links(bioguide_id: str, max_pages: int = 3) -> List[str]:
                 if href and href not in links:
                     links.append(href)
     return links
+
+
+# ---------- Public Financial Disclosure parsing (official sources) ----------
+_DISCLOSURE_SOURCES = {
+    "vance": [
+        "https://www.whitehouse.gov/wp-content/uploads/2025/06/Vice-President-JD-Vance.pdf",
+        "https://extapps2.oge.gov/201/Presiden.nsf/PAS%2BIndex/021DBF0DD058C1C185258CA9002C93BB/%24FILE/Vance%2C%20JD%202025%20Annual%20278.pdf",
+        "https://www.documentcloud.org/documents/25041263-jd-vances-financial-disclosure/"
+    ],
+}
+
+_DISCLOSURE_NAME_TO_TICKER = {
+    "INVESCO QQQ": "QQQ",
+    "QQQ": "QQQ",
+    "SPDR S&P 500 ETF": "SPY",
+    "SPDR S&P 500 ETF TRUST": "SPY",
+    "SPY": "SPY",
+    "SPDR DOW JONES INDUSTRIAL AVERAGE": "DIA",
+    "DIA": "DIA",
+    "ISHARES 20+ YEAR TREASURY BOND ETF": "TLT",
+    "TLT": "TLT",
+    "PROSHARES K-1 FREE CRUDE OIL STRATEGY ETF": "OILK",
+    "OILK": "OILK",
+    "SPDR GOLD TRUST": "GLD",
+    "SPDR GOLD SHARES": "GLD",
+    "GLD": "GLD",
+    "RUMBLE": "RUM",
+    "RUM": "RUM",
+    "BITCOIN": "BTC",
+    "BTC": "BTC",
+}
+
+def _range_mid(s: str) -> float:
+    s = s.replace(",", "").upper()
+    m = re.search(r"\$?\s*([0-9]+(?:\.[0-9]+)?)\s*([KM]?)\s*[-–]\s*\$?\s*([0-9]+(?:\.[0-9]+)?)\s*([KM]?)", s)
+    if not m:
+        m2 = re.search(r"\$?\s*([0-9]+(?:\.[0-9]+)?)\s*([KM]?)\s*\+?", s)
+        if not m2:
+            return 0.0
+        lo, lk = float(m2.group(1)), m2.group(2)
+        mul = 1000.0 if lk=="K" else (1_000_000.0 if lk=="M" else 1.0)
+        return lo*mul
+    lo, lk, hi, hk = float(m.group(1)), m.group(2), float(m.group(3)), m.group(4)
+    mul_lo = 1000.0 if lk=="K" else (1_000_000.0 if lk=="M" else 1.0)
+    mul_hi = 1000.0 if hk=="K" else (1_000_000.0 if hk=="M" else 1.0)
+    return (lo*mul_lo + hi*mul_hi)/2.0
+
+def _fetch_public_disclosure_text(slug: str) -> str:
+    try:
+        import requests
+        from bs4 import BeautifulSoup
+        import io
+    except Exception:
+        return ""
+    urls = _DISCLOSURE_SOURCES.get(slug, [])
+    text_blobs = []
+    for u in urls:
+        try:
+            r = requests.get(u, timeout=20)
+            ct = (r.headers.get("Content-Type") or "").lower()
+            if "pdf" in ct or u.lower().endswith(".pdf"):
+                try:
+                    from pdfminer.high_level import extract_text
+                    txt = extract_text(io.BytesIO(r.content))
+                    if txt and len(txt) > 200:
+                        text_blobs.append(txt)
+                        continue
+                except Exception:
+                    print("EXCEPTION")
+                    pass
+            if "html" in ct or u.endswith("/"):
+                soup = BeautifulSoup(r.text, "html.parser")
+                txt = soup.get_text(" ", strip=True)
+                if txt and len(txt) > 200:
+                    text_blobs.append(txt)
+                    continue
+        except Exception:
+            continue
+    return "\n".join(text_blobs)
+
+def _parse_disclosure_holdings(txt: str):
+    if not txt:
+        return []
+    lines = [re.sub(r"\s+", " ", ln).strip().upper() for ln in txt.splitlines() if ln.strip()]
+    buckets = {}
+    for idx, ln in enumerate(lines):
+        for name, tkr in _DISCLOSURE_NAME_TO_TICKER.items():
+            if name in ln:
+                m = re.search(r"\$\s*[0-9,]+(?:\s*[KM])?\s*[-–]\s*\$\s*[0-9,]+(?:\s*[KM])?", ln)
+                amt = 0.0
+                if not m and idx+1 < len(lines):
+                    m = re.search(r"\$\s*[0-9,]+(?:\s*[KM])?\s*[-–]\s*\$\s*[0-9,]+(?:\s*[KM])?", lines[idx+1])
+                if m:
+                    amt = _range_mid(m.group(0))
+                buckets[tkr] = buckets.get(tkr, 0.0) + float(amt)
+    total = sum(buckets.values())
+    if total <= 0:
+        return []
+    return [{"ticker": k, "weight": v/total} for k, v in sorted(buckets.items(), key=lambda x: -x[1])]
+
+def disclosure_holdings_for_slug(slug: str):
+    if slug != "vance":
+        return []
+    txt = _fetch_public_disclosure_text(slug)
+    items = _parse_disclosure_holdings(txt)
+    return items
 
 def _ct_extract(url: str) -> Optional[Dict[str,str]]:
     soup = _get_soup(url)
@@ -418,6 +532,32 @@ def fetch_and_update_all(max_pages: int = 3):
         rows.sort(key=lambda x: ((x.get("published_date") or ""), (x.get("traded_date") or "")), reverse=True)
         _save(spec.slug, rows)
 
+def _apply_seed_holdings(slug: str, derived: List[Dict[str, object]]) -> List[Dict[str, object]]:
+    """
+    Prefer public financial disclosure holdings if available; otherwise fall back
+    to local seed json (history/seed_holdings/<slug>.json). If neither exists,
+    return the originally derived holdings from trades.
+    Each returned item must have: ticker, weight, change (optional), logo_url.
+    """
+    # Prefer disclosure-derived holdings (no hardcoding; parsed from public PDFs/pages)
+    try:
+        disc = disclosure_holdings_for_slug(slug)
+    except Exception:
+        disc = []
+    if disc:
+        out = []
+        for it in disc:
+            t = (it.get("ticker") or "").upper()
+            w = float(it.get("weight") or 0.0)
+            out.append({"ticker": t, "weight": w, "change": "", "logo_url": _logo_for(t)})
+        s = sum(x.get("weight", 0.0) for x in out)
+        if s > 0:
+            for x in out:
+                x["weight"] = x.get("weight", 0.0) / s
+        return out
+
+    return derived or []
+
 def load_sections_for_render() -> List[Dict[str, object]]:
     out: List[Dict[str, object]] = []
     _load_logo_cache()  # ensure cache is in memory
@@ -426,7 +566,7 @@ def load_sections_for_render() -> List[Dict[str, object]]:
         for r in rows:
             for k in CSV_HEADERS: r[k] = r.get(k,"") or ""
         rows.sort(key=lambda x: ((x.get("published_date") or ""), (x.get("traded_date") or "")), reverse=True)
-        holdings = _build_holdings(rows)
+        holdings = _apply_seed_holdings(spec.slug, _build_holdings(rows))
         out.append({"slug": spec.slug, "name": spec.name, "rows": rows, "holdings": holdings})
     _save_logo_cache()
     return out

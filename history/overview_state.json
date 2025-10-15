@@ -1,0 +1,170 @@
+{
+  "bots": [
+    {
+      "name": "Bubbles",
+      "symbols": "ALL",
+      "win_rate": "0.00%",
+      "win_rate_num": 0.0,
+      "avg_win": "0.00%",
+      "avg_loss": "0.00%",
+      "balance": "$10,000.00",
+      "balance_dir": -1,
+      "trades": 8,
+      "total_actions": 8,
+      "updated": "10/15/25 07:44",
+      "link": "bubbles.html"
+    },
+    {
+      "name": "Julian",
+      "symbols": "ALL",
+      "win_rate": "0.00%",
+      "win_rate_num": 0.0,
+      "avg_win": "0.00%",
+      "avg_loss": "0.00%",
+      "balance": "$10,000.00",
+      "balance_dir": 1,
+      "trades": 5,
+      "total_actions": 5,
+      "updated": "10/15/25 07:45",
+      "link": "julian.html"
+    }
+  ],
+  "portfolios_sections": [
+    {
+      "name": "Nancy Pelosi",
+      "holdings": [
+        {
+          "ticker": "NVDA",
+          "weight": 0.2941411581147603
+        },
+        {
+          "ticker": "PANW",
+          "weight": 0.2940913594015023
+        },
+        {
+          "ticker": "AVGO",
+          "weight": 0.29404170765936055
+        },
+        {
+          "ticker": "VST",
+          "weight": 0.07353518542414933
+        },
+        {
+          "ticker": "AMZN",
+          "weight": 0.0367924063355525
+        },
+        {
+          "ticker": "TEM",
+          "weight": 0.007398183064675032
+        }
+      ]
+    },
+    {
+      "name": "Tommy Tuberville",
+      "holdings": [
+        {
+          "ticker": "ARKK",
+          "weight": 0.4998152481832738
+        },
+        {
+          "ticker": "ABNDX",
+          "weight": 0.2502771277250893
+        },
+        {
+          "ticker": "XBI",
+          "weight": 0.2499076240916369
+        }
+      ]
+    },
+    {
+      "name": "Michael McCaul",
+      "holdings": [
+        {
+          "ticker": "FFRHX",
+          "weight": 0.2222222222222222
+        },
+        {
+          "ticker": "LDNXF",
+          "weight": 0.08333333333333333
+        },
+        {
+          "ticker": "VTEB",
+          "weight": 0.05555555555555555
+        },
+        {
+          "ticker": "DHR",
+          "weight": 0.05555555555555555
+        },
+        {
+          "ticker": "NSIT",
+          "weight": 0.05555555555555555
+        },
+        {
+          "ticker": "ATR",
+          "weight": 0.05555555555555555
+        },
+        {
+          "ticker": "AVGO",
+          "weight": 0.05555555555555555
+        },
+        {
+          "ticker": "WDAY",
+          "weight": 0.05555555555555555
+        },
+        {
+          "ticker": "ARTFX",
+          "weight": 0.027777777777777776
+        },
+        {
+          "ticker": "NOW",
+          "weight": 0.027777777777777776
+        },
+        {
+          "ticker": "CNM",
+          "weight": 0.027777777777777776
+        },
+        {
+          "ticker": "CSL",
+          "weight": 0.027777777777777776
+        },
+        {
+          "ticker": "PRI",
+          "weight": 0.027777777777777776
+        },
+        {
+          "ticker": "WTM",
+          "weight": 0.027777777777777776
+        },
+        {
+          "ticker": "MSA",
+          "weight": 0.027777777777777776
+        },
+        {
+          "ticker": "DXCM",
+          "weight": 0.027777777777777776
+        },
+        {
+          "ticker": "NFLX",
+          "weight": 0.027777777777777776
+        },
+        {
+          "ticker": "HWM",
+          "weight": 0.027777777777777776
+        },
+        {
+          "ticker": "PLXS",
+          "weight": 0.027777777777777776
+        },
+        {
+          "ticker": "ORCL",
+          "weight": 0.027777777777777776
+        },
+        {
+          "ticker": "GOOGL",
+          "weight": 0.027777777777777776
+        }
+      ]
+    }
+  ],
+  "updated_at": "10/15/25 10:33"
+}

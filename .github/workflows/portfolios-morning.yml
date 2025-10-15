@@ -17,6 +17,8 @@ jobs:
   gate:
     name: Gate (run only at 7am New York or manual)
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     outputs:
       should_run: ${{ steps.check.outputs.should_run }}
     steps:
@@ -65,13 +67,34 @@ jobs:
             echo "::error ::report/portfolios.html not found after dispatcher run"; exit 1
           fi
 
-      - name: Commit and push changes
+      
+      - name: Extract portfolios SECTIONS for overview
+        shell: bash
+        run: |
+          python - << 'PY'
+import re, json, os, io, sys
+docs_pf = os.path.join('docs','portfolios.html')
+os.makedirs('history', exist_ok=True)
+out = os.path.join('history','portfolios_sections.json')
+data = []
+if os.path.exists(docs_pf):
+    html = open(docs_pf,'r',encoding='utf-8').read()
+    m = re.search(r"const\s+SECTIONS\s*=\s*(\[.*?\]);", html, re.S)
+    if m:
+        try:
+            data = json.loads(m.group(1))
+        except Exception as e:
+            print("parse error:", e, file=sys.stderr)
+open(out,'w',encoding='utf-8').write(json.dumps(data, indent=2))
+print("wrote", out, "items:", len(data))
+PY
+- name: Commit and push changes
         shell: bash
         run: |
           BRANCH="${{ github.ref_name }}"
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/portfolios.html || true
+          git add docs/portfolios.html docs/overview.html || true
           # include any updated history if your script writes it
           git add history/* 2>/dev/null || true
           git diff --staged --quiet || git commit -m "Morning gap-ups (auto) $(date -u +%F)"

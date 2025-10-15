@@ -24,7 +24,7 @@ from datetime import datetime, timezone
 from typing import List, Dict, Any, Tuple, Optional
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from dotenv import load_dotenv
-from gapups_tracker import record_today_from_finviz, backfill_outcomes, load_rows_for_render
+from gapups_tracker import record_today_from_finviz, backfill_outcomes, load_rows_for_render, compute_historical_streaks
 from portfolios_tracker import fetch_and_update_all as port_fetch, compute_returns_all as port_compute, load_sections_for_render as port_sections
 
 # ------------------------------------------------------------------
@@ -732,13 +732,29 @@ def _render_overview(env, bots_rows: List[Dict[str, Any]]):
     gen_time = time.strftime("%m/%d/%y %H:%M")
     total_trades = sum(r.get("total_actions", r["trades"]) for r in bots_rows)
     avg_win_rate = sum(r["win_rate_num"] for r in bots_rows)/len(bots_rows) if bots_rows else 0.0
+        # Build compact sections json for mini donuts (reuse portfolios data)
+    try:
+        _secs = port_sections()
+    except Exception:
+        _secs = []
+    _slim = []
+    for _s in (_secs or []):
+        _name = (_s.get('name') or _s.get('slug') or 'Portfolio')
+        _hs = []
+        for _h in (_s.get('holdings') or []):
+            try:
+                _hs.append({'ticker': _h.get('ticker'), 'weight': float(_h.get('weight') or 0.0)})
+            except Exception:
+                _hs.append({'ticker': _h.get('ticker'), 'weight': 0.0})
+        _slim.append({'name': _name, 'holdings': _hs})
+    sections_json = json.dumps(_slim, separators=(',',':'))
+
     html = tpl.render(
-        gen_time=gen_time,
-        tz=TZ,
-        bots=bots_rows,
-        total_trades=total_trades,
-        avg_win_rate=f"{avg_win_rate*100:.2f}%",
-    )
+            gen_time=gen_time,
+            tz=TZ,
+            bots=bots_rows,
+            total_trades=total_trades,
+            avg_win_rate=f"{avg_win_rate*100:.2f}%", sections_json=sections_json)
     open(os.path.join(REPORT_DIR,"overview.html"),"w",encoding="utf-8").write(html)
 
 # Accept file_slug for stable filenames
@@ -805,16 +821,32 @@ def _render_gapups(env):
     except Exception as e:
         if DEBUG: print("[gapups] load_rows_for_render failed:", repr(e))
         rows = []
+
+    # NEW: compute historical streaks
+    try:
+        streaks = compute_historical_streaks(min_len=2)
+    except Exception as e:
+        if DEBUG: print("[gapups] compute_historical_streaks failed:", repr(e))
+        streaks = []
+
     try:
         tpl = env.get_template("gapups.html")
     except Exception as e:
         if DEBUG: print("[gapups] missing template:", repr(e))
         return None
-    html = tpl.render(gen_time=time.strftime("%m/%d/%y %H:%M"), rows_json=json.dumps(rows, separators=(",",":")), rows=rows)
+
+    html = tpl.render(
+        gen_time=time.strftime("%m/%d/%y %H:%M"),
+        rows_json=json.dumps(rows, separators=(",",":")),
+        rows=rows,
+        streaks_json=json.dumps(streaks, separators=(",",":")),
+        streaks=streaks
+    )
     out = os.path.join(REPORT_DIR, "gapups.html")
     open(out, "w", encoding="utf-8").write(html)
     if DEBUG: print("[gapups] rendered ->", out)
     return "gapups.html"
+
 
 
 # ------------------------------------------------------------------

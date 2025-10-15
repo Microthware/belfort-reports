@@ -1,4 +1,3 @@
-
 from __future__ import annotations
 import csv, os, re
 from datetime import datetime, timedelta
@@ -58,6 +57,115 @@ def _last_close(symbol: str, on_date: str) -> Optional[float]:
         return px if px>0 else None
     except Exception:
         return None
+
+# === Historical streaks (>= 2 consecutive calendar days) with TRADING-DAY (10/40) performance ===
+def compute_historical_streaks(min_len: int = 2):
+    """
+    Returns a list of historical streak summaries:
+      [{
+        "symbol": "ABC",
+        "streak_len": 3,
+        "second_day": "YYYY-MM-DD",
+        "pct_since_second": 0.1234,        # latest close vs 2nd day close
+        "pct_10d_since_second": 0.0456,    # 10 trading days after 2nd day
+        "pct_40d_since_second": -0.0312    # 40 trading days after 2nd day
+      }, ...]
+
+    Notes:
+      - Trading-day offsets are index-based in the price series returned by _series(sym, start, end).
+      - If a target index is out of range, the corresponding pct is None.
+    """
+    _ensure()
+    rows = _read_rows()
+    if not rows:
+        return []
+
+    # group rows by symbol
+    by_sym: Dict[str, List[dict]] = {}
+    for r in rows:
+        sym = r.get("symbol")
+        d   = r.get("date")
+        if sym and d:
+            by_sym.setdefault(sym, []).append(r)
+
+    streak_runs: List[List[dict]] = []
+
+    # find all runs of >=2 consecutive calendar days (Fri->Mon does NOT count)
+    for sym, arr in by_sym.items():
+        arr.sort(key=lambda r: r["date"])  # ascending
+        run: List[dict] = []
+        prev_date: Optional[str] = None
+        for r in arr:
+            d = r["date"]
+            if prev_date is None:
+                run = [r]
+            else:
+                prev_dt = datetime.fromisoformat(prev_date).date()
+                curr_dt = datetime.fromisoformat(d).date()
+                if (curr_dt - prev_dt).days == 1:
+                    run.append(r)
+                else:
+                    if len(run) >= min_len:
+                        streak_runs.append(run)
+                    run = [r]
+            prev_date = d
+        if len(run) >= min_len:
+            streak_runs.append(run)
+
+    # cache series per (symbol, start_date)
+    ser_cache: Dict[tuple, List[tuple]] = {}
+
+    def _get_series(sym: str, start_date: str):
+        key = (sym, start_date)
+        if key not in ser_cache:
+            # end = tomorrow to capture latest available close
+            end = (datetime.utcnow().date() + timedelta(days=1)).isoformat()
+            ser_cache[key] = _series(sym, start_date, end)  # [(date, close), ...] trading days
+        return ser_cache[key]
+
+    out = []
+    for run in streak_runs:
+        sym = run[0]["symbol"]
+        second_day = run[1]["date"]
+
+        # second day price from CSV row
+        p2 = None
+        try:
+            p2 = float(run[1].get("price") or 0) or None
+        except Exception:
+            p2 = None
+
+        ser = _get_series(sym, second_day)  # list of (date, close), ascending; index 0 == second_day
+        last_px = ser[-1][1] if ser else None
+
+        # latest vs second-day
+        pct_since_second = None
+        if p2 and last_px:
+            pct_since_second = (last_px / p2) - 1.0
+
+        # trading-day offsets: index 10 and 40 from second_day
+        pct_10d = None
+        pct_40d = None
+        if p2 and ser:
+            # index checks (need strictly greater than index to exist)
+            if len(ser) > 10 and ser[10][1]:
+                pct_10d = (ser[10][1] / p2) - 1.0
+            if len(ser) > 40 and ser[40][1]:
+                pct_40d = (ser[40][1] / p2) - 1.0
+
+        out.append({
+            "symbol": sym,
+            "streak_len": len(run),
+            "second_day": second_day,
+            "pct_since_second": pct_since_second,
+            "pct_10d_since_second": pct_10d,
+            "pct_40d_since_second": pct_40d,
+        })
+
+    # Sort: longest streaks first, then best performance since second day
+    out.sort(key=lambda x: (x["streak_len"], x["pct_since_second"] or -1.0), reverse=True)
+    return out
+
 
 def record_today_from_finviz(tickers: List[str], today: Optional[str] = None):
     """Append today's tickers with entry price (close on or after today). Dedup by (date,symbol)."""

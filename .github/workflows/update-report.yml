@@ -1,82 +1,104 @@
-name: Bot Report (5pm)
+name: Update Report (5pm New York, Mon–Fri)
 
 on:
   schedule:
-    - cron: "0 21 * * 1-5"   # 5pm ET during EDT
-    - cron: "0 22 * * 1-5"   # 5pm ET during EST
+    - cron: '0 21 * * 1-5'   # 21:00 UTC; we also gate by NY time below
   workflow_dispatch:
 
 permissions:
   contents: write
 
-concurrency:
-  group: evening-report
-  cancel-in-progress: true
-
 jobs:
-  gate:
-    name: Gate (run only at 5pm New York or manual)
+  build:
     runs-on: ubuntu-latest
-    outputs:
-      should_run: ${{ steps.check.outputs.should_run }}
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}   # <-- mapped from Actions secrets
+      LOCAL_TZ: America/New_York
+      CONSOLIDATE_HISTORY: '1'
+      DISABLE_SYNTH_HOLD: '1'
+      USE_SCAN: '1'
+
     steps:
-      - id: check
+      - name: "Gate: only continue if it's 5pm in New York (manual runs always proceed)"
+        id: gate
         shell: bash
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "should_run=true" >> "$GITHUB_OUTPUT"; exit 0; fi
-          wd=$(TZ=America/New_York date +%u)
-          hr=$(TZ=America/New_York date +%H)
-          if [ "$wd" -ge 1 ] && [ "$wd" -le 5 ] && [ "$hr" = "17" ]; then
-            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            echo "run=yes" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          NY_HOUR=$(TZ=America/New_York date +%H)
+          NY_DOW=$(TZ=America/New_York date +%u) # 1=Mon..7=Sun
+          if [ "$NY_DOW" -ge 1 ] && [ "$NY_DOW" -le 5 ] && [ "$NY_HOUR" -eq 17 ]; then
+            echo "run=yes" >> "$GITHUB_OUTPUT"
           else
-            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "run=no" >> "$GITHUB_OUTPUT"
           fi
 
-  report:
-    name: Build & publish evening report (no gapups/portfolios pages)
-    needs: gate
-    if: ${{ needs.gate.outputs.should_run == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        if: steps.gate.outputs.run == 'yes'
+        uses: actions/checkout@v4
+
+      # Optional: quick sanity checks (won't print the secret value)
+      - name: Sanity: OPENAI_API_KEY visible to shell?
+        if: steps.gate.outputs.run == 'yes'
+        run: |
+          if [ -n "${OPENAI_API_KEY}" ]; then
+            echo "OPENAI_API_KEY is set (length ≈ ${#OPENAI_API_KEY})"
+          else
+            echo "OPENAI_API_KEY is NOT set"
+            exit 1
+          fi
+
+      - name: Sanity: Python sees OPENAI_API_KEY?
+        if: steps.gate.outputs.run == 'yes'
+        run: |
+          python - << 'PY'
+import os, sys
+print("python sees OPENAI_API_KEY:", "yes" if os.getenv("OPENAI_API_KEY") else "no")
+sys.exit(0 if os.getenv("OPENAI_API_KEY") else 1)
+PY
 
       - name: Set up Python
+        if: steps.gate.outputs.run == 'yes'
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
-      - name: Install deps (if any)
-        shell: bash
+      - name: Install dependencies
+        if: steps.gate.outputs.run == 'yes'
         run: |
+          python -m pip install --upgrade pip
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Run dispatcher (portfolios only)
-        run: |
-          python dispatcher.py
+      - name: Run dispatcher
+        if: steps.gate.outputs.run == 'yes'
+        run: python dispatcher.py
 
-      - name: Publish report to docs (overwrite, but exclude gapups.html & portfolios.html)
+      - name: Publish report to docs/
+        if: steps.gate.outputs.run == 'yes'
         shell: bash
         run: |
           mkdir -p docs
-          if [ -d report ] && [ "$(ls -A report)" ]; then
-            rsync -av \
-              --exclude 'gapups.html' \
-              --exclude 'portfolios.html' \
-              report/ docs/
+          if command -v rsync >/dev/null 2>&1; then
+            rsync -av --delete report/ docs/
           else
-            echo "No report/ (or empty). Skipping copy."
+            rm -rf docs/*
+            cp -R report/* docs/
           fi
+          touch docs/.nojekyll
 
-      - name: Commit and push changes
+      - name: Commit & push site + history
+        if: steps.gate.outputs.run == 'yes'
         shell: bash
+        working-directory: ${{ github.workspace }}
         run: |
-          BRANCH="${{ github.ref_name }}"
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/ || true
-          # include any updated history if your script writes it
-          git add history/* 2>/dev/null || true
-          git diff --staged --quiet || git commit -m "Evening report (auto) $(date -u +%F)"
-          git pull --rebase origin "$BRANCH" || true
-          git push origin HEAD:"$BRANCH"
+          git config user.email "actions@github.com"
+          git config user.name "github-actions"
+          git add docs history report || true
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "Auto: report & history $(TZ=UTC date +'%Y-%m-%d %H:%M:%S')"
+            git push
+          else
+            echo "No changes to commit."
+          fi

@@ -1,10 +1,10 @@
-
 from __future__ import annotations
-import re, csv, time
+import re, csv, time, json
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Dict, Optional
+from urllib.parse import urlparse
 
 try:
     import requests
@@ -20,6 +20,8 @@ except Exception:
 
 HISTORY_DIR = Path("history")
 HISTORY_DIR.mkdir(parents=True, exist_ok=True)
+
+LOGO_CACHE_PATH = HISTORY_DIR / "logo_overrides.json"
 
 CSV_HEADERS = [
     "published_date", "traded_date", "issuer", "ticker", "type", "size_range",
@@ -48,7 +50,6 @@ def _ensure_csv(slug: str):
 
 def _parse_text(el) -> str:
     if el is None: return ""
-    import re
     return re.sub(r"\s+", " ", el.get_text(" ", strip=True)).strip()
 
 def _get(url: str) -> str:
@@ -85,13 +86,11 @@ def _ct_extract(url: str) -> Optional[Dict[str,str]]:
     body = _parse_text(soup)
 
     def _find_date(label: str) -> Optional[str]:
-        import re
         m = re.search(rf"{label}\s+(\d{{4}}-\d{{2}}-\d{{2}})", body, re.I)
         if m: return m.group(1)
         m2 = re.search(rf"{label}\s+(\d{{1,2}}\s+\w{{3}}\s+\d{{4}})", body, re.I)
         if m2:
             try:
-                from datetime import datetime
                 dt = datetime.strptime(m2.group(1), "%d %b %Y")
                 return dt.strftime("%Y-%m-%d")
             except Exception: pass
@@ -100,7 +99,6 @@ def _ct_extract(url: str) -> Optional[Dict[str,str]]:
     pub = _find_date("Published") or ""
     trd = _find_date("Traded") or ""
 
-    import re
     m = re.search(r"\b([A-Z]{1,5}):US\b", body)
     ticker = (m.group(1) if m else "").upper()
 
@@ -127,46 +125,62 @@ def _ct_extract(url: str) -> Optional[Dict[str,str]]:
     msh = re.search(r"\b([0-9]{1,3}(?:,[0-9]{3})+)\s+Shares\b", body, re.I)
     if msh: shares = msh.group(1)
 
+    # Interpret "Purchased X call options ..." line if present
+    ai = re.search(
+        r"Additional Information Description:\s*Purchased\s+(\d{1,5})\s+call options?\s+with a strike price of\s*\$?\s*([0-9]{1,5}(?:\.[0-9]+)?)\s+and an expiration date of\s*([0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4})",
+        body, re.I
+    )
+    instrument = "option" if "option" in body.lower() else "stock"
+    option_type = "call" if "call" in body.lower() else ("put" if "put" in body.lower() else "")
+    is_exercise = bool(re.search(r"\bexercis", body, re.I) or re.search(r"\bassigned?\b", body, re.I))
+
+    def _to_iso_date(s: str) -> str:
+        s = (s or "").strip()
+        fmts = ("%m/%d/%y","%m/%d/%Y","%b %d, %Y","%B %d, %Y","%Y-%m-%d")
+        for fmt in fmts:
+            try:
+                dt = datetime.strptime(s, fmt)
+                if fmt == "%m/%d/%y" and dt.year < 2000:
+                    dt = dt.replace(year=dt.year + 2000)
+                return dt.date().isoformat()
+            except Exception:
+                continue
+        return ""
+
+    if ai and typ == "buy":
+        contracts = ai.group(1)
+        strike = ai.group(2)
+        expiry = _to_iso_date(ai.group(3))
+        instrument = "option"; option_type = "call"; is_exercise = False
+        shares = ""  # clear stray "50 Shares" for non-exercised options
+    else:
+        contracts = ""; strike = ""; expiry = ""
+
     pdf_url = ""
     a = soup.find("a", string=re.compile(r"View Original Filing", re.I))
     if a and a.get("href"):
         href = a.get("href")
         pdf_url = href if href.startswith("http") else ("https://" + href.lstrip("/"))
 
-    return {"published_date":pub,"traded_date":trd,"issuer":issuer,"ticker":ticker,"type":typ,"size_range":size,"price":price,"shares":shares,"pdf_url":pdf_url,"detail_url":url,"since_trade_pct":"","since_trade_spy_pct":""}
+    return {
+        "published_date":pub,"traded_date":trd,"issuer":issuer,"ticker":ticker,"type":typ,
+        "size_range":size,"price":price,"shares":shares,"pdf_url":pdf_url,"detail_url":url,
+        "since_trade_pct":"","since_trade_spy_pct":""
+    }
 
 def _load(slug: str) -> List[Dict[str,str]]:
     p = _csv_path(slug)
     if not p.exists(): return []
-    import csv
     with p.open("r", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
 def _save(slug: str, rows: List[Dict[str,str]]):
     p = _csv_path(slug)
     with p.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=CSV_HEADERS); w.writeheader()
-        for r in rows: w.writerow(r)
+        w = csv.DictWriter(f, fieldnames=CSV_HEADERS, extrasaction="ignore"); w.writeheader()
+        for r in rows: w.writerow({k: (r.get(k,"") or "") for k in CSV_HEADERS})
 
-def fetch_and_update_all(max_pages: int = 3):
-    for spec in PORTFOLIOS:
-        _ensure_csv(spec.slug)
-        try:
-            links = _ct_detail_links(spec.identifier, max_pages=max_pages) if spec.source=="capitoltrades" else []
-        except Exception as e:
-            print(f"[portfolios] list error {spec.slug}:", repr(e)); continue
-        existing = {(r["pdf_url"], r["ticker"], r["traded_date"]) for r in _load(spec.slug)}
-        rows = _load(spec.slug)
-        for url in links:
-            try: d = _ct_extract(url)
-            except Exception: d = None
-            if not d: continue
-            key = (d["pdf_url"], d["ticker"], d["traded_date"])
-            if key in existing: continue
-            rows.append(d); existing.add(key); time.sleep(0.7)
-        rows.sort(key=lambda x: ((x.get("published_date") or ""), (x.get("traded_date") or "")), reverse=True)
-        _save(spec.slug, rows)
-
+# ---------- Price history & returns ----------
 def _series(symbol: str, start: str, end: Optional[str] = None):
     if yf is None: return []
     try:
@@ -182,7 +196,6 @@ def _idx_on_or_after(dates: List[str], d0: str) -> Optional[int]:
     return None
 
 def compute_returns_all():
-    # earliest trade date across all portfolios
     earliest = None
     for spec in PORTFOLIOS:
         for r in _load(spec.slug):
@@ -212,12 +225,208 @@ def compute_returns_all():
                     if sp0 and sp1: r["since_trade_spy_pct"]=f"{(sp1/sp0 - 1.0):.6f}"; changed=True
         if changed: _save(spec.slug, rows)
 
+# ---------- Dollar parsing & holdings aggregation ----------
+def _parse_dollar_token(tok: str) -> Optional[float]:
+    """Parse tokens like $250K, 250K, $1.2M, 1000000 -> float dollars."""
+    if tok is None: return None
+    s = str(tok).strip().replace(",", "")
+    m = re.fullmatch(r"\$?([0-9]+(?:\.[0-9]+)?)([kKmM]?)", s)
+    if not m: return None
+    num = float(m.group(1))
+    suf = (m.group(2) or "").lower()
+    mult = 1.0 if not suf else (1e3 if suf == "k" else 1e6)
+    return num * mult
+
+def _mid_range_dollars(txt: str) -> Optional[float]:
+    """Return midpoint dollars from ranges like 250K–500K, $250K-$500K, 500000–1000000."""
+    if not txt: return None
+    s = str(txt).replace(",", "").replace("–", "-").strip()
+    s = re.sub(r"\s*-\s*", "-", s)
+    m = re.search(r"(\$?\d+(?:\.\d+)?[kKmM]?)-(\$?\d+(?:\.\d+)?[kKmM]?)", s)
+    if not m: return None
+    a = _parse_dollar_token(m.group(1))
+    b = _parse_dollar_token(m.group(2))
+    if a is None or b is None: return None
+    return (a + b) / 2.0
+
+def _num(s: str) -> Optional[float]:
+    if not s: return None
+    try:
+        return float(re.sub(r"[^0-9\.]+","", s))
+    except Exception:
+        return None
+
+def _estimate_row_dollars(r: Dict[str,str]) -> Optional[float]:
+    """Best-effort dollars for this row: prefer size_range midpoint; else price*shares if both numeric."""
+    mid = _mid_range_dollars(r.get("size_range") or "")
+    if mid and mid > 0: return mid
+    px = _num(r.get("price") or "")
+    sh = _num((r.get("shares") or "").replace(",",""))
+    if px and sh and px > 0 and sh > 0:
+        return px * sh
+    return None
+
+# ---------- Logos (static + dynamic cache) ----------
+LOGO_OVERRIDES_STATIC = {
+    "NVDA": "https://logo.clearbit.com/nvidia.com",
+    "AAPL": "https://logo.clearbit.com/apple.com",
+    "MSFT": "https://logo.clearbit.com/microsoft.com",
+    "AMZN": "https://logo.clearbit.com/amazon.com",
+    "GOOGL":"https://logo.clearbit.com/abc.xyz",
+    "META": "https://logo.clearbit.com/meta.com",
+    "AVGO": "https://logo.clearbit.com/broadcom.com",
+    "TSLA": "https://logo.clearbit.com/tesla.com",
+    "AMD":  "https://logo.clearbit.com/amd.com",
+    "NFLX": "https://logo.clearbit.com/netflix.com",
+    "PANW": "https://logo.clearbit.com/paloaltonetworks.com",
+    "CRWD": "https://logo.clearbit.com/crowdstrike.com",
+    "VST":  "https://logo.clearbit.com/vistra.com",
+    "TEM":  "https://logo.clearbit.com/tempus.com",
+}
+
+_LOGO_CACHE: Dict[str, str] = {}
+_LOGO_CACHE_DIRTY = False
+
+def _load_logo_cache() -> Dict[str,str]:
+    global _LOGO_CACHE
+    try:
+        if LOGO_CACHE_PATH.exists():
+            _LOGO_CACHE = json.loads(LOGO_CACHE_PATH.read_text(encoding="utf-8"))
+        else:
+            _LOGO_CACHE = {}
+    except Exception:
+        _LOGO_CACHE = {}
+    return _LOGO_CACHE
+
+def _save_logo_cache():
+    global _LOGO_CACHE_DIRTY
+    if not _LOGO_CACHE_DIRTY:
+        return
+    try:
+        LOGO_CACHE_PATH.write_text(json.dumps(_LOGO_CACHE, indent=2, sort_keys=True), encoding="utf-8")
+        _LOGO_CACHE_DIRTY = False
+    except Exception:
+        pass
+
+def _domain_from_url(url: str) -> Optional[str]:
+    try:
+        netloc = urlparse(url).netloc or ""
+        return netloc.lower() or None
+    except Exception:
+        return None
+
+def _logo_for(ticker: str) -> str:
+    """Return a logo URL for ticker. Order: cache.json > static overrides > yfinance website->clearbit > avatar fallback.
+       Newly resolved entries are cached to history/logo_overrides.json so the map quickly grows toward 500+.
+    """
+    global _LOGO_CACHE_DIRTY, _LOGO_CACHE
+    t = (ticker or "").upper()
+    if not t:
+        return "https://ui-avatars.com/api/?name=T&background=1f2937&color=ffffff&size=96&bold=true"
+
+    cache = _load_logo_cache()
+    if t in cache and cache[t]:
+        return cache[t]
+
+    if t in LOGO_OVERRIDES_STATIC:
+        cache[t] = LOGO_OVERRIDES_STATIC[t]
+        _LOGO_CACHE_DIRTY = True
+        return cache[t]
+
+    # yfinance website -> clearbit
+    url = ""
+    try:
+        if yf is not None:
+            info = {}
+            try:
+                info = yf.Ticker(t).info or {}
+            except Exception:
+                info = {}
+            website = (info.get("website") or "") if isinstance(info, dict) else ""
+            if isinstance(website, str) and website:
+                dom = _domain_from_url(website)
+                if dom:
+                    url = f"https://logo.clearbit.com/{dom}"
+    except Exception:
+        url = ""
+
+    if not url:
+        url = f"https://ui-avatars.com/api/?name={t}&background=1f2937&color=ffffff&size=96&bold=true"
+
+    cache[t] = url
+    _LOGO_CACHE_DIRTY = True
+    _LOGO_CACHE = cache
+    return url
+
+# ---------- Build holdings ----------
+def _build_holdings(rows: List[Dict[str,str]]) -> List[Dict[str, object]]:
+    if not rows: return []
+    totals: Dict[str, float] = {}
+    chg_num: Dict[str, float] = {}
+    chg_den: Dict[str, float] = {}
+
+    for r in rows:
+        t = (r.get("ticker") or "").upper()
+        if not t: continue
+        dollars = _estimate_row_dollars(r)
+        if dollars is None: continue
+        side = (r.get("type") or "").lower()
+        sign = -1.0 if side == "sell" else 1.0
+        val = sign * dollars
+        totals[t] = totals.get(t, 0.0) + val
+
+        try:
+            ch = float(r.get("since_trade_pct") or "")
+        except Exception:
+            ch = None
+        if ch is not None:
+            w = abs(dollars)
+            chg_num[t] = chg_num.get(t, 0.0) + ch * w
+            chg_den[t] = chg_den.get(t, 0.0) + w
+
+    positives = {k:v for k,v in totals.items() if v > 0}
+    denom = sum(positives.values())
+    if denom <= 0: 
+        return []
+
+    items = []
+    for t,v in sorted(positives.items(), key=lambda kv: kv[1], reverse=True):
+        w = v / denom
+        ch = ""
+        if chg_den.get(t, 0.0) > 0:
+            ch = chg_num[t] / chg_den[t]
+        items.append({"ticker": t, "weight": w, "change": ch, "logo_url": _logo_for(t)})
+    return items
+
+# ---------- Sections for template ----------
+def fetch_and_update_all(max_pages: int = 3):
+    for spec in PORTFOLIOS:
+        _ensure_csv(spec.slug)
+        try:
+            links = _ct_detail_links(spec.identifier, max_pages=max_pages) if spec.source=="capitoltrades" else []
+        except Exception as e:
+            print(f"[portfolios] list error {spec.slug}:", repr(e)); continue
+        existing = {(r["pdf_url"], r["ticker"], r["traded_date"]) for r in _load(spec.slug)}
+        rows = _load(spec.slug)
+        for url in links:
+            try: d = _ct_extract(url)
+            except Exception: d = None
+            if not d: continue
+            key = (d["pdf_url"], d["ticker"], d["traded_date"])
+            if key in existing: continue
+            rows.append(d); existing.add(key); time.sleep(0.7)
+        rows.sort(key=lambda x: ((x.get("published_date") or ""), (x.get("traded_date") or "")), reverse=True)
+        _save(spec.slug, rows)
+
 def load_sections_for_render() -> List[Dict[str, object]]:
     out: List[Dict[str, object]] = []
+    _load_logo_cache()  # ensure cache is in memory
     for spec in PORTFOLIOS:
         rows = _load(spec.slug)
         for r in rows:
             for k in CSV_HEADERS: r[k] = r.get(k,"") or ""
         rows.sort(key=lambda x: ((x.get("published_date") or ""), (x.get("traded_date") or "")), reverse=True)
-        out.append({"slug": spec.slug, "name": spec.name, "rows": rows})
+        holdings = _build_holdings(rows)
+        out.append({"slug": spec.slug, "name": spec.name, "rows": rows, "holdings": holdings})
+    _save_logo_cache()
     return out

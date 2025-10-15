@@ -50,14 +50,14 @@ jobs:
             exit 1
           fi
 
-      - name: "Sanity: Python sees OPENAI_API_KEY?"
-        if: steps.gate.outputs.run == 'yes'
-        run: |
-          python - << 'PY'
-            import os, sys
-            print("python sees OPENAI_API_KEY:", "yes" if os.getenv("OPENAI_API_KEY") else "no")
-            sys.exit(0 if os.getenv("OPENAI_API_KEY") else 1)
-            PY
+      # - name: "Sanity: Python sees OPENAI_API_KEY?"
+      #   if: steps.gate.outputs.run == 'yes'
+      #   run: |
+      #     python - << 'PY'
+      #       import os, sys
+      #       print("python sees OPENAI_API_KEY:", "yes" if os.getenv("OPENAI_API_KEY") else "no")
+      #       sys.exit(0 if os.getenv("OPENAI_API_KEY") else 1)
+      #       PY
 
       - name: Set up Python
         if: steps.gate.outputs.run == 'yes'

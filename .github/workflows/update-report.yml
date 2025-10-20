@@ -75,7 +75,6 @@ jobs:
         if: steps.gate.outputs.run == 'yes'
         run: |
           python dispatcher.py
-          cp -f docs/overview.html docs/index.html
 
       - name: Publish report to docs/
         if: steps.gate.outputs.run == 'yes'
@@ -87,6 +86,7 @@ jobs:
           else
             rm -rf docs/*
             cp -R report/* docs/
+            cp -f docs/overview.html docs/index.html
           fi
           touch docs/.nojekyll
 

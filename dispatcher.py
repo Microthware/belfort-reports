@@ -435,6 +435,72 @@ def _compute_fifo_stats(trades: List[Trade]) -> Dict[str, float]:
         "closed_sells": closed,
     }
 
+# ------------------------------------------------------------------
+# Today's Gap-Ups (symbols + 14-day OHLC for mini charts on Overview)
+# ------------------------------------------------------------------
+def _get_gapups_today_ohlc(max_days: int = 14) -> list[dict]:
+    """
+    Return: [{"symbol": "ABC", "series":[{"d":"YYYY-MM-DD","o":..,"h":..,"l":..,"c":..}, ...]}]
+    Using the latest date found in gapups-history.csv (via load_rows_for_render()).
+    """
+    try:
+        rows = load_rows_for_render()
+    except Exception:
+        rows = []
+    if not rows:
+        return []
+
+    # Latest date present in history (covers morning/afternoon jobs)
+    dates = [r.get("date") for r in rows if r.get("date")]
+    if not dates:
+        return []
+    latest = max(dates)
+
+    # Unique symbols for that date
+    seen, syms = set(), []
+    streak_for = {}
+    for r in rows:
+        if r.get("date") == latest:
+            s = (r.get("symbol") or "").upper()
+            if s:
+                try:
+                    streak_for[s] = int(r.get("streak") or 1)
+                except Exception:
+                    streak_for[s] = 1
+                if s not in seen:
+                    seen.add(s); syms.append(s)
+
+
+    out = []
+    if not syms or yf is None:
+        return out
+
+    for s in syms:
+        try:
+            # Get ~last 2 months and keep the last `max_days` rows
+            hist = yf.Ticker(s).history(period="2mo", interval="1d", auto_adjust=False)
+            if hist is None or hist.empty:
+                continue
+            frame = hist.tail(max_days)
+            series = []
+            for ts, row in frame.iterrows():
+                try:
+                    series.append({
+                        "d": ts.date().isoformat(),
+                        "o": float(row["Open"]),
+                        "h": float(row["High"]),
+                        "l": float(row["Low"]),
+                        "c": float(row["Close"]),
+                    })
+                except Exception:
+                    continue
+            if series:
+                out.append({"symbol": s, "series": series, "streak": streak_for.get(s, 1)})
+        except Exception:
+            continue
+    return out
+
+
 # ---------- validator WITH carried state (no mutation of original) ----------
 def _validate_trades_budget_with_state(
     trades: List[Trade],
@@ -775,7 +841,7 @@ def _slim_sections(sections: list) -> list:
 # ------------------------------------------------------------------
 # Rendering
 # ------------------------------------------------------------------
-def _render_overview(env, bots_rows: List[Dict[str, Any]], sections_override: list | None = None):
+def _render_overview(env, bots_rows: List[Dict[str, Any]], sections_override: list | None = None, gapups_today: list | None = None):
     # Load last state so partial jobs don't wipe other sections
     state = _load_overview_state() or {}
     state_bots = state.get("bots") or []
@@ -814,7 +880,8 @@ def _render_overview(env, bots_rows: List[Dict[str, Any]], sections_override: li
         bots=state_bots,
         total_trades=total_trades,
         avg_win_rate=f"{avg_win_rate*100:.2f}%",
-        sections_json=json.dumps(state_sections, separators=(",",":"))
+        sections_json=json.dumps(state_sections, separators=(",",":")),
+        gapups_today_json=json.dumps(gapups_today or [], separators=(",",":"))
     )
     open(os.path.join(REPORT_DIR,"overview.html"),"w",encoding="utf-8").write(html)
     if os.getenv("AUTO_PUBLISH_DOCS","0") == "1":
@@ -1120,6 +1187,8 @@ def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUP
         print("[scan] CANDIDATE buckets:", {k: len(v) for k, v in buckets.items()})
         print("[prices] count:", len(prices))
 
+    _GAPUPS_TODAY_DATA = _get_gapups_today_ohlc(max_days=14)
+
     # ---------- CLI gating ----------
     def _maybe_call(name, *a, **kw):
         fn = globals().get(name)
@@ -1134,12 +1203,12 @@ def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUP
                 _secs = port_sections()
             except Exception:
                 _secs = []
-        _render_overview(env, bots_rows=[], sections_override=_secs)
+        _render_overview(env, bots_rows=[], sections_override=_secs, gapups_today=_GAPUPS_TODAY_DATA)
         return
 
     if RUN_GAPUPS_ONLY and not RUN_SKIP_GAPUPS:
         _maybe_call("_run_gapups_section", env, buckets) or (_render_gapups(env))
-        _render_overview(env, bots_rows=[])
+        _render_overview(env, bots_rows=[], gapups_today=_GAPUPS_TODAY_DATA)
         return
 
     if RUN_PORTFOLIOS_ONLY and not RUN_SKIP_PORTFOLIOS:
@@ -1148,7 +1217,7 @@ def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUP
             _secs = port_sections()
         except Exception:
             _secs = []
-        _render_overview(env, bots_rows=[], sections_override=_secs)
+        _render_overview(env, bots_rows=[], sections_override=_secs, gapups_today=_GAPUPS_TODAY_DATA)
         if os.getenv("AUTO_PUBLISH_DOCS","0") == "1":
             _publish_to_docs("portfolios.html", "overview.html")
         try:
@@ -1314,7 +1383,7 @@ def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUP
             "link": page,
         })
 
-    _render_overview(env, bots_rows)
+    _render_overview(env, bots_rows, gapups_today=_GAPUPS_TODAY_DATA)
     try:
         secs = _load_portfolio_sections_from_file()
         if secs:

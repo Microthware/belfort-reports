@@ -73,7 +73,9 @@ jobs:
 
       - name: Run dispatcher
         if: steps.gate.outputs.run == 'yes'
-        run: python dispatcher.py
+        run: |
+          python dispatcher.py
+          cp -f docs/overview.html docs/index.html
 
       - name: Publish report to docs/
         if: steps.gate.outputs.run == 'yes'

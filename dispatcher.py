@@ -1,6 +1,21 @@
 #!/usr/bin/env python3
 import os, json, shutil, time, glob, re, sys, copy
 import argparse
+from dataclasses import dataclass, asdict
+from datetime import datetime, timezone
+from typing import List, Dict, Any, Tuple, Optional
+from jinja2 import Environment, FileSystemLoader, select_autoescape
+from dotenv import load_dotenv
+import yfinance as yf
+import requests
+from bs4 import BeautifulSoup as bs
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+from gapups_tracker import record_today_from_finviz, backfill_outcomes, load_rows_for_render, compute_historical_streaks
+from portfolios_tracker import fetch_and_update_all as port_fetch, compute_returns_all as port_compute, load_sections_for_render as port_sections
+import stock as stockmod
 
 # === Run-mode argument parsing (CLI only) ===
 _ap = argparse.ArgumentParser(add_help=False)
@@ -19,54 +34,11 @@ RUN_ALL = bool(_ARGS.all)
 RUN_SKIP_GAPUPS = bool(_ARGS.skip_gapups)
 RUN_SKIP_PORTFOLIOS = bool(_ARGS.skip_portfolios)
 
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
-from typing import List, Dict, Any, Tuple, Optional
-from jinja2 import Environment, FileSystemLoader, select_autoescape
-from dotenv import load_dotenv
-from gapups_tracker import record_today_from_finviz, backfill_outcomes, load_rows_for_render, compute_historical_streaks
-from portfolios_tracker import fetch_and_update_all as port_fetch, compute_returns_all as port_compute, load_sections_for_render as port_sections
 
-# ------------------------------------------------------------------
 # Debug & runtime flags
-# ------------------------------------------------------------------
 DEBUG = True
 DISABLE_SYNTH_HOLD = os.environ.get("DISABLE_SYNTH_HOLD", "1") == "1"
 HIST_CONSOLIDATE = os.getenv("CONSOLIDATE_HISTORY", "1") == "1"  # consolidated per-bot file default ON
-
-# Make sure local folder is importable (so stock.py works no matter CWD)
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-if BASE_DIR not in sys.path:
-    sys.path.insert(0, BASE_DIR)
-
-# Local stock parser (preferred for candidates)
-try:
-    import stock as stockmod  # local file stock.py
-    if DEBUG:
-        print("[init] stock.py imported from:", getattr(stockmod, "__file__", "(unknown)"))
-except Exception as e:
-    stockmod = None
-    if DEBUG:
-        print("[init] stock.py not available:", repr(e))
-
-# Optional price source (for PRICES_TODAY in prompt)
-try:
-    import yfinance as yf  # type: ignore
-except Exception:
-    yf = None
-    if DEBUG:
-        print("[init] yfinance not available; PRICES_TODAY will be empty")
-
-# Optional deps for Finviz fallback
-try:
-    import requests  # type: ignore
-    from bs4 import BeautifulSoup as bs  # type: ignore
-except Exception:
-    requests = None
-    bs = None
-    if DEBUG:
-        print("[init] requests/bs4 not available; Finviz fallback disabled")
-
 TZ = os.environ.get("LOCAL_TZ", "America/New_York")
 TEMPLATES_DIR = "templates"
 REPORT_DIR = "report"
@@ -76,6 +48,35 @@ DOCS_DIR = "docs"
 DEFAULT_START_BAL = 10000.0
 OVERVIEW_STATE_PATH = os.path.join(HISTORY_DIR, "overview_state.json")
 PORTFOLIO_SECTIONS_JSON = os.path.join(HISTORY_DIR, "portfolios_sections.json")
+
+FINVIZ_SOURCES: List[Tuple[str,str]] = [
+  ("gap_ups", "https://finviz.com/screener.ashx?v=111&f=sh_avgvol_o500,sh_relvol_o5,ta_changeopen_u5,ta_highlow20d_nh,ta_perf_d10o,ta_sma200_pa&ft=4&o=-changeopen"),
+  ("pivots",  "https://finviz.com/screener.ashx?v=111&f=sh_avgvol_o500,sh_relvol_o1.5,ta_changeopen_u5,ta_highlow20d_nh,ta_sma200_pa&ft=4&ta=0&o=-changeopen"),
+]
+CANDIDATE_LIMIT_PER = int(os.environ.get("CANDIDATE_LIMIT_PER", "40"))
+DEFAULT_LEADERS = ["SPY","QQQ","NVDA","AAPL","MSFT","META","AMD","AVGO","TSLA","SMCI"]
+
+SCHEMA_SNIPPET = """
+{
+  "model_name": "<string>",
+  "universe": ["SYM","..."] | "ALL",
+  "starting_balance": <number>,
+  "portfolio_analysis": "<string>",
+  "trades": [
+    {
+      "time": "<ISO8601Z>",
+      "symbol": "<string>",
+      "side": "buy"|"sell"|"hold"|"rebalance",
+      "qty": <number>,
+      "price": <number>,
+      "pnl_pct": <number|null>,
+      "balance_after": <number>,
+      "notes": "<string>"
+    }
+  ]
+}
+""".strip()
+
 
 def _publish_to_docs(*names: str):
     """Copy selected files from report/ to docs/ so partial jobs can update only their parts."""
@@ -135,34 +136,6 @@ def _load_portfolio_sections_from_file() -> list:
     except Exception as e:
         if DEBUG: print("[overview] scrape portfolios.html failed:", repr(e))
     return []
-
-FINVIZ_SOURCES: List[Tuple[str,str]] = [
-  ("gap_ups", "https://finviz.com/screener.ashx?v=111&f=sh_avgvol_o500,sh_relvol_o5,ta_changeopen_u5,ta_highlow20d_nh,ta_perf_d10o,ta_sma200_pa&ft=4&o=-changeopen"),
-  ("pivots",  "https://finviz.com/screener.ashx?v=111&f=sh_avgvol_o500,sh_relvol_o1.5,ta_changeopen_u5,ta_highlow20d_nh,ta_sma200_pa&ft=4&ta=0&o=-changeopen"),
-]
-CANDIDATE_LIMIT_PER = int(os.environ.get("CANDIDATE_LIMIT_PER", "40"))
-DEFAULT_LEADERS = ["SPY","QQQ","NVDA","AAPL","MSFT","META","AMD","AVGO","TSLA","SMCI"]
-
-SCHEMA_SNIPPET = """
-{
-  "model_name": "<string>",
-  "universe": ["SYM","..."] | "ALL",
-  "starting_balance": <number>,
-  "portfolio_analysis": "<string>",
-  "trades": [
-    {
-      "time": "<ISO8601Z>",
-      "symbol": "<string>",
-      "side": "buy"|"sell"|"hold"|"rebalance",
-      "qty": <number>,
-      "price": <number>,
-      "pnl_pct": <number|null>,
-      "balance_after": <number>,
-      "notes": "<string>"
-    }
-  ]
-}
-""".strip()
 
 @dataclass
 class Trade:
@@ -802,68 +775,6 @@ def _slim_sections(sections: list) -> list:
 # ------------------------------------------------------------------
 # Rendering
 # ------------------------------------------------------------------
-
-# def _render_overview(env, bots_rows: List[Dict[str, Any]]):
-#     # Load prior state so we can preserve sections not updated in this run
-#     state = _load_overview_state()
-
-#     # Determine which sections are being updated in this run
-#     update_bots = True  # if caller passed bots_rows, we merge it; otherwise keep prior
-#     update_ports = (RUN_ALL or RUN_PORTFOLIOS_ONLY or ("portfolios" in RUN_ONLY if RUN_ONLY else False)) and not RUN_SKIP_PORTFOLIOS
-#     update_gapups = (RUN_ALL or RUN_GAPUPS_ONLY or ("gapups" in RUN_ONLY if RUN_ONLY else False)) and not RUN_SKIP_GAPUPS
-
-#     # ---- BOT SECTION ----
-#     if bots_rows:
-#         state["bots"] = bots_rows  # replace with latest computed
-#     # else keep existing bots from prior state
-
-#     # ---- PORTFOLIOS MINI DONUTS ----
-#     # Build compact sections json (reuse portfolios data) *only* if updating; else keep prior
-#     if update_ports:
-#         try:
-#             _secs = port_sections()
-#         except Exception:
-#             _secs = []
-#         _slim = []
-#         for _s in (_secs or []):
-#             _name = (_s.get('name') or _s.get('slug') or 'Portfolio')
-#             _hs = []
-#             for _h in (_s.get('holdings') or []):
-#                 try:
-#                     _hs.append({'ticker': _h.get('ticker'), 'weight': float(_h.get('weight') or 0.0)})
-#                 except Exception:
-#                     _hs.append({'ticker': _h.get('ticker'), 'weight': 0.0})
-#             _slim.append({'name': _name, 'holdings': _hs})
-#         state["portfolios_sections"] = _slim
-
-#     # ---- (Optional) GAPUPS summary placeholder ----
-#     # If your overview.html uses gap-ups metadata, compute and set here.
-#     # For now we just stamp last update time so the section doesn't appear stale.
-#     if update_gapups:
-#         state["gapups_meta"] = {"updated": time.strftime("%m/%d/%y %H:%M")}
-
-#     # Persist merged state for the next partial run
-#     state["updated_at"] = time.strftime("%m/%d/%y %H:%M")
-#     _save_overview_state(state)
-
-#     # ----- Render using merged state -----
-#     tpl = env.get_template("overview.html")
-#     gen_time = time.strftime("%m/%d/%y %H:%M")
-#     bots_eff = state.get("bots") or []
-#     total_trades = sum(r.get("total_actions", r.get("trades", 0)) for r in bots_eff)
-#     avg_win_rate = sum((r.get("win_rate_num") or 0.0) for r in bots_eff)/len(bots_eff) if bots_eff else 0.0
-
-#     sections_json = json.dumps(state.get("portfolios_sections") or [], separators=(',',':'))
-
-#     html = tpl.render(
-#         gen_time=gen_time,
-#         tz=TZ,
-#         bots=bots_eff,
-#         total_trades=total_trades,
-#         avg_win_rate=f"{avg_win_rate*100:.2f}%",
-#         sections_json=sections_json
-#     )
-#     open(os.path.join(REPORT_DIR,"overview.html"),"w",encoding="utf-8").write(html)
 def _render_overview(env, bots_rows: List[Dict[str, Any]], sections_override: list | None = None):
     # Load last state so partial jobs don't wipe other sections
     state = _load_overview_state() or {}
@@ -1178,9 +1089,7 @@ def query_model(model_name: str, prompt_text: str) -> str:
         if DEBUG: print("[openai] fallback -> dev sample")
         return dev_sample()
 
-# ------------------------------------------------------------------
-# Main
-# ------------------------------------------------------------------
+
 def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUPS, RUN_SKIP_PORTFOLIOS):
     load_dotenv()
 

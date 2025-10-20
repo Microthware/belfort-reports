@@ -5,24 +5,14 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Dict, Optional
 from urllib.parse import urlparse
+import requests
+from bs4 import BeautifulSoup as bs
+import yfinance as yf
 
-try:
-    import requests
-    from bs4 import BeautifulSoup as bs  # type: ignore
-except Exception:
-    requests = None
-    bs = None
-
-try:
-    import yfinance as yf  # type: ignore
-except Exception:
-    yf = None
 
 HISTORY_DIR = Path("history")
 HISTORY_DIR.mkdir(parents=True, exist_ok=True)
-
 LOGO_CACHE_PATH = HISTORY_DIR / "logo_overrides.json"
-
 CSV_HEADERS = [
     "published_date", "traded_date", "issuer", "ticker", "type", "size_range",
     "price", "shares", "pdf_url", "detail_url", "since_trade_pct", "since_trade_spy_pct"
@@ -46,6 +36,35 @@ PORTFOLIOS: List[PortfolioSpec] = [
     PortfolioSpec(slug="hern", name="Kevin Hern", source="capitoltrades", identifier="H001082"),
     PortfolioSpec(slug="john-james", name="John James", source="capitoltrades", identifier="J000307"),
 ]
+
+_DISCLOSURE_SOURCES = {
+    "vance": [
+        "https://www.whitehouse.gov/wp-content/uploads/2025/06/Vice-President-JD-Vance.pdf",
+        "https://extapps2.oge.gov/201/Presiden.nsf/PAS%2BIndex/021DBF0DD058C1C185258CA9002C93BB/%24FILE/Vance%2C%20JD%202025%20Annual%20278.pdf",
+        "https://www.documentcloud.org/documents/25041263-jd-vances-financial-disclosure/"
+    ],
+}
+
+_DISCLOSURE_NAME_TO_TICKER = {
+    "INVESCO QQQ": "QQQ",
+    "QQQ": "QQQ",
+    "SPDR S&P 500 ETF": "SPY",
+    "SPDR S&P 500 ETF TRUST": "SPY",
+    "SPY": "SPY",
+    "SPDR DOW JONES INDUSTRIAL AVERAGE": "DIA",
+    "DIA": "DIA",
+    "ISHARES 20+ YEAR TREASURY BOND ETF": "TLT",
+    "TLT": "TLT",
+    "PROSHARES K-1 FREE CRUDE OIL STRATEGY ETF": "OILK",
+    "OILK": "OILK",
+    "SPDR GOLD TRUST": "GLD",
+    "SPDR GOLD SHARES": "GLD",
+    "GLD": "GLD",
+    "RUMBLE": "RUM",
+    "RUM": "RUM",
+    "BITCOIN": "BTC",
+    "BTC": "BTC",
+}
 
 def _csv_path(slug: str) -> Path:
     return HISTORY_DIR / f"{slug}-trades.csv"
@@ -88,37 +107,6 @@ def _ct_detail_links(bioguide_id: str, max_pages: int = 3) -> List[str]:
                 if href and href not in links:
                     links.append(href)
     return links
-
-
-# ---------- Public Financial Disclosure parsing (official sources) ----------
-_DISCLOSURE_SOURCES = {
-    "vance": [
-        "https://www.whitehouse.gov/wp-content/uploads/2025/06/Vice-President-JD-Vance.pdf",
-        "https://extapps2.oge.gov/201/Presiden.nsf/PAS%2BIndex/021DBF0DD058C1C185258CA9002C93BB/%24FILE/Vance%2C%20JD%202025%20Annual%20278.pdf",
-        "https://www.documentcloud.org/documents/25041263-jd-vances-financial-disclosure/"
-    ],
-}
-
-_DISCLOSURE_NAME_TO_TICKER = {
-    "INVESCO QQQ": "QQQ",
-    "QQQ": "QQQ",
-    "SPDR S&P 500 ETF": "SPY",
-    "SPDR S&P 500 ETF TRUST": "SPY",
-    "SPY": "SPY",
-    "SPDR DOW JONES INDUSTRIAL AVERAGE": "DIA",
-    "DIA": "DIA",
-    "ISHARES 20+ YEAR TREASURY BOND ETF": "TLT",
-    "TLT": "TLT",
-    "PROSHARES K-1 FREE CRUDE OIL STRATEGY ETF": "OILK",
-    "OILK": "OILK",
-    "SPDR GOLD TRUST": "GLD",
-    "SPDR GOLD SHARES": "GLD",
-    "GLD": "GLD",
-    "RUMBLE": "RUM",
-    "RUM": "RUM",
-    "BITCOIN": "BTC",
-    "BTC": "BTC",
-}
 
 def _range_mid(s: str) -> float:
     s = s.replace(",", "").upper()

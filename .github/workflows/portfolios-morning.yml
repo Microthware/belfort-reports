@@ -57,6 +57,7 @@ jobs:
         run: |
           export AUTO_PUBLISH_DOCS=1
           python dispatcher.py --portfolios-only
+          cp -f docs/overview.html docs/index.html
 
       - name: Publish only portfolios.html to docs/
         shell: bash

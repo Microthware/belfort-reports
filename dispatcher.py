@@ -72,9 +72,28 @@ TEMPLATES_DIR = "templates"
 REPORT_DIR = "report"
 PROMPTS_DIR = "prompts"
 HISTORY_DIR = "history"
+DOCS_DIR = "docs"
 DEFAULT_START_BAL = 10000.0
 OVERVIEW_STATE_PATH = os.path.join(HISTORY_DIR, "overview_state.json")
 PORTFOLIO_SECTIONS_JSON = os.path.join(HISTORY_DIR, "portfolios_sections.json")
+
+def _publish_to_docs(*names: str):
+    """Copy selected files from report/ to docs/ so partial jobs can update only their parts."""
+    try:
+        os.makedirs(DOCS_DIR, exist_ok=True)
+    except Exception:
+        pass
+    for n in names:
+        try:
+            src_path = os.path.join(REPORT_DIR, n)
+            dst_path = os.path.join(DOCS_DIR, n)
+            if os.path.exists(src_path):
+                shutil.copyfile(src_path, dst_path)
+                if DEBUG:
+                    print("[publish]", src_path, "->", dst_path)
+        except Exception as e:
+            if DEBUG:
+                print("[publish] failed for", n, ":", repr(e))
 
 def _load_overview_state() -> dict:
     try:
@@ -887,6 +906,8 @@ def _render_overview(env, bots_rows: List[Dict[str, Any]], sections_override: li
         sections_json=json.dumps(state_sections, separators=(",",":"))
     )
     open(os.path.join(REPORT_DIR,"overview.html"),"w",encoding="utf-8").write(html)
+    if os.getenv("AUTO_PUBLISH_DOCS","0") == "1":
+        _publish_to_docs("overview.html")
 
 
 # Accept file_slug for stable filenames
@@ -1000,6 +1021,8 @@ def _render_portfolios(env):
     out = os.path.join(REPORT_DIR, "portfolios.html")
     open(out, "w", encoding="utf-8").write(html)
     if DEBUG: print("[portfolios] rendered ->", out)
+    if os.getenv("AUTO_PUBLISH_DOCS","0") == "1":
+        _publish_to_docs("portfolios.html")
     return "portfolios.html"
 
 
@@ -1217,6 +1240,8 @@ def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUP
         except Exception:
             _secs = []
         _render_overview(env, bots_rows=[], sections_override=_secs)
+        if os.getenv("AUTO_PUBLISH_DOCS","0") == "1":
+            _publish_to_docs("portfolios.html", "overview.html")
         try:
             with open(PORTFOLIO_SECTIONS_JSON, "w", encoding="utf-8") as f:
                 json.dump(_slim_sections(_secs), f, indent=2)

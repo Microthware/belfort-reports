@@ -55,6 +55,7 @@ jobs:
 
       - name: Run dispatcher (portfolios only; writes report/portfolios.html)
         run: |
+          export AUTO_PUBLISH_DOCS=1
           python dispatcher.py --portfolios-only
 
       - name: Publish only portfolios.html to docs/

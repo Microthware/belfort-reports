@@ -2,12 +2,10 @@ from __future__ import annotations
 import csv, os, re
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
-try:
-    import yfinance as yf  # type: ignore
-except Exception:
-    yf = None
+import yfinance as yf
 
 HISTORY_DIR = "history"
+MIN_GAPUP_PRICE = 2.0
 CSV_PATH = os.path.join(HISTORY_DIR, "gapups-history.csv")
 CSV_HEADERS = [
     "date","symbol","price",
@@ -18,6 +16,8 @@ CSV_HEADERS = [
     "streak"
 ]
 
+
+# HELPERS
 def _ensure():
     os.makedirs(HISTORY_DIR, exist_ok=True)
     if not os.path.exists(CSV_PATH):
@@ -58,7 +58,22 @@ def _last_close(symbol: str, on_date: str) -> Optional[float]:
     except Exception:
         return None
 
-# === Historical streaks (>= 2 consecutive calendar days) with TRADING-DAY (10/40) performance ===
+def _series(symbol: str, start: str, end: Optional[str] = None):
+    if yf is None: return []
+    try:
+        hist = yf.Ticker(symbol).history(start=start, end=end or None, auto_adjust=False)
+        if hist is None or hist.empty: return []
+        return [(ts.date().isoformat(), float(c)) for ts,c in hist["Close"].items() if float(c)>0]
+    except Exception:
+        return []
+
+def _idx_on_or_after(dates: List[str], d0: str) -> Optional[int]:
+    if d0 in dates: return dates.index(d0)
+    for i,d in enumerate(dates):
+        if d > d0: return i
+    return None
+
+
 def compute_historical_streaks(min_len: int = 2):
     """
     Returns a list of historical streak summaries:
@@ -179,6 +194,8 @@ def record_today_from_finviz(tickers: List[str], today: Optional[str] = None):
         if key in seen:
             continue
         price = _last_close(sym, today)
+        if (price is None) or (price < MIN_GAPUP_PRICE):
+            continue
         rows.append({
             "date": today, "symbol": sym, "price": f"{price:.6f}" if price else "",
             "next_day_price":"", "next_day_pct":"",
@@ -190,20 +207,6 @@ def record_today_from_finviz(tickers: List[str], today: Optional[str] = None):
         seen.add(key)
     _write_rows(rows)
 
-def _series(symbol: str, start: str, end: Optional[str] = None):
-    if yf is None: return []
-    try:
-        hist = yf.Ticker(symbol).history(start=start, end=end or None, auto_adjust=False)
-        if hist is None or hist.empty: return []
-        return [(ts.date().isoformat(), float(c)) for ts,c in hist["Close"].items() if float(c)>0]
-    except Exception:
-        return []
-
-def _idx_on_or_after(dates: List[str], d0: str) -> Optional[int]:
-    if d0 in dates: return dates.index(d0)
-    for i,d in enumerate(dates):
-        if d > d0: return i
-    return None
 
 def backfill_outcomes():
     """Compute T+1, T+5, T+21 outcomes and SPY market context. Also recompute streaks."""
@@ -248,26 +251,30 @@ def backfill_outcomes():
     by_sym: Dict[str, List[str]] = {}
     for r in rows:
         by_sym.setdefault(r["symbol"], []).append(r["date"])
+
     for sym, dates in by_sym.items():
-        dates.sort(reverse=True)
-        # compute streaks descending
-        prev = None; cnt = 0
+        # compute streaks in chronological order so the most recent day has the highest count
+        dates.sort()  # ascending YYYY-MM-DD
+        prev = None
+        cnt = 0
         streak_map = {}
+
         for d in dates:
             if prev is None:
                 cnt = 1
             else:
-                # if today's date is exactly previous -1 day (calendar), increment; else reset
-                dd = datetime.fromisoformat(prev).date() - timedelta(days=1)
+                # if current date is exactly previous + 1 day (calendar), increment; else reset
+                dd = datetime.fromisoformat(prev).date() + timedelta(days=1)
                 if d == dd.isoformat():
                     cnt += 1
                 else:
                     cnt = 1
             streak_map[d] = cnt
             prev = d
+
         # assign back
         for r in rows:
-            if r["symbol"]==sym:
+            if r["symbol"] == sym:
                 r["streak"] = str(streak_map.get(r["date"], 1))
     _write_rows(rows)
 

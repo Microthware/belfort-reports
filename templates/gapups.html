@@ -10,6 +10,7 @@
       --row-h: 42px;   /* approx row height */
       --head-h: 44px;  /* header height */
       --tbl-h: calc(var(--head-h) + 20 * var(--row-h)); /* visible rows height */
+      --tbl-8: calc(var(--head-h) + 8 * var(--row-h)); /* visible rows height */
     }
     html,body{background:var(--bg);color:var(--text);margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
     .wrap{max-width:1200px;margin:28px auto;padding:0 16px}
@@ -69,6 +70,32 @@
       background: var(--card);
       box-shadow: 0 1px 0 0 var(--border) inset;
     }
+
+    .table-scroll-8{
+      position: relative;           /* sticky context */
+      max-height:var(--tbl-8);
+      overflow:auto;
+      border-radius:10px;
+      /* Firefox scrollbar */
+      scrollbar-width: thin;
+      scrollbar-color:#2b3a4d #0f141b; /* thumb, track */
+    }
+    /* WebKit (Chrome/Edge/Safari) scrollbar */
+    .table-scroll-8::-webkit-scrollbar{ width:8px;height:8px; }
+    .table-scroll-8::-webkit-scrollbar::-webkit-scrollbar-track{ background:#0f141b;border-radius:10px; }
+    .table-scroll-8::-webkit-scrollbar-thumb{
+      background-color:#2b3a4d;border-radius:10px;border:2px solid #0f141b;
+    }
+    .table-scroll-8::-webkit-scrollbar-thumb:hover{ background-color:#3b4f69; }
+
+    /* Sticky header stays opaque above rows */
+    .table-scroll-8 thead th{
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: var(--card);
+      box-shadow: 0 1px 0 0 var(--border) inset;
+    }
   </style>
 </head>
 <body>
@@ -83,20 +110,22 @@
 
     <!-- Historical consecutive-day streaks -->
     <section class="card" style="margin-bottom:14px">
-      <div class="section-title">Historical Consecutive-Day Streaks (≥2 days)</div>
-      <table id="streaks">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Streak</th>
-            <th>Change since streak start</th>
-            <th>Change after 10 trading days</th>
-            <th>Change after 40 trading days</th>
-            <th>Streak start</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="table-scroll-8">
+        <div class="section-title">Historical Consecutive-Day Streaks (≥2 days)</div>
+        <table id="streaks">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Streak</th>
+              <th>Change since streak start</th>
+              <th>Change after 10 trading days</th>
+              <th>Change after 40 trading days</th>
+              <th>Streak start</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </section>
 
     <!-- Per-day table (scrollable) -->

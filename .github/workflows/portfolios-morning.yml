@@ -67,28 +67,28 @@ jobs:
             echo "::error ::report/portfolios.html not found after dispatcher run"; exit 1
           fi
 
-      
       - name: Extract portfolios SECTIONS for overview
         shell: bash
         run: |
           python - << 'PY'
-import re, json, os, io, sys
-docs_pf = os.path.join('docs','portfolios.html')
-os.makedirs('history', exist_ok=True)
-out = os.path.join('history','portfolios_sections.json')
-data = []
-if os.path.exists(docs_pf):
-    html = open(docs_pf,'r',encoding='utf-8').read()
-    m = re.search(r"const\s+SECTIONS\s*=\s*(\[.*?\]);", html, re.S)
-    if m:
-        try:
-            data = json.loads(m.group(1))
-        except Exception as e:
-            print("parse error:", e, file=sys.stderr)
-open(out,'w',encoding='utf-8').write(json.dumps(data, indent=2))
-print("wrote", out, "items:", len(data))
-PY
-- name: Commit and push changes
+          import re, json, os, io, sys
+          docs_pf = os.path.join('docs','portfolios.html')
+          os.makedirs('history', exist_ok=True)
+          out = os.path.join('history','portfolios_sections.json')
+          data = []
+          if os.path.exists(docs_pf):
+              html = open(docs_pf,'r',encoding='utf-8').read()
+              m = re.search(r"const\s+SECTIONS\s*=\s*(\[.*?\]);", html, re.S)
+              if m:
+                  try:
+                      data = json.loads(m.group(1))
+                  except Exception as e:
+                      print("parse error:", e, file=sys.stderr)
+          open(out,'w',encoding='utf-8').write(json.dumps(data, indent=2))
+          print("wrote", out, "items:", len(data))
+          PY
+
+      - name: Commit and push changes
         shell: bash
         run: |
           BRANCH="${{ github.ref_name }}"

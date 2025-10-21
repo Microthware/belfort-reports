@@ -13,6 +13,7 @@ import yfinance as yf
 HISTORY_DIR = Path("history")
 HISTORY_DIR.mkdir(parents=True, exist_ok=True)
 LOGO_CACHE_PATH = HISTORY_DIR / "logo_overrides.json"
+_HP_STOCKS_CSV = HISTORY_DIR / "hp-stocks.csv"
 CSV_HEADERS = [
     "published_date", "traded_date", "issuer", "ticker", "type", "size_range",
     "price", "shares", "pdf_url", "detail_url", "since_trade_pct", "since_trade_spy_pct"
@@ -27,15 +28,15 @@ class PortfolioSpec:
 
 PORTFOLIOS: List[PortfolioSpec] = [
     PortfolioSpec(slug="pelosi", name="Nancy Pelosi", source="capitoltrades", identifier="P000197"),
-    # PortfolioSpec(slug="vance", name="J. D. Vance", source="disclosure", identifier="V000137"),
-    PortfolioSpec(slug="tuberville", name="Tommy Tuberville", source="capitoltrades", identifier="T000278"),
-    PortfolioSpec(slug="mccaul", name="Michael McCaul", source="capitoltrades", identifier="M001157"),
-    PortfolioSpec(slug="gottheimer", name="Josh Gottheimer", source="capitoltrades", identifier="G000583"),
-    PortfolioSpec(slug="mark-green", name="Mark E. Green", source="capitoltrades", identifier="G000590"),
-    PortfolioSpec(slug="blumenthal", name="Richard Blumenthal", source="capitoltrades", identifier="B001277"),
-    PortfolioSpec(slug="hern", name="Kevin Hern", source="capitoltrades", identifier="H001082"),
-    PortfolioSpec(slug="john-james", name="John James", source="capitoltrades", identifier="J000307"),
+    # PortfolioSpec(slug="tuberville", name="Tommy Tuberville", source="capitoltrades", identifier="T000278"),
+    # PortfolioSpec(slug="mccaul", name="Michael McCaul", source="capitoltrades", identifier="M001157"),
+    # PortfolioSpec(slug="gottheimer", name="Josh Gottheimer", source="capitoltrades", identifier="G000583"),
+    # PortfolioSpec(slug="hern", name="Kevin Hern", source="capitoltrades", identifier="H001082"),
 ]
+    # PortfolioSpec(slug="vance", name="J. D. Vance", source="disclosure", identifier="V000137"),
+    # PortfolioSpec(slug="mark-green", name="Mark E. Green", source="capitoltrades", identifier="G000590"),
+    # PortfolioSpec(slug="blumenthal", name="Richard Blumenthal", source="capitoltrades", identifier="B001277"),
+    # PortfolioSpec(slug="john-james", name="John James", source="capitoltrades", identifier="J000307"),
 
 _DISCLOSURE_SOURCES = {
     "vance": [
@@ -545,6 +546,124 @@ def _apply_seed_holdings(slug: str, derived: List[Dict[str, object]]) -> List[Di
         return out
 
     return derived or []
+
+def _hp_read_rows():
+    p = _HP_STOCKS_CSV
+    if not p.exists():
+        return []
+    out = []
+    import csv as _csv
+    with p.open("r", encoding="utf-8") as f:
+        r = _csv.DictReader(f)
+        for row in r:
+            out.append({
+                "date": (row.get("date") or "").strip(),
+                "symbol": (row.get("symbol") or "").strip().upper(),
+                "PNL": (row.get("PNL") or "").strip(),
+                "gap ups": (row.get("gap ups") or "").strip(),
+                "info": (row.get("info") or "").strip(),
+            })
+    return out
+
+def _hp_write_rows(rows):
+    p = _HP_STOCKS_CSV
+    p.parent.mkdir(parents=True, exist_ok=True)
+    import csv as _csv
+    headers = ["date","symbol","PNL","gap ups","info"]
+    with p.open("w", newline="", encoding="utf-8") as f:
+        w = _csv.DictWriter(f, fieldnames=headers, extrasaction="ignore")
+        w.writeheader()
+        for r in rows:
+            w.writerow({
+                "date": r.get("date",""),
+                "symbol": r.get("symbol",""),
+                "PNL": r.get("PNL",""),
+                "gap ups": r.get("gap ups",""),
+                "info": r.get("info",""),
+            })
+
+def _hp_parse_date(s: str) -> str | None:
+    if not s: return None
+    s = s.strip()
+    from datetime import datetime as _dt
+    for fmt in ("%Y-%m-%d","%m/%d/%Y","%m/%d/%y","%b %d, %Y","%B %d, %Y"):
+        try:
+            return _dt.strptime(s, fmt).date().isoformat()
+        except Exception:
+            pass
+    return None
+
+def _hp_yf_symbol(sym: str) -> str:
+    s = (sym or "").upper().strip()
+    if s == "BTC": return "BTC-USD"
+    return s
+
+def _hp_price_on_or_after(sym: str, iso_date: str) -> float | None:
+    try:
+        import yfinance as _yf
+        df = _yf.Ticker(sym).history(start=iso_date, end=None, auto_adjust=False)
+        if df is None or df.empty:
+            return None
+        for _, row in df.iterrows():
+            c = float(row.get("Close") or 0)
+            if c > 0: return c
+    except Exception:
+        pass
+    return None
+
+def _hp_last_close(sym: str) -> float | None:
+    try:
+        import yfinance as _yf
+        df = _yf.Ticker(sym).history(period="5d", auto_adjust=False)
+        if df is None or df.empty: return None
+        v = float(df["Close"].iloc[-1])
+        return v if v > 0 else None
+    except Exception:
+        return None
+
+def load_hp_csv_for_render() -> list[dict]:
+    """Return rows enriched with prices/pnl for templates; does not modify the CSV.
+       Output: [{symbol,date,entry_price,current_price,pnl_float,pnl_text,gap_ups,info,logo_url}]
+    """
+    raw = _hp_read_rows()
+    if not raw: return []
+    symbols = sorted({r["symbol"] for r in raw if r["symbol"]})
+    price_cache = {s: _hp_last_close(_hp_yf_symbol(s)) for s in symbols}
+    out = []
+    for r in raw:
+        sym = r["symbol"]
+        d_iso = _hp_parse_date(r["date"])
+        entry = _hp_price_on_or_after(_hp_yf_symbol(sym), d_iso) if d_iso else None
+        cur = price_cache.get(sym)
+        pnl = (cur/entry - 1.0) if (entry and cur) else None
+        pnl_text = (f"{pnl*100:.2f}%" if pnl is not None else "—")
+        out.append({
+            "symbol": sym,
+            "date": r["date"],
+            "entry_price": entry,
+            "current_price": cur,
+            "pnl_float": pnl,
+            "pnl_text": pnl_text,
+            "gap_ups": r.get("gap ups",""),
+            "info": r.get("info",""),
+            "logo_url": _logo_for(sym),
+        })
+    return out
+
+def update_hp_csv_pnl():
+    """Recompute PNL from 'date' to latest close and write back into the PNL column (as '%')."""
+    rows = _hp_read_rows()
+    if not rows: return
+    symbols = sorted({r["symbol"] for r in rows if r["symbol"]})
+    price_cache = {s: _hp_last_close(_hp_yf_symbol(s)) for s in symbols}
+    for r in rows:
+        sym = r["symbol"]
+        d_iso = _hp_parse_date(r["date"])
+        entry = _hp_price_on_or_after(_hp_yf_symbol(sym), d_iso) if d_iso else None
+        cur = price_cache.get(sym)
+        pnl = (cur/entry - 1.0) if (entry and cur) else None
+        r["PNL"] = (f"{pnl*100:.2f}%" if pnl is not None else (r.get("PNL") or ""))
+    _hp_write_rows(rows)
 
 def load_sections_for_render() -> List[Dict[str, object]]:
     out: List[Dict[str, object]] = []

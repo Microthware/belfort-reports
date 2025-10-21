@@ -14,7 +14,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 from gapups_tracker import record_today_from_finviz, backfill_outcomes, load_rows_for_render, compute_historical_streaks
-from portfolios_tracker import fetch_and_update_all as port_fetch, compute_returns_all as port_compute, load_sections_for_render as port_sections
+from portfolios_tracker import fetch_and_update_all as port_fetch, compute_returns_all as port_compute, load_sections_for_render as port_sections, load_hp_csv_for_render as hp_csv_for_render, update_hp_csv_pnl as hp_csv_update_pnl
 import stock as stockmod
 
 # === Run-mode argument parsing (CLI only) ===
@@ -874,6 +874,10 @@ def _render_overview(env, bots_rows: List[Dict[str, Any]], sections_override: li
     avg_win_rate = (
         sum((r.get("win_rate_num") or 0.0) for r in state_bots)/len(state_bots) if state_bots else 0.0
     )
+    try:
+        _hp_list = hp_csv_for_render()
+    except Exception:
+        _hp_list = []
     html = tpl.render(
         gen_time=gen_time,
         tz=TZ,
@@ -881,7 +885,8 @@ def _render_overview(env, bots_rows: List[Dict[str, Any]], sections_override: li
         total_trades=total_trades,
         avg_win_rate=f"{avg_win_rate*100:.2f}%",
         sections_json=json.dumps(state_sections, separators=(",",":")),
-        gapups_today_json=json.dumps(gapups_today or [], separators=(",",":"))
+        gapups_today_json=json.dumps(gapups_today or [], separators=(",",":")),
+        hp_stocks_json=json.dumps(_hp_list or [], separators=(",",":")),
     )
     open(os.path.join(REPORT_DIR,"overview.html"),"w",encoding="utf-8").write(html)
     if os.getenv("AUTO_PUBLISH_DOCS","0") == "1":
@@ -987,6 +992,10 @@ def _render_portfolios(env):
     try:
         port_fetch(max_pages=3)
         port_compute()
+        try:
+            hp_csv_update_pnl()
+        except Exception as _e:
+            pass
     except Exception as e:
         if DEBUG: print("[portfolios] fetch/compute error:", repr(e))
     try:
@@ -995,7 +1004,7 @@ def _render_portfolios(env):
         if DEBUG: print("[portfolios] missing template:", repr(e))
         return None
     sections = port_sections()
-    html = tpl.render(gen_time=time.strftime("%m/%d/%y %H:%M"), sections=sections, sections_json=json.dumps(sections, separators=(",",":")))
+    html = tpl.render(gen_time=time.strftime("%m/%d/%y %H:%M"), sections=sections, sections_json=json.dumps(sections, separators=(",",":")), hp_stocks=hp_csv_for_render())
     out = os.path.join(REPORT_DIR, "portfolios.html")
     open(out, "w", encoding="utf-8").write(html)
     if DEBUG: print("[portfolios] rendered ->", out)
@@ -1195,6 +1204,7 @@ def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUP
         return fn(*a, **kw) if callable(fn) else None
 
     if RUN_ONLY:
+        _secs = None  # safe default so sections_override may be None
         if ("gapups" in RUN_ONLY) and (not RUN_SKIP_GAPUPS):
             _maybe_call("_run_gapups_section", env, buckets) or (_render_gapups(env))
         if ("portfolios" in RUN_ONLY) and (not RUN_SKIP_PORTFOLIOS):
@@ -1203,11 +1213,13 @@ def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUP
                 _secs = port_sections()
             except Exception:
                 _secs = []
+        _GAPUPS_TODAY_DATA = _get_gapups_today_ohlc(max_days=14)  # <- recompute AFTER any CSV updates
         _render_overview(env, bots_rows=[], sections_override=_secs, gapups_today=_GAPUPS_TODAY_DATA)
         return
 
     if RUN_GAPUPS_ONLY and not RUN_SKIP_GAPUPS:
         _maybe_call("_run_gapups_section", env, buckets) or (_render_gapups(env))
+        _GAPUPS_TODAY_DATA = _get_gapups_today_ohlc(max_days=14)
         _render_overview(env, bots_rows=[], gapups_today=_GAPUPS_TODAY_DATA)
         return
 
@@ -1383,6 +1395,7 @@ def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUP
             "link": page,
         })
 
+    _GAPUPS_TODAY_DATA = _get_gapups_today_ohlc(max_days=14)
     _render_overview(env, bots_rows, gapups_today=_GAPUPS_TODAY_DATA)
     try:
         secs = _load_portfolio_sections_from_file()

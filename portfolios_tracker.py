@@ -28,10 +28,10 @@ class PortfolioSpec:
 
 PORTFOLIOS: List[PortfolioSpec] = [
     PortfolioSpec(slug="pelosi", name="Nancy Pelosi", source="capitoltrades", identifier="P000197"),
-    # PortfolioSpec(slug="tuberville", name="Tommy Tuberville", source="capitoltrades", identifier="T000278"),
-    # PortfolioSpec(slug="mccaul", name="Michael McCaul", source="capitoltrades", identifier="M001157"),
-    # PortfolioSpec(slug="gottheimer", name="Josh Gottheimer", source="capitoltrades", identifier="G000583"),
-    # PortfolioSpec(slug="hern", name="Kevin Hern", source="capitoltrades", identifier="H001082"),
+    PortfolioSpec(slug="tuberville", name="Tommy Tuberville", source="capitoltrades", identifier="T000278"),
+    PortfolioSpec(slug="mccaul", name="Michael McCaul", source="capitoltrades", identifier="M001157"),
+    PortfolioSpec(slug="gottheimer", name="Josh Gottheimer", source="capitoltrades", identifier="G000583"),
+    PortfolioSpec(slug="hern", name="Kevin Hern", source="capitoltrades", identifier="H001082"),
 ]
     # PortfolioSpec(slug="vance", name="J. D. Vance", source="disclosure", identifier="V000137"),
     # PortfolioSpec(slug="mark-green", name="Mark E. Green", source="capitoltrades", identifier="G000590"),

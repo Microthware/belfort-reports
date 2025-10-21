@@ -1,4 +1,4 @@
-name: Update Report (5pm, Mon–Fri)
+name: Update Bots (5pm, Mon–Fri)
 
 on:
   schedule:
@@ -14,9 +14,6 @@ jobs:
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}   # <-- mapped from Actions secrets
       LOCAL_TZ: America/New_York
-      CONSOLIDATE_HISTORY: '1'
-      DISABLE_SYNTH_HOLD: '1'
-      USE_SCAN: '1'
 
     steps:
       - name: "Gate: only continue if it's 5pm in New York (manual runs always proceed)"
@@ -74,19 +71,15 @@ jobs:
       - name: Run dispatcher
         if: steps.gate.outputs.run == 'yes'
         run: |
-          python dispatcher.py
+          python dispatcher.py --bots-only
 
       - name: Publish report to docs/
         if: steps.gate.outputs.run == 'yes'
         shell: bash
         run: |
           mkdir -p docs
-          if command -v rsync >/dev/null 2>&1; then
-            rsync -av --delete report/ docs/
-          else
-            rm -rf docs/*
-            cp -R report/* docs/
-            cp -f docs/overview.html docs/index.html
+          cp -R report/* docs/
+          cp -f docs/overview.html docs/index.html
           fi
           touch docs/.nojekyll
 
@@ -97,7 +90,7 @@ jobs:
         run: |
           git config user.email "actions@github.com"
           git config user.name "github-actions"
-          git add docs history report || true
+          git add docs history || true
           if [ -n "$(git status --porcelain)" ]; then
             git commit -m "Auto: report & history $(TZ=UTC date +'%Y-%m-%d %H:%M:%S')"
             git push

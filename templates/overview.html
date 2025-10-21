@@ -118,6 +118,35 @@
   letter-spacing:.2px;
 }
 </style>
+<style>
+  .hpmini-card{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:12px;padding:10px;display:flex;flex-direction:column}
+  .hpmini-title{font-weight:400;margin-bottom:6px;color:#cfe1f7;font-size: small;}
+  .hpmini-wrap{
+    max-height:240px;
+    overflow:auto;
+    border:1px solid var(--border);
+    border-radius:8px;
+
+    /* thin, black scrollbars */
+    scrollbar-width: thin;                 /* Firefox */
+    scrollbar-color: #000 transparent;     /* thumb | track */
+  }
+  .hpmini-wrap::-webkit-scrollbar{
+    width:4px;                              /* Chrome/Edge/Safari */
+  }
+  .hpmini-wrap::-webkit-scrollbar-track{
+    background: transparent;
+  }
+  .hpmini-wrap::-webkit-scrollbar-thumb{
+    background:#000;
+    border-radius:8px;
+  }
+  .hpmini-wrap table{width:100%;border-collapse:collapse}
+  .hpmini-wrap thead th{position:sticky;top:0;background:rgb(26, 26, 26);color:var(--muted);font-size:12px}
+  .hpmini-wrap th, .hpmini-wrap td{padding:8px 8px;border-bottom:1px solid var(--border);font-size:12px;white-space:nowrap}
+  .hpmini-pct.up{color:#16a34a;font-weight:600}
+  .hpmini-pct.down{color:#dc2626;font-weight:600}
+</style>
 
 </head>
 <body>
@@ -540,6 +569,43 @@
       window.location.href = 'portfolios.html';
     });
   })();
+})();
+</script>
+<script>
+(function(){
+  const DATA = (function(){ try { return {{ hp_stocks_json | default('[]') | safe }}; } catch(e){ return []; } })();
+  if(!DATA || !DATA.length) return;
+
+  function buildHpCard(){
+    const card = document.createElement('div'); card.className='hpmini-card';
+    const title = document.createElement('div'); title.className='hpmini-title'; title.textContent='High-Profile Stocks';
+    const wrap = document.createElement('div'); wrap.className='hpmini-wrap';
+    wrap.innerHTML = `<table>
+      <thead><tr><th>Symbol</th><th>Date</th><th>Entry</th><th>Now</th><th>PNL</th><th>Gap Ups</th><th>Info</th></tr></thead>
+      <tbody>
+        ${DATA.map(r=>{
+          const ep = (r.entry_price!=null)?('$'+Number(r.entry_price).toFixed(2)):'—';
+          const cp = (r.current_price!=null)?('$'+Number(r.current_price).toFixed(2)):'—';
+          const logo = r.logo_url ? `<img src="${r.logo_url}" style="width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:6px">` : '';
+          const pnl = (r.pnl_float!=null)?`<span class="${r.pnl_float>=0?'hpmini-pct up':'hpmini-pct down'}">${(r.pnl_float*100).toFixed(2)}%</span>`:'—';
+          return `<tr>
+            <td>${logo}<strong>${r.symbol||'?'}</strong></td>
+            <td>${r.date||''}</td>
+            <td>${ep}</td>
+            <td>${cp}</td>
+            <td>${pnl}</td>
+            <td>${r.gap_ups||''}</td>
+            <td>${r.info||''}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+    card.appendChild(title); card.appendChild(wrap);
+    return card;
+  }
+
+  const host = document.getElementById('mini-portfolios');
+  if (host) { host.prepend(buildHpCard()); }
 })();
 </script>
 

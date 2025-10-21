@@ -79,6 +79,46 @@
       <div class="updated">Updated {{ gen_time }}</div>
     </header>
 
+    {% if hp_stocks %}
+    <section class="card" style="margin-bottom:14px">
+      <div class="section-heading">High-Profile Stocks (Manual CSV)</div>
+      <div style="max-height:420px; overflow:auto; border:1px solid var(--border); border-radius:10px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Date</th>
+              <th>Entry</th>
+              <th>Current</th>
+              <th>PNL</th>
+              <th>Gap Ups</th>
+              <th>Info</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in hp_stocks %}
+            <tr>
+              <td><img src="{{ r.logo_url }}" alt="" style="width:16px;height:16px;border-radius:50%;vertical-align:-3px;margin-right:6px"><strong>{{ r.symbol }}</strong></td>
+              <td class="muted">{{ r.date }}</td>
+              <td>{{ ('$' ~ ('%.2f'|format(r.entry_price))) if r.entry_price else '—' }}</td>
+              <td>{{ ('$' ~ ('%.2f'|format(r.current_price))) if r.current_price else '—' }}</td>
+              <td>
+                {% if r.pnl_float is not none %}
+                  {% set p = r.pnl_float %}
+                  <span class="{{ 'pct up' if p >= 0 else 'pct down' }}">{{ ('%.2f'|format(p*100)) }}%</span>
+                {% else %}—{% endif %}
+              </td>
+              <td>{{ r.gap_ups }}</td>
+              <td class="muted">{{ r.info }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="muted" style="margin-top:6px">Source: <code>history/hp-stocks.csv</code>. PNL refreshes when the portfolios job runs.</div>
+    </section>
+    {% endif %}
+
     <section class="card">
       {% for sec in sections %}
       <details {{ 'open' if loop.first else '' }}>

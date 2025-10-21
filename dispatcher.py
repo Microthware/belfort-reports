@@ -19,21 +19,15 @@ import stock as stockmod
 
 # === Run-mode argument parsing (CLI only) ===
 _ap = argparse.ArgumentParser(add_help=False)
-_ap.add_argument("--only", type=str, help="Comma list of sections to run, e.g. gapups,portfolios")
 _ap.add_argument("--gapups-only", action="store_true")
 _ap.add_argument("--portfolios-only", action="store_true")
+_ap.add_argument("--bots-only", action="store_true")
 _ap.add_argument("--all", action="store_true", help="Explicitly run everything (same as no flags)")
-_ap.add_argument("--skip-gapups", action="store_true")
-_ap.add_argument("--skip-portfolios", action="store_true")
 _ARGS, _ = _ap.parse_known_args()
-
-RUN_ONLY = [s.strip().lower() for s in (_ARGS.only.split(",") if _ARGS.only else []) if s.strip()]
 RUN_GAPUPS_ONLY = bool(_ARGS.gapups_only)
 RUN_PORTFOLIOS_ONLY = bool(_ARGS.portfolios_only)
+RUN_BOTS_ONLY = bool(_ARGS.bots_only)
 RUN_ALL = bool(_ARGS.all)
-RUN_SKIP_GAPUPS = bool(_ARGS.skip_gapups)
-RUN_SKIP_PORTFOLIOS = bool(_ARGS.skip_portfolios)
-
 
 # Debug & runtime flags
 DEBUG = True
@@ -435,6 +429,7 @@ def _compute_fifo_stats(trades: List[Trade]) -> Dict[str, float]:
         "closed_sells": closed,
     }
 
+
 # ------------------------------------------------------------------
 # Today's Gap-Ups (symbols + 14-day OHLC for mini charts on Overview)
 # ------------------------------------------------------------------
@@ -443,12 +438,7 @@ def _get_gapups_today_ohlc(max_days: int = 14) -> list[dict]:
     Return: [{"symbol": "ABC", "series":[{"d":"YYYY-MM-DD","o":..,"h":..,"l":..,"c":..}, ...]}]
     Using the latest date found in gapups-history.csv (via load_rows_for_render()).
     """
-    try:
-        rows = load_rows_for_render()
-    except Exception:
-        rows = []
-    if not rows:
-        return []
+    rows = load_rows_for_render()
 
     # Latest date present in history (covers morning/afternoon jobs)
     dates = [r.get("date") for r in rows if r.get("date")]
@@ -469,7 +459,6 @@ def _get_gapups_today_ohlc(max_days: int = 14) -> list[dict]:
                     streak_for[s] = 1
                 if s not in seen:
                     seen.add(s); syms.append(s)
-
 
     out = []
     if not syms or yf is None:
@@ -506,7 +495,8 @@ def _validate_trades_budget_with_state(
     trades: List[Trade],
     init_cash: float,
     init_lots: Dict[str, List[Dict[str, float]]],
-    prices_today: Dict[str,float]
+    prices_today: Dict[str,float],
+    carry_last_px: Optional[Dict[str, float]] = None
 ) -> List[str]:
     issues: List[str] = []
     EPS_BAL = 0.015  # 1.5% tolerance for balance_after checks
@@ -514,7 +504,7 @@ def _validate_trades_budget_with_state(
     chron = sorted(trades, key=lambda x: x.time or "")
     cash = float(init_cash or 0.0)
     lots: Dict[str, List[Dict[str, float]]] = copy.deepcopy(init_lots)  # deep copy; don't mutate input
-    last_px: Dict[str, float] = {}
+    last_px: Dict[str, float] = dict(carry_last_px or {})
 
     def port_value() -> float:
         total = cash
@@ -577,7 +567,6 @@ def _validate_trades_budget_with_state(
                 ba = float(t.balance_after or 0.0)
                 if abs(ba - est) / est > EPS_BAL:
                     issues.append(f"{t.time} balance_after ${ba:,.2f} != estimated ${est:,.2f} (>{int(EPS_BAL*100)}% diff).")
-
     return issues
 
 # Backwards-compatible wrapper (no prior state)
@@ -597,6 +586,7 @@ def _build_correction_prompt(original_full_prompt: str, previous_json_text: str,
         lines.append(f"- {it}")
     lines.append("\nRe-output STRICT JSON ONLY (no commentary, no code fences), obeying all budget/share rules, NEVER exceeding available cash, NEVER selling more than held, and including 'balance_after' after EVERY action.")
     return "\n".join(lines)
+
 
 # ------------------------------------------------------------------
 # Candidates (stock.py preferred; Finviz + leaders fallback)
@@ -682,6 +672,7 @@ def _format_candidates_for_prompt(buckets: Dict[str, List[str]]) -> str:
     lines.append(f"(total candidates: {total})")
     return "\n".join(lines)
 
+
 # ------------------------------------------------------------------
 # Prices
 # ------------------------------------------------------------------
@@ -708,6 +699,7 @@ def _format_prices_for_prompt(prices: Dict[str, float]) -> str:
     if not prices:
         return "(none)"
     return ", ".join(f"{k}={v:.2f}" for k, v in sorted(prices.items()))
+
 
 # ------------------------------------------------------------------
 # Aggregation (consolidated-aware)
@@ -838,10 +830,12 @@ def _slim_sections(sections: list) -> list:
                 hs.append({'ticker': h.get('ticker'), 'weight': 0.0})
         slim.append({'name': name, 'holdings': hs})
     return slim
+
+
 # ------------------------------------------------------------------
 # Rendering
 # ------------------------------------------------------------------
-def _render_overview(env, bots_rows: List[Dict[str, Any]], sections_override: list | None = None, gapups_today: list | None = None):
+def _render_overview(env, bots_rows: List[Dict[str, Any]], sections_override: list | None = None):
     # Load last state so partial jobs don't wipe other sections
     state = _load_overview_state() or {}
     state_bots = state.get("bots") or []
@@ -870,6 +864,7 @@ def _render_overview(env, bots_rows: List[Dict[str, Any]], sections_override: li
     # Render overview from merged state
     tpl = env.get_template("overview.html")
     gen_time = time.strftime("%m/%d/%y %H:%M")
+    gapups_today = _get_gapups_today_ohlc(max_days=14)
     total_trades = sum((r.get("trades") or 0) for r in state_bots)
     avg_win_rate = (
         sum((r.get("win_rate_num") or 0.0) for r in state_bots)/len(state_bots) if state_bots else 0.0
@@ -891,7 +886,6 @@ def _render_overview(env, bots_rows: List[Dict[str, Any]], sections_override: li
     open(os.path.join(REPORT_DIR,"overview.html"),"w",encoding="utf-8").write(html)
     if os.getenv("AUTO_PUBLISH_DOCS","0") == "1":
         _publish_to_docs("overview.html")
-
 
 # Accept file_slug for stable filenames
 def _render_model(env, b: BotDay, stats: Dict[str, Any], prompt_text: str = "", response_text: str = "", file_slug: Optional[str] = None):
@@ -984,7 +978,6 @@ def _render_gapups(env):
     return "gapups.html"
 
 
-
 # ------------------------------------------------------------------
 # Public Portfolios page renderer
 # ------------------------------------------------------------------
@@ -1012,8 +1005,6 @@ def _render_portfolios(env):
         _publish_to_docs("portfolios.html")
     return "portfolios.html"
 
-
-
 def _run_gapups_section(env, buckets):
     try:
         gap_up_tickers = []
@@ -1026,6 +1017,7 @@ def _run_gapups_section(env, buckets):
     except Exception as e:
         if DEBUG: print("[gapups] record/backfill failed:", repr(e))
     _render_gapups(env)
+
 
 # ------------------------------------------------------------------
 # Prompts & querying
@@ -1165,8 +1157,96 @@ def query_model(model_name: str, prompt_text: str) -> str:
         if DEBUG: print("[openai] fallback -> dev sample")
         return dev_sample()
 
+def get_response_for_prompt(slug, fname, prices, buckets, base_prompt, carry_state):
+    
+    candidates_note = _format_candidates_for_prompt(buckets)
+    carry_note = _format_carry_for_prompt(carry_state, prices)
+    yest = _load_yesterday_state(slug)
+    prices_note = _format_prices_for_prompt(prices)
+    full_prompt = _build_prompt(base_prompt, yest, candidates_note, prices_note, carry_note)
+    raw = query_model(fname, full_prompt)
+    # if DEBUG:
+    #     print("[response] length:", len(raw))
+    #     print("[response] head:\n", raw[:800])
 
-def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUPS, RUN_SKIP_PORTFOLIOS):
+    try:
+        data = _parse_ai_json(raw)
+    except Exception as e:
+        if DEBUG:
+            print("[parse] failed:", repr(e))
+            print("[parse] raw snippet:", raw[:2000])
+        data = {"model_name": fname, "universe": [], "starting_balance": yest.get("balance", DEFAULT_START_BAL), "portfolio_analysis": "", "trades": []}
+
+    # Anchor to prompt name
+    latest = _coerce_bot_day(data, yest.get("balance"), canonical_name=fname)
+    if DEBUG:
+        print(f"[parsed] trades={len(latest.trades)} starting_balance={latest.starting_balance}")
+
+    # Validate AGAINST carried state (cash + lots)
+    issues = _validate_trades_budget_with_state(
+        latest.trades,
+        carry_state.get("cash", DEFAULT_START_BAL),
+        carry_state.get("lots", {}),
+        prices,
+        carry_last_px=carry_state.get("last_px", {})
+    )
+    if issues:
+        if DEBUG:
+            print("[validate] issues found:", len(issues))
+            for e in issues[:12]:
+                print("  -", e)
+        correction_prompt = _build_correction_prompt(full_prompt, raw, issues, carry_note=carry_note)
+        raw2 = query_model(fname, correction_prompt)
+        try:
+            data2 = _parse_ai_json(raw2)
+            latest2 = _coerce_bot_day(data2, yest.get("balance"), canonical_name=fname)
+            issues2 = _validate_trades_budget_with_state(
+                latest2.trades,
+                carry_state.get("cash", DEFAULT_START_BAL),
+                carry_state.get("lots", {}),
+                prices,
+                carry_last_px=carry_state.get("last_px", {})
+            )
+            if not issues2 and len(latest2.trades) > 0:
+                if DEBUG: print("[validate] correction succeeded")
+                latest = latest2
+                raw = raw2
+            else:
+                if DEBUG:
+                    print("[validate] correction still invalid; keeping original (unmodified).")
+        except Exception as e:
+            if DEBUG: print("[validate] correction parse failed:", repr(e))
+
+    # Retry once if empty
+    if len(latest.trades) == 0:
+        retry_prompt = full_prompt + " IMPORTANT: Your previous response contained no trades. Use PRICES_TODAY and CURRENT_PORTFOLIO_STATE to produce 1–4 justified actions without exceeding AVAILABLE_CASH_USD, and include 'balance_after'. If you must hold, emit a single HOLD with 'balance_after'."
+        raw2 = query_model(fname, retry_prompt)
+        try:
+            data2 = _parse_ai_json(raw2)
+            latest2 = _coerce_bot_day(data2, yest.get("balance"), canonical_name=fname)
+            if len(latest2.trades) > 0:
+                if DEBUG: print("[retry] succeeded with trades:", len(latest2.trades))
+                latest = latest2
+                raw = raw2
+                full_prompt = retry_prompt
+            else:
+                if DEBUG: print("[retry] still no trades")
+        except Exception as e:
+            if DEBUG: print("[retry] parse failed:", repr(e))
+
+    # Optional synthetic HOLD
+    if len(latest.trades) == 0 and not DISABLE_SYNTH_HOLD:
+        now = datetime.utcnow().isoformat() + "Z"
+        if DEBUG:
+            print("[synth] injecting HOLD at", now)
+        synth = Trade(time=now, symbol="CASH", side="hold", qty=0.0, price=0.0, pnl_pct=None, balance_after=(latest.starting_balance or 0.0), notes="Auto HOLD: no trades returned; maintaining balance.")
+        latest = BotDay(model_name=latest.model_name, universe=latest.universe, starting_balance=latest.starting_balance, trades=[synth], portfolio_analysis=latest.portfolio_analysis or "No trades — preserving capital.")
+        raw = json.dumps({"model_name": latest.model_name, "universe": latest.universe if latest.universe is not None else "ALL", "starting_balance": latest.starting_balance or 0.0, "portfolio_analysis": latest.portfolio_analysis, "trades": [{
+            "time": now, "symbol": "CASH", "side": "hold", "qty": 0, "price": 0, "pnl_pct": None, "balance_after": latest.starting_balance or 0.0, "notes": "Auto HOLD: no trades returned; maintaining balance."
+        }]}, separators=(",",":"))
+    return raw, latest, full_prompt
+
+def main(RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_BOTS_ONLY, RUN_ALL,):
     load_dotenv()
 
     # Clean report dir
@@ -1182,230 +1262,88 @@ def main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUP
 
     env = Environment(loader=FileSystemLoader(TEMPLATES_DIR), autoescape=select_autoescape(["html"]))
 
-    prompts = _load_prompts()
-    bots_rows = []
-
-    # Scan candidates & prices once per run (toggle with USE_SCAN, default ON)
-    USE_SCAN = os.getenv("USE_SCAN", "1") == "1"
-    buckets = _scan_candidates() if USE_SCAN else {}
-    candidates_note = _format_candidates_for_prompt(buckets)
+    buckets = _scan_candidates()
     uniq: List[str] = sorted({t.upper() for arr in buckets.values() for t in arr})
     prices = _fetch_prices(uniq) if uniq else {}
-    prices_note = _format_prices_for_prompt(prices)
     if DEBUG:
         print("[scan] CANDIDATE buckets:", {k: len(v) for k, v in buckets.items()})
         print("[prices] count:", len(prices))
 
-    _GAPUPS_TODAY_DATA = _get_gapups_today_ohlc(max_days=14)
+    if RUN_GAPUPS_ONLY or RUN_ALL:
+        _run_gapups_section(env, buckets)
+        _render_overview(env, bots_rows=[])
+        if not RUN_ALL:
+            return
 
-    # ---------- CLI gating ----------
-    def _maybe_call(name, *a, **kw):
-        fn = globals().get(name)
-        return fn(*a, **kw) if callable(fn) else None
-
-    if RUN_ONLY:
-        _secs = None  # safe default so sections_override may be None
-        if ("gapups" in RUN_ONLY) and (not RUN_SKIP_GAPUPS):
-            _maybe_call("_run_gapups_section", env, buckets) or (_render_gapups(env))
-        if ("portfolios" in RUN_ONLY) and (not RUN_SKIP_PORTFOLIOS):
-            _maybe_call("_render_portfolios", env)
-            try:
-                _secs = port_sections()
-            except Exception:
-                _secs = []
-        _GAPUPS_TODAY_DATA = _get_gapups_today_ohlc(max_days=14)  # <- recompute AFTER any CSV updates
-        _render_overview(env, bots_rows=[], sections_override=_secs, gapups_today=_GAPUPS_TODAY_DATA)
-        return
-
-    if RUN_GAPUPS_ONLY and not RUN_SKIP_GAPUPS:
-        _maybe_call("_run_gapups_section", env, buckets) or (_render_gapups(env))
-        _GAPUPS_TODAY_DATA = _get_gapups_today_ohlc(max_days=14)
-        _render_overview(env, bots_rows=[], gapups_today=_GAPUPS_TODAY_DATA)
-        return
-
-    if RUN_PORTFOLIOS_ONLY and not RUN_SKIP_PORTFOLIOS:
-        _maybe_call("_render_portfolios", env)
-        try:
-            _secs = port_sections()
-        except Exception:
-            _secs = []
-        _render_overview(env, bots_rows=[], sections_override=_secs, gapups_today=_GAPUPS_TODAY_DATA)
+    if RUN_PORTFOLIOS_ONLY or RUN_ALL:
+        _render_portfolios(env)
+        _secs = port_sections()
+        _render_overview(env, bots_rows=[], sections_override=_secs)
         if os.getenv("AUTO_PUBLISH_DOCS","0") == "1":
             _publish_to_docs("portfolios.html", "overview.html")
-        try:
-            with open(PORTFOLIO_SECTIONS_JSON, "w", encoding="utf-8") as f:
-                json.dump(_slim_sections(_secs), f, indent=2)
-        except Exception as e:
-            if DEBUG: print("[overview] persist sections failed:", repr(e))
-        return
+        with open(PORTFOLIO_SECTIONS_JSON, "w", encoding="utf-8") as f:
+            json.dump(_slim_sections(_secs), f, indent=2)
+        if not RUN_ALL:
+            return
 
-    # RUN_ALL simply falls through into full pipeline below
+    if RUN_BOTS_ONLY or RUN_ALL:
+        bots_rows = []
+        prompts = _load_prompts()
+        for fname, base_prompt in prompts.items():
+            slug = _slug(fname)
+            carry_state = _reconstruct_portfolio_state(slug, prices)
+            held = sorted({s.upper() for s in (carry_state.get("lots") or {}).keys()})
+            missing = [s for s in held if s not in prices]
+            extra_px = _fetch_prices(missing) if missing else {}
+            prices_bot = {**prices, **(carry_state.get("last_px") or {}), **extra_px}
 
-    # === Gap-Ups & Public Portfolios pages ===
-    try:
-        gap_up_tickers = []
-        if isinstance(buckets, dict):
-            gap_up_tickers = buckets.get("gap_ups", []) or []
-        if gap_up_tickers:
-            if DEBUG: print(f"[gapups] recording {len(gap_up_tickers)} Finviz tickers")
-            record_today_from_finviz(gap_up_tickers)
-        backfill_outcomes()
-    except Exception as e:
-        if DEBUG: print("[gapups] record/backfill failed:", repr(e))
-    _render_gapups(env)
+            raw, latest, full_prompt = get_response_for_prompt(slug, fname, prices_bot, buckets, base_prompt, carry_state)
 
-    # Portfolios page
-    _render_portfolios(env)
+            _save_history(slug, {"prompt": full_prompt, "response": raw}, latest)
 
-    for fname, base_prompt in prompts.items():
-        slug = _slug(fname)
+            agg = _aggregate_history(slug, latest)
+            stats = _compute_fifo_stats(agg.trades) # unified stats (used by both pages)
+            page = _render_model(env, agg, stats, prompt_text=full_prompt, response_text=raw, file_slug=slug)
 
-        # Carry-forward state from history (cash + lots) BEFORE building the prompt
-        carry_state = _reconstruct_portfolio_state(slug, prices)
-        carry_note = _format_carry_for_prompt(carry_state, prices)
+            end_bal = _ending_balance(agg) or 0.0
+            start_bal = agg.starting_balance or 0.0
 
-        yest = _load_yesterday_state(slug)
-        full_prompt = _build_prompt(base_prompt, yest, candidates_note, prices_note, carry_note)
+            if isinstance(agg.universe, list):
+                symbols_text = ", ".join(agg.universe) if agg.universe else "—"
+            elif isinstance(agg.universe, str):
+                symbols_text = agg.universe
+            else:
+                symbols_text = "—"
 
-        if DEBUG:
-            print(f"\n[bot] {fname} | slug={slug} | carry_balance_hint={yest.get('balance')} | last={yest.get('last_time')}")
-            print("[prompt] length:", len(full_prompt))
-            print("[prompt] head:\n", full_prompt[:800])
+            bots_rows.append({
+                "name": fname.replace("-", " ").replace("_", " ").title(),
+                "symbols": symbols_text,
+                "win_rate": f"{stats['win_rate_num']*100:.2f}%",
+                "win_rate_num": stats["win_rate_num"],
+                "avg_win": f"{stats['avg_win_num']*100:.2f}%",
+                "avg_loss": f"{stats['avg_loss_num']*100:.2f}%",
+                "balance": f"${end_bal:,.2f}" if end_bal else "—",
+                "balance_dir": 1 if end_bal >= start_bal else -1,
+                "trades": len(agg.trades),
+                "total_actions": len(agg.trades),
+                "updated": time.strftime("%m/%d/%y %H:%M"),
+                "link": page,
+            })
 
-        raw = query_model(fname, full_prompt)
-
-        if DEBUG:
-            print("[response] length:", len(raw))
-            print("[response] head:\n", raw[:800])
-
-        try:
-            data = _parse_ai_json(raw)
-        except Exception as e:
-            if DEBUG:
-                print("[parse] failed:", repr(e))
-                print("[parse] raw snippet:", raw[:2000])
-            data = {"model_name": fname, "universe": [], "starting_balance": yest.get("balance", DEFAULT_START_BAL), "portfolio_analysis": "", "trades": []}
-
-        # Anchor to prompt name
-        latest = _coerce_bot_day(data, yest.get("balance"), canonical_name=fname)
-        if DEBUG:
-            print(f"[parsed] trades={len(latest.trades)} starting_balance={latest.starting_balance}")
-
-        # Validate AGAINST carried state (cash + lots)
-        issues = _validate_trades_budget_with_state(
-            latest.trades,
-            carry_state.get("cash", DEFAULT_START_BAL),
-            carry_state.get("lots", {}),
-            prices
-        )
-        if issues:
-            if DEBUG:
-                print("[validate] issues found:", len(issues))
-                for e in issues[:12]:
-                    print("  -", e)
-            correction_prompt = _build_correction_prompt(full_prompt, raw, issues, carry_note=carry_note)
-            raw2 = query_model(fname, correction_prompt)
-            try:
-                data2 = _parse_ai_json(raw2)
-                latest2 = _coerce_bot_day(data2, yest.get("balance"), canonical_name=fname)
-                issues2 = _validate_trades_budget_with_state(
-                    latest2.trades,
-                    carry_state.get("cash", DEFAULT_START_BAL),
-                    carry_state.get("lots", {}),
-                    prices
-                )
-                if not issues2 and len(latest2.trades) > 0:
-                    if DEBUG: print("[validate] correction succeeded")
-                    latest = latest2
-                    raw = raw2
-                else:
-                    if DEBUG:
-                        print("[validate] correction still invalid; keeping original (unmodified).")
-            except Exception as e:
-                if DEBUG: print("[validate] correction parse failed:", repr(e))
-
-        # Retry once if empty
-        if len(latest.trades) == 0:
-            retry_prompt = full_prompt + " IMPORTANT: Your previous response contained no trades. Use PRICES_TODAY and CURRENT_PORTFOLIO_STATE to produce 1–4 justified actions without exceeding AVAILABLE_CASH_USD, and include 'balance_after'. If you must hold, emit a single HOLD with 'balance_after'."
-            raw2 = query_model(fname, retry_prompt)
-            try:
-                data2 = _parse_ai_json(raw2)
-                latest2 = _coerce_bot_day(data2, yest.get("balance"), canonical_name=fname)
-                if len(latest2.trades) > 0:
-                    if DEBUG: print("[retry] succeeded with trades:", len(latest2.trades))
-                    latest = latest2
-                    raw = raw2
-                    full_prompt = retry_prompt
-                else:
-                    if DEBUG: print("[retry] still no trades")
-            except Exception as e:
-                if DEBUG: print("[retry] parse failed:", repr(e))
-
-        # Optional synthetic HOLD
-        if len(latest.trades) == 0 and not DISABLE_SYNTH_HOLD:
-            now = datetime.utcnow().isoformat() + "Z"
-            if DEBUG:
-                print("[synth] injecting HOLD at", now)
-            synth = Trade(time=now, symbol="CASH", side="hold", qty=0.0, price=0.0, pnl_pct=None, balance_after=(latest.starting_balance or 0.0), notes="Auto HOLD: no trades returned; maintaining balance.")
-            latest = BotDay(model_name=latest.model_name, universe=latest.universe, starting_balance=latest.starting_balance, trades=[synth], portfolio_analysis=latest.portfolio_analysis or "No trades — preserving capital.")
-            raw = json.dumps({"model_name": latest.model_name, "universe": latest.universe if latest.universe is not None else "ALL", "starting_balance": latest.starting_balance or 0.0, "portfolio_analysis": latest.portfolio_analysis, "trades": [{
-                "time": now, "symbol": "CASH", "side": "hold", "qty": 0, "price": 0, "pnl_pct": None, "balance_after": latest.starting_balance or 0.0, "notes": "Auto HOLD: no trades returned; maintaining balance."
-            }]}, separators=(",",":"))
-
-        _save_history(slug, {"prompt": full_prompt, "response": raw}, latest)
-
-        # Aggregate full history for display & stats parity across runs
-        agg = _aggregate_history(slug, latest)
-
-        # Pretty display name derived from prompt filename (keep slug stable)
-        pretty_name = fname.replace("-", " ").replace("_", " ").title()
-        agg.model_name = pretty_name
-
-        # unified stats (used by both pages)
-        stats = _compute_fifo_stats(agg.trades)
-
-        # Render model page (stable file name based on prompt slug)
-        page = _render_model(env, agg, stats, prompt_text=full_prompt, response_text=raw, file_slug=slug)
-
-        end_bal = _ending_balance(agg) or 0.0
-        start_bal = agg.starting_balance or 0.0
-
-        if isinstance(agg.universe, list):
-            symbols_text = ", ".join(agg.universe) if agg.universe else "—"
-        elif isinstance(agg.universe, str):
-            symbols_text = agg.universe
+        if RUN_ALL:
+            _render_overview(env, bots_rows, sections_override=_secs)
         else:
-            symbols_text = "—"
-
-        if DEBUG:
-            print(f"[stats] win_rate={stats['win_rate_num']:.2%} avg_win={stats['avg_win_num']:.2%} avg_loss={stats['avg_loss_num']:.2%} end_bal={end_bal:.2f}")
-
-        bots_rows.append({
-            "name": agg.model_name,
-            "symbols": symbols_text,
-            "win_rate": f"{stats['win_rate_num']*100:.2f}%",
-            "win_rate_num": stats["win_rate_num"],
-            "avg_win": f"{stats['avg_win_num']*100:.2f}%",
-            "avg_loss": f"{stats['avg_loss_num']*100:.2f}%",
-            "balance": f"${end_bal:,.2f}" if end_bal else "—",
-            "balance_dir": 1 if end_bal >= start_bal else -1,
-            "trades": len(agg.trades),
-            "total_actions": len(agg.trades),
-            "updated": time.strftime("%m/%d/%y %H:%M"),
-            "link": page,
-        })
-
-    _GAPUPS_TODAY_DATA = _get_gapups_today_ohlc(max_days=14)
-    _render_overview(env, bots_rows, gapups_today=_GAPUPS_TODAY_DATA)
-    try:
-        secs = _load_portfolio_sections_from_file()
-        if secs:
-            with open(PORTFOLIO_SECTIONS_JSON, "w", encoding="utf-8") as f:
-                json.dump(secs, f, indent=2)
-            if DEBUG: print("[overview] wrote", PORTFOLIO_SECTIONS_JSON)
-    except Exception as e:
-        if DEBUG: print("[overview] persist sections failed:", repr(e))
+            _render_overview(env, bots_rows)
+    # ignore this following comment
+    # try:
+    #     secs = _load_portfolio_sections_from_file()
+    #     if secs:
+    #         with open(PORTFOLIO_SECTIONS_JSON, "w", encoding="utf-8") as f:
+    #             json.dump(secs, f, indent=2)
+    #         if DEBUG: print("[overview] wrote", PORTFOLIO_SECTIONS_JSON)
+    # except Exception as e:
+    #     if DEBUG: print("[overview] persist sections failed:", repr(e))
     print("Report generated")
 
 if __name__ == '__main__':
-    main(RUN_ONLY, RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_ALL, RUN_SKIP_GAPUPS, RUN_SKIP_PORTFOLIOS)
+    main(RUN_GAPUPS_ONLY, RUN_PORTFOLIOS_ONLY, RUN_BOTS_ONLY, RUN_ALL)

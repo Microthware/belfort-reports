@@ -2,81 +2,200 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Gap-Up History</title>
+  <title>Gap-Up History & Outcomes</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    :root{--bg:#0b0f14;--card:#11161d;--muted:#9bb1c8;--text:#e8f0fa;--green:#16a34a;--red:#dc2626;--border:#223142;--amber:#f59e0b}
+    :root{
+      --bg:#0b0f14;--card:#11161d;--muted:#9bb1c8;--text:#e8f0fa;--green:#16a34a;--red:#dc2626;--border:#223142;
+      --row-h: 42px;   /* approx row height */
+      --head-h: 44px;  /* header height */
+      --tbl-h: calc(var(--head-h) + 20 * var(--row-h)); /* visible rows height */
+      --tbl-8: calc(var(--head-h) + 8 * var(--row-h)); /* visible rows height */
+    }
     html,body{background:var(--bg);color:var(--text);margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial}
     .wrap{max-width:1200px;margin:28px auto;padding:0 16px}
-    header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:12px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
     h1{font-size:22px;margin:0}
-    .updated{color:var(--muted);font-size:12px}
     .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px}
     table{width:100%;border-collapse:collapse}
-    thead th{text-align:left;font-weight:600;font-size:13px;color:var(--muted);padding:10px 12px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);position:sticky;top:0}
+    thead th{
+      text-align:left;font-weight:600;font-size:13px;color:var(--muted);
+      padding:10px 12px;border-bottom:1px solid var(--border);
+    }
     tbody td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:14px;white-space:nowrap}
     .pct.up{color:var(--green);font-weight:600}
     .pct.down{color:var(--red);font-weight:600}
-    .chips{display:flex;gap:6px;flex-wrap:wrap}
-    .chip{border:1px solid var(--border);border-radius:999px;padding:2px 8px;font-size:12px}
-    .streak{margin-left:8px;border:1px dashed rgba(245,158,11,.4);color:var(--amber);border-radius:999px;padding:1px 6px;font-size:12px}
+    a{color:#9ecbff;text-decoration:none}
+    a:hover{text-decoration:underline}
+    .chip{border:1px solid var(--border);border-radius:999px;padding:1px 8px;font-size:12px;color:var(--muted)}
+    .section-title{font-size:14px;font-weight:700;margin:0 0 8px;letter-spacing:.3px;color:#cfe1f7}
+
+    /* Bottom-right timestamp */
+    .footer-updated{
+      position:fixed;
+      right:12px;
+      bottom:10px;
+      color:var(--muted);
+      font-size:12px;
+      background:rgba(11,15,20,0.7);
+      backdrop-filter:saturate(120%) blur(4px);
+      border:1px solid var(--border);
+      border-radius:8px;
+      padding:4px 8px;
+    }
+
+    /* Scroll container for the per-day history table */
+    .table-scroll-20{
+      position: relative;           /* sticky context */
+      max-height:var(--tbl-h);
+      overflow:auto;
+      border-radius:10px;
+      /* Firefox scrollbar */
+      scrollbar-width: thin;
+      scrollbar-color:#2b3a4d #0f141b; /* thumb, track */
+    }
+    /* WebKit (Chrome/Edge/Safari) scrollbar */
+    .table-scroll-20::-webkit-scrollbar{ width:8px;height:8px; }
+    .table-scroll-20::-webkit-scrollbar-track{ background:#0f141b;border-radius:10px; }
+    .table-scroll-20::-webkit-scrollbar-thumb{
+      background-color:#2b3a4d;border-radius:10px;border:2px solid #0f141b;
+    }
+    .table-scroll-20::-webkit-scrollbar-thumb:hover{ background-color:#3b4f69; }
+
+    /* Sticky header stays opaque above rows */
+    .table-scroll-20 thead th{
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: var(--card);
+      box-shadow: 0 1px 0 0 var(--border) inset;
+    }
+
+    .table-scroll-8{
+      position: relative;           /* sticky context */
+      max-height:var(--tbl-8);
+      overflow:auto;
+      border-radius:10px;
+      /* Firefox scrollbar */
+      scrollbar-width: thin;
+      scrollbar-color:#2b3a4d #0f141b; /* thumb, track */
+    }
+    /* WebKit (Chrome/Edge/Safari) scrollbar */
+    .table-scroll-8::-webkit-scrollbar{ width:8px;height:8px; }
+    .table-scroll-8::-webkit-scrollbar::-webkit-scrollbar-track{ background:#0f141b;border-radius:10px; }
+    .table-scroll-8::-webkit-scrollbar-thumb{
+      background-color:#2b3a4d;border-radius:10px;border:2px solid #0f141b;
+    }
+    .table-scroll-8::-webkit-scrollbar-thumb:hover{ background-color:#3b4f69; }
+
+    /* Sticky header stays opaque above rows */
+    .table-scroll-8 thead th{
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: var(--card);
+      box-shadow: 0 1px 0 0 var(--border) inset;
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <h1>Gap-Up History</h1>
-      <div class="updated">Updated 10/14/25 10:55</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <a class="back" href="overview.html" style="color:#9ecbff;text-decoration:none">&larr; Back</a>
+        <h1>Gap-Up History & Outcomes</h1>
+      </div>
+      <!-- removed top-right timestamp -->
     </header>
 
+    <!-- Historical consecutive-day streaks -->
+    <section class="card" style="margin-bottom:14px">
+      <div class="table-scroll-8">
+        <div class="section-title">Historical Consecutive-Day Streaks (≥2 days)</div>
+        <table id="streaks">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Streak</th>
+              <th>Change since streak start</th>
+              <th>Change after 10 trading days</th>
+              <th>Change after 40 trading days</th>
+              <th>Streak start</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Per-day table (scrollable) -->
     <section class="card">
-      <table id="tbl">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Next Day Price</th>
-            <th>Next Day %</th>
-            <th>Week-Later Price</th>
-            <th>Week-Later %</th>
-            <th>Month-Later Price</th>
-            <th>Month-Later %</th>
-            <th>Market Conditions (D / W / M)</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+      <div class="table-scroll-20">
+        <table id="tbl">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Symbol</th>
+              <th>Price</th>
+              <th>Next&nbsp;Day</th>
+              <th>Next&nbsp;Day&nbsp;%</th>
+              <th>Week</th>
+              <th>Week&nbsp;%</th>
+              <th>Month</th>
+              <th>Month&nbsp;%</th>
+              <th>Market D/W/M</th>
+              <th>Streak</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </section>
   </div>
 
+  <div class="footer-updated">Updated 10/22/25 12:12</div>
+
   <script>
-    const ROWS = [{"date":"2025-10-14","name":"XCHG Limited","symbol":"XCH","price":"1.6800","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-14","name":"Westwater Resources, Inc.","symbol":"WWR","price":"2.5600","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-14","name":"W&T Offshore, Inc.","symbol":"WTI","price":"2.5200","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-14","name":"VanEck Rare Earth and Strategic","symbol":"REMX","price":"79.2200","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-14","name":"United States Antimony Corporat","symbol":"UAMY","price":"16.7100","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-14","name":"Solidion Technology, Inc.","symbol":"STI","price":"21.6250","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-14","name":"Snow Lake Resources Ltd.","symbol":"LITM","price":"5.9400","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-14","name":"Electra Battery Materials Corpo","symbol":"ELBM","price":"7.0200","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-14","name":"ESS Tech, Inc.","symbol":"GWH","price":"9.0500","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-14","name":"Critical Metals Corp.","symbol":"CRML","price":"23.2800","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-14","name":"American Resources Corporation","symbol":"AREC","price":"4.9800","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-14","name":"American Battery Technology Com","symbol":"ABAT","price":"9.2200","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-13","name":"Westwater Resources, Inc.","symbol":"WWR","price":"2.5699","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"W&T Offshore, Inc.","symbol":"WTI","price":"2.5000","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"VanEck Rare Earth and Strategic","symbol":"REMX","price":"79.2200","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"United States Antimony Corporat","symbol":"UAMY","price":"16.7100","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"Solidion Technology, Inc.","symbol":"STI","price":"21.2411","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"Snow Lake Resources Ltd.","symbol":"LITM","price":"6.0300","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"Electra Battery Materials Corpo","symbol":"ELBM","price":"7.4500","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"ESS Tech, Inc.","symbol":"GWH","price":"9.2010","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"Critical Metals Corp.","symbol":"CRML","price":"22.2950","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"American Resources Corporation","symbol":"AREC","price":"4.9888","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""},{"date":"2025-10-13","name":"American Battery Technology Com","symbol":"ABAT","price":"8.9648","next_day_price":"","next_day_pct":"","week_later_price":"","week_later_pct":"","month_later_price":"","month_later_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":""}];
-    function money(v){ if(v===""||v==null) return "—"; const n=Number(v); return isFinite(n) ? "$"+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:4}) : "—"; }
-    function pct(v){ if(v===""||v==null) return "—"; const n=Number(v); if(!isFinite(n)) return "—"; const cls=n>=0?"pct up":"pct down"; return `<span class="${cls}">${(n*100).toFixed(2)}%</span>`; }
-    function chip(label,v){ if(v===""||v==null) return `<span class="chip">${label}: —</span>`; const n=Number(v); const cls=n>=0?"pct up":"pct down"; return `<span class="chip ${cls}">${label}: ${(n*100).toFixed(2)}%</span>`; }
-    function streakPill(r){
-      const n = Number(r.streak || 0);
-      if(!n || n < 2) return "";
-      return `<span class="streak">${n}d</span>`;
+    const ROWS = [{"date":"2025-10-22","symbol":"RYOJ","price":"9.120000","next_day_price":"","next_day_pct":"","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-22","symbol":"BYND","price":"3.620000","next_day_price":"","next_day_pct":"","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-22","symbol":"RANI","price":"2.850000","next_day_price":"","next_day_pct":"","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"3"},{"date":"2025-10-22","symbol":"AVDL","price":"17.870001","next_day_price":"","next_day_pct":"","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-22","symbol":"BOF","price":"2.800000","next_day_price":"","next_day_pct":"","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-21","symbol":"RANI","price":"2.710000","next_day_price":"","next_day_pct":"","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-21","symbol":"ACRS","price":"2.415000","next_day_price":"","next_day_pct":"","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-21","symbol":"RYOJ","price":"5.730000","next_day_price":"","next_day_pct":"","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-21","symbol":"ACHV","price":"5.340000","next_day_price":"","next_day_pct":"","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-21","symbol":"MGNX","price":"2.000000","next_day_price":"","next_day_pct":"","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-21","symbol":"GM","price":"66.989998","next_day_price":"","next_day_pct":"","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-21","symbol":"BYND","price":"3.620000","next_day_price":"","next_day_pct":"","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-21","symbol":"AVDL","price":"17.870001","next_day_price":"","next_day_pct":"","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-20","symbol":"LBRT","price":"15.320000","next_day_price":"15.910000","next_day_pct":"0.038512","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.000015","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-20","symbol":"REKR","price":"3.200000","next_day_price":"2.900000","next_day_pct":"-0.093750","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.000015","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-20","symbol":"LNKS","price":"0.730000","next_day_price":"0.517000","next_day_pct":"-0.291781","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.000015","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-20","symbol":"CCO","price":"1.700000","next_day_price":"1.850000","next_day_pct":"0.088235","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.000015","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-20","symbol":"RANI","price":"1.640000","next_day_price":"2.850000","next_day_pct":"0.737805","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.000015","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-20","symbol":"CREV","price":"5.340000","next_day_price":"5.080000","next_day_pct":"-0.048689","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.000015","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-20","symbol":"ELDN","price":"3.440000","next_day_price":"3.490000","next_day_pct":"0.014535","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.000015","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-20","symbol":"ARTV","price":"6.010000","next_day_price":"4.360000","next_day_pct":"-0.274542","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.000015","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-20","symbol":"ACHV","price":"4.200000","next_day_price":"5.150000","next_day_pct":"0.226190","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.000015","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-20","symbol":"ANRO","price":"10.870000","next_day_price":"10.850000","next_day_pct":"-0.001840","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.000015","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-20","symbol":"REPL","price":"9.665000","next_day_price":"8.100000","next_day_pct":"-0.161924","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.000015","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-20","symbol":"DGXX","price":"4.528800","next_day_price":"4.150000","next_day_pct":"-0.083642","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.000015","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-17","symbol":"ELWS","price":"5.100000","next_day_price":"4.160000","next_day_pct":"-0.184314","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"0.010400","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-17","symbol":"RYOJ","price":"4.760000","next_day_price":"3.800000","next_day_pct":"-0.201681","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"0.010400","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-16","symbol":"LOBO","price":"1.138900","next_day_price":"1.060000","next_day_pct":"-0.069277","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"0.005676","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-15","symbol":"AQMS","price":"29.620001","next_day_price":"15.700000","next_day_pct":"-0.469953","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-15","symbol":"COOT","price":"0.965000","next_day_price":"2.200000","next_day_pct":"1.279793","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-15","symbol":"THM","price":"2.760000","next_day_price":"2.240000","next_day_pct":"-0.188406","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-15","symbol":"TMQ","price":"10.600000","next_day_price":"7.100000","next_day_pct":"-0.330189","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-15","symbol":"LAES","price":"7.650000","next_day_price":"6.360000","next_day_pct":"-0.168627","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-15","symbol":"WWR","price":"3.480000","next_day_price":"2.100000","next_day_pct":"-0.396552","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-15","symbol":"UGRO","price":"0.575000","next_day_price":"0.442000","next_day_pct":"-0.231304","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-15","symbol":"TTI","price":"7.040000","next_day_price":"7.080000","next_day_pct":"0.005682","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-15","symbol":"DBRG","price":"13.480000","next_day_price":"12.490000","next_day_pct":"-0.073442","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-15","symbol":"ORLA","price":"13.130000","next_day_price":"13.520000","next_day_pct":"0.029703","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-15","symbol":"AREC","price":"6.810000","next_day_price":"4.250000","next_day_pct":"-0.375918","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-15","symbol":"SYRE","price":"21.000000","next_day_price":"22.240000","next_day_pct":"0.059048","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-15","symbol":"KOPN","price":"3.940000","next_day_price":"3.650000","next_day_pct":"-0.073604","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"2"},{"date":"2025-10-15","symbol":"REKR","price":"2.520000","next_day_price":"2.600000","next_day_pct":"0.031746","week_price":"","week_pct":"","month_price":"","month_pct":"","mkt_day_pct":"-0.006810","mkt_week_pct":"","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"ELBM","price":"7.020000","next_day_price":"2.310000","next_day_pct":"-0.670940","week_price":"1.650000","week_pct":"-0.764957","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"STI","price":"21.625000","next_day_price":"21.750000","next_day_pct":"0.005780","week_price":"13.930000","week_pct":"-0.355838","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"XCH","price":"1.680000","next_day_price":"1.910000","next_day_pct":"0.136905","week_price":"1.960000","week_pct":"0.166667","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"GWH","price":"9.050000","next_day_price":"6.120000","next_day_pct":"-0.323757","week_price":"4.330000","week_pct":"-0.521547","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"CRML","price":"23.280001","next_day_price":"22.719999","next_day_pct":"-0.024055","week_price":"16.270000","week_pct":"-0.301117","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"LITM","price":"5.940000","next_day_price":"5.740000","next_day_pct":"-0.033670","week_price":"4.420000","week_pct":"-0.255892","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"WTI","price":"2.520000","next_day_price":"2.250000","next_day_pct":"-0.107143","week_price":"2.110000","week_pct":"-0.162698","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"ABAT","price":"9.220000","next_day_price":"8.950000","next_day_pct":"-0.029284","week_price":"6.100000","week_pct":"-0.338395","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"WWR","price":"2.560000","next_day_price":"2.470000","next_day_pct":"-0.035156","week_price":"1.830000","week_pct":"-0.285156","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"UAMY","price":"16.709999","next_day_price":"13.760000","next_day_pct":"-0.176541","week_price":"12.390000","week_pct":"-0.258528","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"AREC","price":"4.980000","next_day_price":"5.010000","next_day_pct":"0.006024","week_price":"4.230000","week_pct":"-0.150602","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"REMX","price":"79.220001","next_day_price":"77.889999","next_day_pct":"-0.016789","week_price":"69.610001","week_pct":"-0.121308","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"AQMS","price":"29.620001","next_day_price":"13.940000","next_day_pct":"-0.529372","week_price":"11.790000","week_pct":"-0.601958","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"THM","price":"2.760000","next_day_price":"2.670000","next_day_pct":"-0.032609","week_price":"1.830000","week_pct":"-0.336957","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"TMQ","price":"10.600000","next_day_price":"8.460000","next_day_pct":"-0.201887","week_price":"5.560000","week_pct":"-0.475472","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"LAES","price":"7.650000","next_day_price":"7.490000","next_day_pct":"-0.020915","week_price":"6.100000","week_pct":"-0.202614","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"TTI","price":"7.040000","next_day_price":"7.640000","next_day_pct":"0.085227","week_price":"7.620000","week_pct":"0.082386","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"UGRO","price":"0.575000","next_day_price":"0.464000","next_day_pct":"-0.193044","week_price":"0.345000","week_pct":"-0.400000","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"DBRG","price":"13.480000","next_day_price":"13.830000","next_day_pct":"0.025964","week_price":"12.560000","week_pct":"-0.068249","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"ORLA","price":"13.130000","next_day_price":"13.610000","next_day_pct":"0.036557","week_price":"10.800000","week_pct":"-0.177456","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"KOPN","price":"3.940000","next_day_price":"3.990000","next_day_pct":"0.012690","week_price":"4.060000","week_pct":"0.030457","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"},{"date":"2025-10-14","symbol":"SYRE","price":"21.000000","next_day_price":"22.190001","next_day_pct":"0.056667","week_price":"23.250000","week_pct":"0.107143","month_price":"","month_pct":"","mkt_day_pct":"0.004440","mkt_week_pct":"0.013681","mkt_month_pct":"","streak":"1"}];
+    const STREAKS = [{"symbol":"RANI","streak_len":3,"second_day":"2025-10-21","pct_since_second":0.05166048141423185,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"SYRE","streak_len":2,"second_day":"2025-10-15","pct_since_second":0.1071428571428572,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"TTI","streak_len":2,"second_day":"2025-10-15","pct_since_second":0.0823863473805515,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"KOPN","streak_len":2,"second_day":"2025-10-15","pct_since_second":0.030456838268918984,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"AVDL","streak_len":2,"second_day":"2025-10-22","pct_since_second":-8.99645169472052e-09,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"RYOJ","streak_len":2,"second_day":"2025-10-22","pct_since_second":-1.254834613995115e-08,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"BYND","streak_len":2,"second_day":"2025-10-22","pct_since_second":-3.1613513251649294e-08,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"ACHV","streak_len":2,"second_day":"2025-10-21","pct_since_second":-0.03558050648549971,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"DBRG","streak_len":2,"second_day":"2025-10-15","pct_since_second":-0.06824922703140213,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"ORLA","streak_len":2,"second_day":"2025-10-15","pct_since_second":-0.17745619263253143,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"LAES","streak_len":2,"second_day":"2025-10-15","pct_since_second":-0.20261439155129835,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"THM","streak_len":2,"second_day":"2025-10-15","pct_since_second":-0.33695650619009265,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"AREC","streak_len":2,"second_day":"2025-10-15","pct_since_second":-0.37885462274985515,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"UGRO","streak_len":2,"second_day":"2025-10-15","pct_since_second":-0.40000000207320496,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"WWR","streak_len":2,"second_day":"2025-10-15","pct_since_second":-0.47413791870248734,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"TMQ","streak_len":2,"second_day":"2025-10-15","pct_since_second":-0.47547170351136403,"pct_10d_since_second":null,"pct_40d_since_second":null},{"symbol":"AQMS","streak_len":2,"second_day":"2025-10-15","pct_since_second":-0.6019581511204868,"pct_10d_since_second":null,"pct_40d_since_second":null}];
+
+    function money(v){ if(!v) return "—"; const n=Number(v); return isFinite(n) ? "$"+n.toFixed(2) : String(v); }
+    function pct(v){
+      if(v===null || v===undefined || v==="") return "—";
+      const n=Number(v);
+      if(!isFinite(n)) return "—";
+      const cls = n>=0 ? "pct up" : "pct down";
+      return `<span class="${cls}">${(n*100).toFixed(2)}%</span>`;
     }
+
+    // Render historical streaks (with 10/40 trading-day columns)
+    const sbody = document.querySelector("#streaks tbody");
+    sbody.innerHTML = (STREAKS || []).map(s => `
+      <tr>
+        <td><strong>${s.symbol}</strong></td>
+        <td>${s.streak_len}d</td>
+        <td>${pct(s.pct_since_second)}</td>
+        <td>${pct(s.pct_10d_since_second)}</td>
+        <td>${pct(s.pct_40d_since_second)}</td>
+        <td>${s.second_day || "—"}</td>
+      </tr>
+    `).join("");
+
+    // Render daily rows
     const tbody=document.querySelector("#tbl tbody");
     tbody.innerHTML = ROWS.map(r=>`
       <tr>
-        <td>${r.date}</td>
-        <td>${r.name}${streakPill(r)}</td>
+        <td>${r.date||"—"}</td>
+        <td><strong>${r.symbol||"—"}</strong></td>
         <td>${money(r.price)}</td>
         <td>${money(r.next_day_price)}</td>
         <td>${pct(r.next_day_pct)}</td>
-        <td>${money(r.week_later_price)}</td>
-        <td>${pct(r.week_later_pct)}</td>
-        <td>${money(r.month_later_price)}</td>
-        <td>${pct(r.month_later_pct)}</td>
-        <td><div class="chips">
-          ${chip("D", r.mkt_day_pct)}
-          ${chip("W", r.mkt_week_pct)}
-          ${chip("M", r.mkt_month_pct)}
-        </div></td>
+        <td>${money(r.week_price)}</td>
+        <td>${pct(r.week_pct)}</td>
+        <td>${money(r.month_price)}</td>
+        <td>${pct(r.month_pct)}</td>
+        <td>${[pct(r.mkt_day_pct), pct(r.mkt_week_pct), pct(r.mkt_month_pct)].join(" / ")}</td>
+        <td>${(Number(r.streak||"1")>=2)? `<span class="chip">${r.streak}d</span>` : "—"}</td>
       </tr>`).join("");
   </script>
 </body>

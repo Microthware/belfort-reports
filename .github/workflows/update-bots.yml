@@ -80,7 +80,6 @@ jobs:
           mkdir -p docs
           cp -R report/* docs/
           cp -f docs/overview.html docs/index.html
-          fi
           touch docs/.nojekyll
 
       - name: Commit & push site + history

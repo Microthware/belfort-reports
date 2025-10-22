@@ -20,15 +20,134 @@
     .pill{display:inline-block;padding:2px 8px;border:1px solid var(--border);border-radius:999px;font-size:12px;margin-left:8px}
     .up{color:var(--green);border-color:rgba(22,163,74,.35)}
     .down{color:var(--red);border-color:rgba(220,38,38,.35)}
-    /* circular win rate */
+
+    /* circular win-rate */
     .ring{width:40px;height:40px;display:inline-block;position:relative}
     .ring svg{width:40px;height:40px;display:block}
     .ring .txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px}
+
     .footer-updated{position:fixed;right:12px;bottom:10px;color:var(--muted);font-size:12px}
     .bots-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
     .summary{display:flex;gap:16px;align-items:center}
     .summary .label{font-size:12px;color:var(--muted)}
   </style>
+
+<style>
+/* portfolios-mini (no-fetch) */
+.portfolios-card{cursor:pointer}
+.portfolios-card .mini-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:16px;
+  margin-top:10px;
+}
+.mini-card{
+  background:rgba(255,255,255,.02);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:10px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.mini-pie{width:120px;height:120px;position:relative;flex:0 0 auto}
+.mini-legend{display:flex;flex-direction:column;gap:4px;font-size:12px}
+.mini-legend .row{display:flex;align-items:center;gap:6px}
+.mini-legend .sw{width:9px;height:9px;border-radius:2px;display:inline-block}
+.mini-title{font-weight:700;margin-bottom:6px;color:#cfe1f7}
+@media (max-width:520px){
+  .mini-card{flex-direction:column;align-items:flex-start}
+}
+</style>
+
+  <style>
+    .section-title{display:flex;align-items:center;gap:8px}
+    .title-ico{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;opacity:.85}
+    .title-ico svg{display:block;width:18px;height:18px}
+  </style>
+<style>
+  /* price badge next to ticker */
+  .gap-price{
+    font-weight:700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing:.2px;
+  }
+  .gap-price.up{ color:#FFFFFF }
+  .gap-price.down{ color:#FFFFFF }
+</style>
+<style>
+/* overview-icons-and-donuts */
+.section-title{display:flex;align-items:center;gap:8px}
+.title-ico{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;opacity:.9}
+.title-ico svg{display:block;width:18px;height:18px}
+.portfolios-card .mini-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:10px}
+.mini-card{background:rgba(255,255,255,.02);border:1px solid var(--border,#223142);border-radius:12px;padding:10px;display:flex;gap:10px;align-items:center}
+.mini-pie{width:120px;height:120px;position:relative;flex:0 0 auto}
+.mini-legend{display:flex;flex-direction:column;gap:4px;font-size:12px}
+.mini-legend .row{display:flex;align-items:center;gap:6px}
+.mini-legend .sw{width:9px;height:9px;border-radius:2px;display:inline-block}
+.mini-title{font-weight:700;margin-bottom:6px;color:#cfe1f7}
+</style>
+
+<!-- NEW: gap-ups mini-candles styles -->
+<style>
+.gaps-grid{
+  margin-top:8px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(240px,1fr));
+  gap:12px;
+}
+.gap-card{
+  background:rgba(255,255,255,.02);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px;
+}
+.gap-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.gap-sym{font-weight:700}
+.gap-canvas{width:100%;height:120px;display:block}
+.gap-streak{
+  margin-left:8px;
+  font-size:11px;
+  padding:2px 6px;
+  border-radius:999px;
+  border:1px solid rgba(250,204,21,.35); /* amber */
+  background:rgba(250,204,21,.08);
+  color:#facc15;
+  font-variant-numeric: tabular-nums;
+  letter-spacing:.2px;
+}
+</style>
+<style>
+  .hpmini-card{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:12px;padding:10px;display:flex;flex-direction:column}
+  .hpmini-title{font-weight:400;margin-bottom:6px;color:#cfe1f7;font-size: small;}
+  .hpmini-wrap{
+    max-height:240px;
+    overflow:auto;
+    border:1px solid var(--border);
+    border-radius:8px;
+
+    /* thin, black scrollbars */
+    scrollbar-width: thin;                 /* Firefox */
+    scrollbar-color: #000 transparent;     /* thumb | track */
+  }
+  .hpmini-wrap::-webkit-scrollbar{
+    width:4px;                              /* Chrome/Edge/Safari */
+  }
+  .hpmini-wrap::-webkit-scrollbar-track{
+    background: transparent;
+  }
+  .hpmini-wrap::-webkit-scrollbar-thumb{
+    background:#000;
+    border-radius:8px;
+  }
+  .hpmini-wrap table{width:100%;border-collapse:collapse}
+  .hpmini-wrap thead th{position:sticky;top:0;background:rgb(26, 26, 26);color:var(--muted);font-size:12px}
+  .hpmini-wrap th, .hpmini-wrap td{padding:8px 8px;border-bottom:1px solid var(--border);font-size:12px;white-space:nowrap}
+  .hpmini-pct.up{color:#16a34a;font-weight:600}
+  .hpmini-pct.down{color:#dc2626;font-weight:600}
+</style>
+
 </head>
 <body>
   <div class="wrap">
@@ -37,10 +156,10 @@
     <!-- Section 1: Bots (includes summary) -->
     <section class="card">
       <div class="bots-header">
-        <div class="section-title" style="margin:0">Bots</div>
+        <div class="section-title" style="margin:0"><span class="title-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#9ecbff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="10" rx="2"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="15.5" cy="13" r="1.5"/><path d="M12 8V4"/><path d="M10 4h4"/></svg></span>Bots</div>
         <div class="summary">
-          <div class="label">Total actions: <strong>25</strong></div>
-          <div class="label">Avg win rate: <strong>0.00%</strong></div>
+          <div class="label">Total actions: <strong>18</strong></div>
+          <div class="label">Avg win rate: <strong>16.67%</strong></div>
         </div>
       </div>
       <table>
@@ -58,59 +177,33 @@
         </thead>
         <tbody>
           
-          
           <tr>
             <td><a href="bubbles.html"><strong>Bubbles</strong></a></td>
             <td class="muted">ALL</td>
             <td>
-              <div class="ring" title="0.00%">
-                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
+              <div class="ring" title="33.33%">
+                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 33.33%">
                   <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
                   
-                  <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
-                          stroke-dasharray="100.53" stroke-dashoffset="100.53"
-                          transform="rotate(-90 20 20)"></circle>
-                </svg>
-                <div class="txt">0.00%</div>
-              </div>
-            </td>
-            <td>0.00%</td>
-            <td>0.00%</td>
-            <td>
-              $10,000.00
-              
-                <span class="pill up">▲</span>
-              
-            </td>
-            <td>3</td>
-            <td class="muted">10/14/25 11:55</td>
-          </tr>
-          
-          <tr>
-            <td><a href="cory.html"><strong>Cory</strong></a></td>
-            <td class="muted">ALL</td>
-            <td>
-              <div class="ring" title="0.00%">
-                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
-                  <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
+                  
                   
                   <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
-                          stroke-dasharray="100.53" stroke-dashoffset="100.53"
+                          stroke-dasharray="100.53" stroke-dashoffset="67.02"
                           transform="rotate(-90 20 20)"></circle>
                 </svg>
-                <div class="txt">0.00%</div>
+                <div class="txt">33.33%</div>
               </div>
             </td>
-            <td>0.00%</td>
-            <td>0.00%</td>
+            <td>7.99%</td>
+            <td>-16.85%</td>
             <td>
-              $10,000.00
+              $8,899.54
               
-                <span class="pill up">▲</span>
+                <span class="pill down">▼</span>
               
             </td>
-            <td>3</td>
-            <td class="muted">10/14/25 11:55</td>
+            <td>11</td>
+            <td class="muted">10/22/25 12:07</td>
           </tr>
           
           <tr>
@@ -121,32 +214,7 @@
                 <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
                   <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
                   
-                  <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
-                          stroke-dasharray="100.53" stroke-dashoffset="100.53"
-                          transform="rotate(-90 20 20)"></circle>
-                </svg>
-                <div class="txt">0.00%</div>
-              </div>
-            </td>
-            <td>0.00%</td>
-            <td>0.00%</td>
-            <td>
-              $10,000.00
-              
-                <span class="pill up">▲</span>
-              
-            </td>
-            <td>4</td>
-            <td class="muted">10/14/25 11:55</td>
-          </tr>
-          
-          <tr>
-            <td><a href="lahey.html"><strong>Lahey</strong></a></td>
-            <td class="muted">ALL</td>
-            <td>
-              <div class="ring" title="0.00%">
-                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
-                  <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
+                  
                   
                   <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
                           stroke-dasharray="100.53" stroke-dashoffset="100.53"
@@ -163,89 +231,8 @@
                 <span class="pill up">▲</span>
               
             </td>
-            <td>4</td>
-            <td class="muted">10/14/25 11:55</td>
-          </tr>
-          
-          <tr>
-            <td><a href="randy.html"><strong>Randy</strong></a></td>
-            <td class="muted">ALL</td>
-            <td>
-              <div class="ring" title="0.00%">
-                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
-                  <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
-                  
-                  <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
-                          stroke-dasharray="100.53" stroke-dashoffset="100.53"
-                          transform="rotate(-90 20 20)"></circle>
-                </svg>
-                <div class="txt">0.00%</div>
-              </div>
-            </td>
-            <td>0.00%</td>
-            <td>0.00%</td>
-            <td>
-              $10,000.00
-              
-                <span class="pill up">▲</span>
-              
-            </td>
-            <td>5</td>
-            <td class="muted">10/14/25 11:55</td>
-          </tr>
-          
-          <tr>
-            <td><a href="ricky.html"><strong>Ricky</strong></a></td>
-            <td class="muted">ALL</td>
-            <td>
-              <div class="ring" title="0.00%">
-                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
-                  <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
-                  
-                  <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
-                          stroke-dasharray="100.53" stroke-dashoffset="100.53"
-                          transform="rotate(-90 20 20)"></circle>
-                </svg>
-                <div class="txt">0.00%</div>
-              </div>
-            </td>
-            <td>0.00%</td>
-            <td>0.00%</td>
-            <td>
-              $10,000.00
-              
-                <span class="pill up">▲</span>
-              
-            </td>
-            <td>4</td>
-            <td class="muted">10/14/25 11:55</td>
-          </tr>
-          
-          <tr>
-            <td><a href="trevor.html"><strong>Trevor</strong></a></td>
-            <td class="muted">ALL</td>
-            <td>
-              <div class="ring" title="0.00%">
-                <svg viewBox="0 0 40 40" role="img" aria-label="Win rate 0.00%">
-                  <circle cx="20" cy="20" r="16" stroke="#2c3238" stroke-width="4" fill="none"></circle>
-                  
-                  <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="4" fill="none"
-                          stroke-dasharray="100.53" stroke-dashoffset="100.53"
-                          transform="rotate(-90 20 20)"></circle>
-                </svg>
-                <div class="txt">0.00%</div>
-              </div>
-            </td>
-            <td>0.00%</td>
-            <td>0.00%</td>
-            <td>
-              $10,000.00
-              
-                <span class="pill up">▲</span>
-              
-            </td>
-            <td>2</td>
-            <td class="muted">10/14/25 11:55</td>
+            <td>7</td>
+            <td class="muted">10/22/25 12:08</td>
           </tr>
           
         </tbody>
@@ -258,9 +245,396 @@
       <ul style="margin:6px 0 0; padding-left:16px; line-height:1.9;">
         <li><a href="gapups.html">Gap-Up History &amp; Outcomes</a></li>
       </ul>
+
+      <!-- NEW: Today’s Gap-Ups list + 14-day mini candles -->
+      <div class="section-title" style="margin-top:14px">Today's Gap-Ups</div>
+      <div id="gapups-today" class="gaps-grid"></div>
+    </section>
+
+    <!-- Section 3: Portfolios -->
+    <section class="portfolios-card card" style="margin-top:14px;">
+      <div class="section-title">
+        <span class="title-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="#a7f3d0">
+            <path d="M12 2c2.75 0 5 2.25 5 5s-2.25 5-5 5-5-2.25-5-5 2.25-5 5-5Zm-7 18c0-3.6 5.2-5.5 7-5.5s7 1.9 7 5.5v1H5v-1Z"/>
+          </svg>
+        </span>
+        High Profile Portfolios</div>
+      <div class="mini-grid" id="mini-portfolios"></div>
+      <div class="muted" style="margin-top:8px">Click anywhere in this card to open detailed portfolios.</div>
     </section>
   </div>
 
-  <div class="footer-updated">Updated 10/14/25 11:55</div>
+  <div class="footer-updated">Updated 10/22/25 12:08</div>
+
+<script>
+// portfolios-mini render (no-fetch): uses same SECTIONS strategy as portfolios.html
+(function(){
+  const SECTIONS = [{"name":"Nancy Pelosi","holdings":[{"ticker":"NVDA","weight":0.2941411581147603},{"ticker":"PANW","weight":0.2940913594015023},{"ticker":"AVGO","weight":0.29404170765936055},{"ticker":"VST","weight":0.07353518542414933},{"ticker":"AMZN","weight":0.0367924063355525},{"ticker":"TEM","weight":0.007398183064675032}]},{"name":"Tommy Tuberville","holdings":[{"ticker":"ARKK","weight":0.4998152481832738},{"ticker":"ABNDX","weight":0.2502771277250893},{"ticker":"XBI","weight":0.2499076240916369}]},{"name":"Michael McCaul","holdings":[{"ticker":"FFRHX","weight":0.2222222222222222},{"ticker":"LDNXF","weight":0.08333333333333333},{"ticker":"VTEB","weight":0.05555555555555555},{"ticker":"DHR","weight":0.05555555555555555},{"ticker":"NSIT","weight":0.05555555555555555},{"ticker":"ATR","weight":0.05555555555555555},{"ticker":"AVGO","weight":0.05555555555555555},{"ticker":"WDAY","weight":0.05555555555555555},{"ticker":"ARTFX","weight":0.027777777777777776},{"ticker":"NOW","weight":0.027777777777777776},{"ticker":"CNM","weight":0.027777777777777776},{"ticker":"CSL","weight":0.027777777777777776},{"ticker":"PRI","weight":0.027777777777777776},{"ticker":"WTM","weight":0.027777777777777776},{"ticker":"MSA","weight":0.027777777777777776},{"ticker":"DXCM","weight":0.027777777777777776},{"ticker":"NFLX","weight":0.027777777777777776},{"ticker":"HWM","weight":0.027777777777777776},{"ticker":"PLXS","weight":0.027777777777777776},{"ticker":"ORCL","weight":0.027777777777777776},{"ticker":"GOOGL","weight":0.027777777777777776}]}];
+  const palette = ['#0021A5','#FA4616','#0077c0','#22884C','#D50A0A','#FCD006','#4B2A91','#6B21A8','#0EA5E9','#FF7900','#A855F7','#CA8A04','#34302B','#B1BABf'];
+  const MAX_HOLDINGS = null; // show all
+  const ANGLE_OFFSET = Math.PI/2;
+
+  function pctText(n){ if(!isFinite(n)) return '—'; const p=n*100; return (p<0.1&&p>0)?'<0.1%':p.toFixed(2)+'%'; }
+
+  function drawMiniDonut(el, items){
+
+    const w=120,h=120,cx=60,cy=60,r=44;
+    const NS='http://www.w3.org/2000/svg';
+    const svg=document.createElementNS(NS,'svg'); svg.setAttribute('viewBox','0 0 '+w+' '+h); svg.setAttribute('width', w); svg.setAttribute('height', h);
+    let start=0;
+    items.forEach((x,i)=>{
+      const frac=Math.max(0,x.weight||0);
+      const end=start+frac*2*Math.PI;
+      const large=(end-start)>Math.PI?1:0;
+      const sA=start+ANGLE_OFFSET, eA=end+ANGLE_OFFSET;
+      const x1=cx+r*Math.cos(sA), y1=cy+r*Math.sin(sA);
+      const x2=cx+r*Math.cos(eA), y2=cy+r*Math.sin(eA);
+      const p=document.createElementNS(NS,'path');
+      p.setAttribute('d','M '+cx+' '+cy+' L '+x1+' '+y1+' A '+r+' '+r+' 0 '+large+' 1 '+x2+' '+y2+' Z');
+      p.setAttribute('fill', palette[i%palette.length]);
+      svg.appendChild(p);
+      start=end;
+    
+    // add donut inner circle like portfolios.html
+    const hole = document.createElementNS(svgNS,'circle');
+    hole.setAttribute('cx', cx);
+    hole.setAttribute('cy', cy);
+    hole.setAttribute('r', String(Math.round(r*0.58)));
+    try{
+      const card = getComputedStyle(document.documentElement).getPropertyValue('--card').trim() || '#11161d';
+      const border = getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#223142';
+      hole.setAttribute('fill', card);
+      hole.setAttribute('stroke', border);
+      hole.setAttribute('stroke-width', '1');
+    }catch(e){
+      hole.setAttribute('fill', '#11161d');
+      hole.setAttribute('stroke', '#223142');
+      hole.setAttribute('stroke-width', '1');
+    }
+    svg.appendChild(hole);
+
+});
+    el.innerHTML=''; el.appendChild(svg);
+  }
+
+  function buildMiniCard(sec){
+    const box=document.createElement('div'); box.className='mini-card';
+    const pie=document.createElement('div'); pie.className='mini-pie';
+    const legend=document.createElement('div'); legend.className='mini-legend';
+    const title=document.createElement('div'); title.className='mini-title'; title.textContent=sec.name || 'Portfolio';
+    legend.appendChild(title);
+    const items=(sec.holdings||[]);
+    drawMiniDonut(pie, items);
+    items.forEach((x,i)=>{
+      const row=document.createElement('div'); row.className='row';
+      const sw=document.createElement('span'); sw.className='sw'; sw.style.background=palette[i%palette.length];
+      const label=document.createElement('span'); label.innerHTML=(x.ticker||'?')+' — '+pctText(x.weight);
+      row.appendChild(sw); row.appendChild(label); legend.appendChild(row);
+    });
+    box.appendChild(pie); box.appendChild(legend);
+    return box;
+  }
+
+  // Render immediately (script is at end of body so DOM exists)
+  (function render(){
+    const host = document.getElementById('mini-portfolios');
+    if(!host) return;
+    host.innerHTML='';
+    (SECTIONS || []).forEach(sec => host.appendChild(buildMiniCard(sec)));
+  })();
+
+  // Make the entire card clickable to portfolios.html (preserve link clicks)
+  (function bindClick(){
+    const heading = Array.from(document.querySelectorAll('h1,h2,h3,div.section-title'))
+      .find(h => /High Profile Portfolios/i.test(h.textContent||''));
+    const card = heading ? heading.closest('section') : null;
+    if(!card) return;
+    card.classList.add('portfolios-card');
+    card.addEventListener('click', (e)=>{
+      const a = e.target.closest && e.target.closest('a');
+      if(a) return;
+      window.location.href='portfolios.html';
+    });
+  })();
+})();
+</script>
+
+<script>
+// NEW: Today's Gap-Ups mini candlesticks (14 trading days)
+(function(){
+  const DATA = (function(){ try { return [{"symbol":"RANI","series":[{"d":"2025-10-02","o":0.4970000088214874,"h":0.5090000033378601,"l":0.47999998927116394,"c":0.5049999952316284},{"d":"2025-10-03","o":0.5199999809265137,"h":0.527999997138977,"l":0.4970000088214874,"c":0.5049999952316284},{"d":"2025-10-06","o":0.5,"h":0.5099999904632568,"l":0.49000000953674316,"c":0.5059999823570251},{"d":"2025-10-07","o":0.503000020980835,"h":0.5040000081062317,"l":0.49300000071525574,"c":0.5},{"d":"2025-10-08","o":0.49900001287460327,"h":0.49900001287460327,"l":0.48500001430511475,"c":0.49000000953674316},{"d":"2025-10-09","o":0.5,"h":0.5,"l":0.47699999809265137,"c":0.47699999809265137},{"d":"2025-10-10","o":0.4749999940395355,"h":0.48100000619888306,"l":0.45500001311302185,"c":0.4580000042915344},{"d":"2025-10-13","o":0.45399999618530273,"h":0.4790000021457672,"l":0.4449999928474426,"c":0.4690000116825104},{"d":"2025-10-14","o":0.46000000834465027,"h":0.49000000953674316,"l":0.45500001311302185,"c":0.48399999737739563},{"d":"2025-10-15","o":0.47999998927116394,"h":0.5,"l":0.4699999988079071,"c":0.49000000953674316},{"d":"2025-10-16","o":0.49000000953674316,"h":0.49000000953674316,"l":0.4620000123977661,"c":0.47099998593330383},{"d":"2025-10-17","o":1.3700000047683716,"h":2.390000104904175,"l":1.1299999952316284,"c":1.6399999856948853},{"d":"2025-10-20","o":2.0999999046325684,"h":2.819999933242798,"l":1.8300000429153442,"c":2.25},{"d":"2025-10-21","o":2.265000104904175,"h":3.319999933242798,"l":2.259999990463257,"c":2.8499999046325684}],"streak":2},{"symbol":"ACRS","series":[{"d":"2025-10-02","o":1.8700000047683716,"h":1.8969999551773071,"l":1.809999942779541,"c":1.840000033378601},{"d":"2025-10-03","o":1.8300000429153442,"h":1.909999966621399,"l":1.8300000429153442,"c":1.8600000143051147},{"d":"2025-10-06","o":1.8600000143051147,"h":1.940000057220459,"l":1.840000033378601,"c":1.899999976158142},{"d":"2025-10-07","o":1.909999966621399,"h":1.9299999475479126,"l":1.840000033378601,"c":1.840000033378601},{"d":"2025-10-08","o":1.8799999952316284,"h":1.9550000429153442,"l":1.840000033378601,"c":1.899999976158142},{"d":"2025-10-09","o":1.9199999570846558,"h":1.9500000476837158,"l":1.899999976158142,"c":1.9500000476837158},{"d":"2025-10-10","o":1.9700000286102295,"h":1.9700000286102295,"l":1.8550000190734863,"c":1.8700000047683716},{"d":"2025-10-13","o":1.909999966621399,"h":1.9500000476837158,"l":1.8799999952316284,"c":1.909999966621399},{"d":"2025-10-14","o":1.8899999856948853,"h":1.8899999856948853,"l":1.7400000095367432,"c":1.809999942779541},{"d":"2025-10-15","o":1.850000023841858,"h":1.9600000381469727,"l":1.8300000429153442,"c":1.9299999475479126},{"d":"2025-10-16","o":1.9199999570846558,"h":2.0999999046325684,"l":1.899999976158142,"c":2.049999952316284},{"d":"2025-10-17","o":2.0,"h":2.069999933242798,"l":1.8799999952316284,"c":1.899999976158142},{"d":"2025-10-20","o":1.9700000286102295,"h":2.0399999618530273,"l":1.9299999475479126,"c":2.009999990463257},{"d":"2025-10-21","o":2.0299999713897705,"h":2.4700000286102295,"l":2.0299999713897705,"c":2.380000114440918}],"streak":1},{"symbol":"RYOJ","series":[{"d":"2025-10-02","o":1.899999976158142,"h":2.0399999618530273,"l":1.8700000047683716,"c":1.9900000095367432},{"d":"2025-10-03","o":1.940000057220459,"h":2.015000104904175,"l":1.8899999856948853,"c":1.940000057220459},{"d":"2025-10-06","o":2.0399999618530273,"h":2.3499999046325684,"l":1.899999976158142,"c":2.2730000019073486},{"d":"2025-10-07","o":2.119999885559082,"h":2.200000047683716,"l":2.0,"c":2.0},{"d":"2025-10-08","o":1.9500000476837158,"h":2.200000047683716,"l":1.9500000476837158,"c":2.1600000858306885},{"d":"2025-10-09","o":2.0799999237060547,"h":2.2100000381469727,"l":2.009999990463257,"c":2.0199999809265137},{"d":"2025-10-10","o":2.0139999389648438,"h":2.119999885559082,"l":1.9199999570846558,"c":1.940000057220459},{"d":"2025-10-13","o":1.9299999475479126,"h":2.009999990463257,"l":1.9199999570846558,"c":1.9299999475479126},{"d":"2025-10-14","o":1.899999976158142,"h":1.9900000095367432,"l":1.8839999437332153,"c":1.9199999570846558},{"d":"2025-10-15","o":2.0,"h":2.200000047683716,"l":1.8669999837875366,"c":2.1700000762939453},{"d":"2025-10-16","o":4.494999885559082,"h":5.349999904632568,"l":3.5299999713897705,"c":4.760000228881836},{"d":"2025-10-17","o":4.309999942779541,"h":4.829999923706055,"l":3.609999895095825,"c":4.829999923706055},{"d":"2025-10-20","o":4.610000133514404,"h":5.0,"l":3.799999952316284,"c":3.799999952316284},{"d":"2025-10-21","o":4.869999885559082,"h":11.430000305175781,"l":4.550000190734863,"c":9.119999885559082}],"streak":1},{"symbol":"ACHV","series":[{"d":"2025-10-02","o":3.0999999046325684,"h":3.200000047683716,"l":3.069999933242798,"c":3.190000057220459},{"d":"2025-10-03","o":3.180000066757202,"h":3.259999990463257,"l":3.0999999046325684,"c":3.1500000953674316},{"d":"2025-10-06","o":3.1500000953674316,"h":3.240000009536743,"l":3.130000114440918,"c":3.1600000858306885},{"d":"2025-10-07","o":3.140000104904175,"h":3.390000104904175,"l":3.140000104904175,"c":3.319999933242798},{"d":"2025-10-08","o":3.3499999046325684,"h":3.4800000190734863,"l":3.319999933242798,"c":3.450000047683716},{"d":"2025-10-09","o":3.450000047683716,"h":3.450000047683716,"l":3.259999990463257,"c":3.2799999713897705},{"d":"2025-10-10","o":3.319999933242798,"h":3.319999933242798,"l":3.0799999237060547,"c":3.0799999237060547},{"d":"2025-10-13","o":3.119999885559082,"h":3.1700000762939453,"l":3.0899999141693115,"c":3.0999999046325684},{"d":"2025-10-14","o":3.0999999046325684,"h":3.190000057220459,"l":3.0299999713897705,"c":3.1700000762939453},{"d":"2025-10-15","o":3.180000066757202,"h":3.240000009536743,"l":3.0899999141693115,"c":3.180000066757202},{"d":"2025-10-16","o":3.2200000286102295,"h":3.240000009536743,"l":3.059999942779541,"c":3.0799999237060547},{"d":"2025-10-17","o":3.9700000286102295,"h":4.440000057220459,"l":3.7100000381469727,"c":4.199999809265137},{"d":"2025-10-20","o":4.260000228881836,"h":5.039999961853027,"l":4.230000019073486,"c":5.0},{"d":"2025-10-21","o":5.019999980926514,"h":5.78000020980835,"l":4.929999828338623,"c":5.150000095367432}],"streak":2},{"symbol":"MGNX","series":[{"d":"2025-10-02","o":1.7100000381469727,"h":1.7400000095367432,"l":1.659999966621399,"c":1.7100000381469727},{"d":"2025-10-03","o":1.7200000286102295,"h":1.8300000429153442,"l":1.7100000381469727,"c":1.7799999713897705},{"d":"2025-10-06","o":1.7799999713897705,"h":1.809999942779541,"l":1.7350000143051147,"c":1.7599999904632568},{"d":"2025-10-07","o":1.7899999618530273,"h":1.7990000247955322,"l":1.690000057220459,"c":1.7200000286102295},{"d":"2025-10-08","o":1.7200000286102295,"h":1.8300000429153442,"l":1.7200000286102295,"c":1.7799999713897705},{"d":"2025-10-09","o":1.7799999713897705,"h":1.7899999618530273,"l":1.7100000381469727,"c":1.75},{"d":"2025-10-10","o":1.7699999809265137,"h":1.7699999809265137,"l":1.649999976158142,"c":1.690000057220459},{"d":"2025-10-13","o":1.690000057220459,"h":1.7100000381469727,"l":1.6349999904632568,"c":1.6399999856948853},{"d":"2025-10-14","o":1.6100000143051147,"h":1.6890000104904175,"l":1.559999942779541,"c":1.6100000143051147},{"d":"2025-10-15","o":1.6200000047683716,"h":1.7699999809265137,"l":1.6200000047683716,"c":1.690000057220459},{"d":"2025-10-16","o":1.7100000381469727,"h":1.75,"l":1.659999966621399,"c":1.690000057220459},{"d":"2025-10-17","o":1.6799999475479126,"h":1.7400000095367432,"l":1.6430000066757202,"c":1.649999976158142},{"d":"2025-10-20","o":1.659999966621399,"h":1.805999994277954,"l":1.659999966621399,"c":1.7100000381469727},{"d":"2025-10-21","o":1.7100000381469727,"h":2.0299999713897705,"l":1.7050000429153442,"c":2.0199999809265137}],"streak":1},{"symbol":"GM","series":[{"d":"2025-10-02","o":61.47999954223633,"h":61.5,"l":59.209999084472656,"c":59.36000061035156},{"d":"2025-10-03","o":59.31999969482422,"h":60.61000061035156,"l":58.66999816894531,"c":60.130001068115234},{"d":"2025-10-06","o":59.939998626708984,"h":59.939998626708984,"l":58.130001068115234,"c":58.189998626708984},{"d":"2025-10-07","o":58.630001068115234,"h":58.65999984741211,"l":56.630001068115234,"c":57.2599983215332},{"d":"2025-10-08","o":57.33000183105469,"h":57.70000076293945,"l":56.2400016784668,"c":56.400001525878906},{"d":"2025-10-09","o":56.779998779296875,"h":56.869998931884766,"l":55.90999984741211,"c":55.91999816894531},{"d":"2025-10-10","o":56.2400016784668,"h":56.54999923706055,"l":55.220001220703125,"c":55.349998474121094},{"d":"2025-10-13","o":55.900001525878906,"h":56.20000076293945,"l":55.349998474121094,"c":55.619998931884766},{"d":"2025-10-14","o":54.5099983215332,"h":57.25,"l":54.33000183105469,"c":57.150001525878906},{"d":"2025-10-15","o":57.2599983215332,"h":58.25,"l":57.0099983215332,"c":57.79999923706055},{"d":"2025-10-16","o":57.88999938964844,"h":58.400001525878906,"l":56.810001373291016,"c":57.34000015258789},{"d":"2025-10-17","o":57.72999954223633,"h":59.16999816894531,"l":57.54999923706055,"c":58.380001068115234},{"d":"2025-10-20","o":58.540000915527344,"h":58.560001373291016,"l":57.68000030517578,"c":58.0},{"d":"2025-10-21","o":63.7599983215332,"h":67.55000305175781,"l":62.36000061035156,"c":66.62000274658203}],"streak":1},{"symbol":"BYND","series":[{"d":"2025-10-02","o":2.3399999141693115,"h":2.490000009536743,"l":2.299999952316284,"c":2.3299999237060547},{"d":"2025-10-03","o":2.3499999046325684,"h":2.6500000953674316,"l":2.3499999046325684,"c":2.569999933242798},{"d":"2025-10-06","o":2.5999999046325684,"h":2.630000114440918,"l":2.2850000858306885,"c":2.3499999046325684},{"d":"2025-10-07","o":2.390000104904175,"h":2.390000104904175,"l":2.109999895095825,"c":2.180000066757202},{"d":"2025-10-08","o":2.200000047683716,"h":2.2200000286102295,"l":2.0399999618530273,"c":2.0799999237060547},{"d":"2025-10-09","o":2.059999942779541,"h":2.069999933242798,"l":1.9500000476837158,"c":1.9700000286102295},{"d":"2025-10-10","o":2.009999990463257,"h":2.2799999713897705,"l":1.9950000047683716,"c":2.009999990463257},{"d":"2025-10-13","o":0.8479999899864197,"h":1.1200000047683716,"l":0.8450000286102295,"c":1.034999966621399},{"d":"2025-10-14","o":0.9190000295639038,"h":0.9259999990463257,"l":0.7699999809265137,"c":0.781000018119812},{"d":"2025-10-15","o":0.7870000004768372,"h":0.8180000185966492,"l":0.6510000228881836,"c":0.6700000166893005},{"d":"2025-10-16","o":0.6930000185966492,"h":0.6930000185966492,"l":0.5,"c":0.5199999809265137},{"d":"2025-10-17","o":0.6079999804496765,"h":0.753000020980835,"l":0.550000011920929,"c":0.6460000276565552},{"d":"2025-10-20","o":1.0199999809265137,"h":1.5299999713897705,"l":0.8809999823570251,"c":1.4700000286102295},{"d":"2025-10-21","o":2.309999942779541,"h":3.859999895095825,"l":1.9299999475479126,"c":3.619999885559082}],"streak":1},{"symbol":"AVDL","series":[{"d":"2025-10-02","o":14.960000038146973,"h":15.210000038146973,"l":14.850000381469727,"c":14.9399995803833},{"d":"2025-10-03","o":15.079999923706055,"h":15.579999923706055,"l":14.979999542236328,"c":15.010000228881836},{"d":"2025-10-06","o":15.050000190734863,"h":15.199999809265137,"l":14.449999809265137,"c":14.529999732971191},{"d":"2025-10-07","o":14.630000114440918,"h":14.670000076293945,"l":14.149999618530273,"c":14.470000267028809},{"d":"2025-10-08","o":14.579999923706055,"h":14.579999923706055,"l":14.180000305175781,"c":14.210000038146973},{"d":"2025-10-09","o":14.319999694824219,"h":14.609999656677246,"l":14.180000305175781,"c":14.199999809265137},{"d":"2025-10-10","o":14.25,"h":14.270000457763672,"l":13.829999923706055,"c":14.0},{"d":"2025-10-13","o":13.979999542236328,"h":14.279999732971191,"l":13.880000114440918,"c":14.199999809265137},{"d":"2025-10-14","o":14.199999809265137,"h":14.390000343322754,"l":14.0600004196167,"c":14.369999885559082},{"d":"2025-10-15","o":14.399999618530273,"h":15.170000076293945,"l":14.3100004196167,"c":15.15999984741211},{"d":"2025-10-16","o":15.430000305175781,"h":15.430000305175781,"l":14.65999984741211,"c":15.0},{"d":"2025-10-17","o":14.899999618530273,"h":15.25,"l":14.800000190734863,"c":15.220000267028809},{"d":"2025-10-20","o":15.369999885559082,"h":15.819999694824219,"l":15.039999961853027,"c":15.800000190734863},{"d":"2025-10-21","o":15.800000190734863,"h":18.40999984741211,"l":15.630000114440918,"c":17.8700008392334}],"streak":1}]; } catch(e){ return []; } })();
+  const host = document.getElementById('gapups-today');
+  if(!host || !DATA || !DATA.length) return;
+
+  function drawCandle(ctx, x, w, yOpen, yClose, yHigh, yLow, up){
+    // wick
+    ctx.beginPath();
+    ctx.moveTo(x, yHigh); ctx.lineTo(x, yLow);
+    ctx.strokeStyle = up ? '#16a34a' : '#dc2626';
+    ctx.lineWidth = 1; ctx.stroke();
+    // body
+    const left = x - w/2, h = Math.max(1, Math.abs(yClose - yOpen));
+    const top = Math.min(yOpen, yClose);
+    ctx.fillStyle = up ? '#16a34a' : '#dc2626';
+    ctx.fillRect(left, top, w, h);
+  }
+  function fmtDate(iso){
+    // show as M/D
+    const d = new Date(iso + 'T00:00:00');
+    if(!isFinite(d)) return iso;
+    return (d.getMonth()+1) + '/' + d.getDate();
+  }
+  function drawChart(canvas, series){
+    const dpr = window.devicePixelRatio || 1;
+    const H = 140, W = canvas.clientWidth || 260;
+    canvas.width = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+    const ctx = canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    const padL=34, padR=6, padT=8, padB=20;
+    const plotW=W - padL - padR, plotH=H - padT - padB;
+    let lo=Infinity, hi=-Infinity;
+    series.forEach(s=>{ lo=Math.min(lo,s.l); hi=Math.max(hi,s.h); });
+    if(!(isFinite(lo)&&isFinite(hi)) || hi<=lo){ lo=0; hi=1; }
+
+    const n = series.length;
+    const toX = i => padL + (i+0.5)*(plotW/n);
+    const toY = v => padT + (hi - v) * (plotH/(hi-lo));
+
+    // light grid
+    ctx.strokeStyle='rgba(255,255,255,.07)'; ctx.lineWidth=1;
+    [0.25,0.5,0.75].forEach(fr=>{
+      const y=padT + fr*plotH; ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(padL+plotW,y); ctx.stroke();
+    });
+    // axes (y left, x bottom) + labels
+    const cs = getComputedStyle(document.documentElement);
+    const muted = cs.getPropertyValue('--muted').trim() || '#8ea0b3';
+    const border = cs.getPropertyValue('--border').trim() || '#223142';
+
+    ctx.strokeStyle = border; ctx.lineWidth = 1;
+    // y-axis
+    ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, padT+plotH); ctx.stroke();
+    // x-axis
+    ctx.beginPath(); ctx.moveTo(padL, padT+plotH); ctx.lineTo(padL+plotW, padT+plotH); ctx.stroke();
+
+    // y labels: hi / mid / lo
+    ctx.fillStyle = muted; ctx.font = '10px system-ui, -apple-system, Segoe UI, Roboto, Arial';
+    ctx.textBaseline = 'middle';
+    const midV = (hi + lo) / 2;
+    [[hi, padT],[midV, padT+plotH/2],[lo, padT+plotH]].forEach(([v,y])=>{
+      const txt = Number(v).toFixed(2);
+      ctx.fillText(String(txt), 4, y);
+    });
+
+    // x labels: first / middle / last dates
+    ctx.textBaseline = 'top';
+    const nn = series.length;
+    const first = series[0]?.d, last = series[nn-1]?.d, mid = series[Math.floor(nn/2)]?.d;
+    if(first){ ctx.fillText(fmtDate(first), padL, padT+plotH+4); }
+    if(mid){ const x = padL + plotW/2; const t = fmtDate(mid); ctx.fillText(t, x-ctx.measureText(t).width/2, padT+plotH+4); }
+    if(last){ const t = fmtDate(last); const x = padL+plotW - ctx.measureText(t).width; ctx.fillText(t, x, padT+plotH+4); }
+
+    // candles
+    const barW = Math.max(3, Math.min(12, (plotW/n)*0.6));
+    series.forEach((s,i)=>{
+      drawCandle(ctx, toX(i), barW, toY(s.o), toY(s.c), toY(s.h), toY(s.l), s.c>=s.o);
+    });
+  }
+
+  function card(item){
+    const el = document.createElement('div'); el.className='gap-card';
+    const head = document.createElement('div'); head.className='gap-head';
+    const sym = document.createElement('div'); sym.className='gap-sym'; sym.textContent=item.symbol;
+    head.appendChild(sym);
+
+    let last = null, prev = null;
+    if (item.series && item.series.length){
+      last = item.series[item.series.length-1];
+      if (item.series.length > 1) prev = item.series[item.series.length-2];
+    }
+    const priceVal = (last && isFinite(last.c)) ? last.c : null;
+    const chg = (priceVal!=null && prev && isFinite(prev.c)) ? (priceVal - prev.c) : 0;
+
+    const price = document.createElement('div');
+    price.className = 'gap-price ' + (chg >= 0 ? 'up' : 'down');
+    price.textContent = (priceVal!=null) ? ('$' + priceVal.toFixed(2)) : '—';
+
+    // Right-side wrap so price + streak sit together
+    const right = document.createElement('div');
+    right.style.display = 'flex';
+    right.style.alignItems = 'center';
+    right.appendChild(price);
+
+    // Only show streak if > 1
+    const streakNum = Number(item.streak || 0);
+    if (streakNum > 1) {
+      const st = document.createElement('span');
+      st.className = 'gap-streak';
+      st.title = 'Consecutive days on the gap-up list';
+      st.textContent = `${streakNum}d`;
+      right.appendChild(st);
+    }
+
+    head.appendChild(right);
+
+    const c = document.createElement('canvas'); c.className='gap-canvas';
+    el.appendChild(head); el.appendChild(c);
+    // draw after layout
+    requestAnimationFrame(()=> drawChart(c, item.series));
+    window.addEventListener('resize', ()=> drawChart(c, item.series));
+    return el;
+  }
+
+  host.innerHTML='';
+  DATA.forEach(it => host.appendChild(card(it)));
+})();
+</script>
+
+<script>
+// overview-icons-and-donuts-init (kept as-is)
+(function(){
+  const ICONS = {
+    bots: '<span class="title-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#9ecbff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="10" rx="2"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="15.5" cy="13" r="1.5"/><path d="M12 8V4"/><path d="M10 4h4"/></svg></span>',
+    portfolios: '<span class="title-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="#a7f3d0"><path d="M12 2c2.75 0 5 2.25 5 5s-2.25 5-5 5-5-2.25-5-5 2.25-5 5-5Zm-7 18c0-3.6 5.2-5.5 7-5.5s7 1.9 7 5.5v1H5v-1Z"/></svg></span>',
+    market: '<span class="title-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 4-6"/></svg></span>'
+  };
+  function prependIcon(titleRegex, svg){
+    const el = Array.from(document.querySelectorAll('.section-title'))
+      .find(x => titleRegex.test((x.textContent||'').trim()));
+    if(!el) return;
+    if(!el.querySelector('.title-ico')){
+      el.insertAdjacentHTML('afterbegin', svg);
+    }
+  }
+  prependIcon(/\bBots\b/i, ICONS.bots);
+  prependIcon(/High Profile Portfolios/i, ICONS.portfolios);
+  prependIcon(/Market (Studies|Analysis)/i, ICONS.market);
+
+  // Also ensure mini donuts are present + click-through (this mirrors your earlier script)
+  const SECTIONS = (function(){ try { return [{"name":"Nancy Pelosi","holdings":[{"ticker":"NVDA","weight":0.2941411581147603},{"ticker":"PANW","weight":0.2940913594015023},{"ticker":"AVGO","weight":0.29404170765936055},{"ticker":"VST","weight":0.07353518542414933},{"ticker":"AMZN","weight":0.0367924063355525},{"ticker":"TEM","weight":0.007398183064675032}]},{"name":"Tommy Tuberville","holdings":[{"ticker":"ARKK","weight":0.4998152481832738},{"ticker":"ABNDX","weight":0.2502771277250893},{"ticker":"XBI","weight":0.2499076240916369}]},{"name":"Michael McCaul","holdings":[{"ticker":"FFRHX","weight":0.2222222222222222},{"ticker":"LDNXF","weight":0.08333333333333333},{"ticker":"VTEB","weight":0.05555555555555555},{"ticker":"DHR","weight":0.05555555555555555},{"ticker":"NSIT","weight":0.05555555555555555},{"ticker":"ATR","weight":0.05555555555555555},{"ticker":"AVGO","weight":0.05555555555555555},{"ticker":"WDAY","weight":0.05555555555555555},{"ticker":"ARTFX","weight":0.027777777777777776},{"ticker":"NOW","weight":0.027777777777777776},{"ticker":"CNM","weight":0.027777777777777776},{"ticker":"CSL","weight":0.027777777777777776},{"ticker":"PRI","weight":0.027777777777777776},{"ticker":"WTM","weight":0.027777777777777776},{"ticker":"MSA","weight":0.027777777777777776},{"ticker":"DXCM","weight":0.027777777777777776},{"ticker":"NFLX","weight":0.027777777777777776},{"ticker":"HWM","weight":0.027777777777777776},{"ticker":"PLXS","weight":0.027777777777777776},{"ticker":"ORCL","weight":0.027777777777777776},{"ticker":"GOOGL","weight":0.027777777777777776}]}]; } catch(e){ return []; } })();
+  function pctText(n){ if(!isFinite(n)) return '—'; const p = n*100; return (p<0.1&&p>0)?'<0.1%':p.toFixed(2)+'%'; }
+  function ensureMiniHost(){
+    const heading = Array.from(document.querySelectorAll('.section-title'))
+      .find(h => /High Profile Portfolios/i.test((h.textContent||'')));
+    if(!heading) return null;
+    const card = heading.closest('section') || heading.parentElement;
+    if(!card) return null;
+    card.classList.add('portfolios-card');
+    let host = card.querySelector('#mini-portfolios');
+    if(!host){
+      host = document.createElement('div');
+      host.className = 'mini-grid';
+      host.id = 'mini-portfolios';
+      heading.insertAdjacentElement('afterend', host);
+    }
+    return {card,host};
+  }
+  function drawMiniDonut(el, items){
+    const w=120,h=120,cx=60,cy=60,r=44, ANGLE_OFFSET=Math.PI/2;
+    const NS='http://www.w3.org/2000/svg';
+    const svg=document.createElementNS(NS,'svg'); svg.setAttribute('viewBox','0 0 '+w+' '+h); svg.setAttribute('width', w); svg.setAttribute('height', h);
+    let start=0;
+    const pal=['#0021A5','#FA4616','#0077c0','#22884C','#D50A0A','#FCD006','#4B2A91','#6B21A8','#0EA5E9','#FF7900','#A855F7','#CA8A04','#34302B','#B1BABf'];
+    (items||[]).forEach((x,i)=>{
+      const frac=Math.max(0,x.weight||0);
+      const end=start+frac*2*Math.PI;
+      const large=(end-start)>Math.PI?1:0;
+      const sA=start+ANGLE_OFFSET, eA=end+ANGLE_OFFSET;
+      const x1=cx+r*Math.cos(sA), y1=cy+r*Math.sin(sA);
+      const x2=cx+r*Math.cos(eA), y2=cy+r*Math.sin(eA);
+      const p=document.createElementNS(NS,'path');
+      p.setAttribute('d','M '+cx+' '+cy+' L '+x1+' '+y1+' A '+r+' '+r+' 0 '+large+' 1 '+x2+' '+y2+' Z');
+      p.setAttribute('fill', pal[i%pal.length]);
+      svg.appendChild(p);
+      start=end;
+    });
+    const hole=document.createElementNS(NS,'circle');
+    hole.setAttribute('cx', cx); hole.setAttribute('cy', cy);
+    hole.setAttribute('r', String(Math.round(r*0.58)));
+    try{
+      const cs = getComputedStyle(document.documentElement);
+      const fill = cs.getPropertyValue('--card').trim() || '#11161d';
+      const stroke = cs.getPropertyValue('--border').trim() || '#223142';
+      hole.setAttribute('fill', fill);
+      hole.setAttribute('stroke', stroke);
+      hole.setAttribute('stroke-width', '1');
+    }catch(e){
+      hole.setAttribute('fill', '#11161d');
+      hole.setAttribute('stroke', '#223142');
+      hole.setAttribute('stroke-width', '1');
+    }
+    svg.appendChild(hole);
+    el.innerHTML=''; el.appendChild(svg);
+  }
+  function buildMini(sec){
+    const pal=['#0021A5','#FA4616','#0077c0','#22884C','#D50A0A','#FCD006','#4B2A91','#6B21A8','#0EA5E9','#FF7900','#A855F7','#CA8A04','#34302B','#B1BABf'];
+    const box=document.createElement('div'); box.className='mini-card';
+    const pie=document.createElement('div'); pie.className='mini-pie';
+    const legend=document.createElement('div'); legend.className='mini-legend';
+    const title=document.createElement('div'); title.className='mini-title'; title.textContent=sec.name||'Portfolio';
+    legend.appendChild(title);
+    const items=(sec.holdings||[]);
+    drawMiniDonut(pie, items);
+    items.forEach((x,i)=>{
+      const row=document.createElement('div'); row.className='row';
+      const sw=document.createElement('span'); sw.className='sw'; sw.style.background=pal[i%pal.length];
+      const label=document.createElement('span'); label.innerHTML=(x.ticker||'?')+' — '+pctText(x.weight);
+      row.appendChild(sw); row.appendChild(label); legend.appendChild(row);
+    });
+    box.appendChild(pie); box.appendChild(legend);
+    return box;
+  }
+  (function render(){
+    const ctx = ensureMiniHost();
+    if(!ctx) return;
+    const {card,host} = ctx;
+    host.innerHTML='';
+    (SECTIONS||[]).forEach(sec => host.appendChild(buildMini(sec)));
+    card.addEventListener('click', (e)=>{
+      const a = e.target.closest && e.target.closest('a'); if(a) return;
+      window.location.href = 'portfolios.html';
+    });
+  })();
+})();
+</script>
+<script>
+(function(){
+  const DATA = (function(){ try { return [{"symbol":"AEP","date":"2025-10-21","entry_price":117.43000030517578,"current_price":117.43000030517578,"pnl_float":0.0,"pnl_text":"0.00%","gap_ups":"0","info":"Traded by Rick Larsen who sits on committee that oversees funding for enery infrastructure","logo_url":"https://logo.clearbit.com/www.aep.com"},{"symbol":"HOOD","date":"2025-10-15","entry_price":134.14999389648438,"current_price":131.83999633789062,"pnl_float":-0.01721951296081492,"pnl_text":"-1.72%","gap_ups":"0","info":"Traded by John Jackson","logo_url":"https://logo.clearbit.com/robinhood.com"},{"symbol":"IDXX","date":"2025-10-8","entry_price":629.9099731445312,"current_price":637.1300048828125,"pnl_float":0.011462005756534666,"pnl_text":"1.15%","gap_ups":"0","info":"Traded by 5 politicians","logo_url":"https://logo.clearbit.com/www.idexx.com"},{"symbol":"UNH","date":"2025-10-2","entry_price":353.7200012207031,"current_price":365.3699951171875,"pnl_float":0.032935637951712504,"pnl_text":"3.29%","gap_ups":"0","info":"Traded by Mark Wayne Mullin who sits on committee of health","logo_url":"https://logo.clearbit.com/www.unitedhealthgroup.com"},{"symbol":"BBAI","date":"2025-9-15","entry_price":5.090000152587891,"current_price":7.079999923706055,"pnl_float":0.3909626152184682,"pnl_text":"39.10%","gap_ups":"1","info":"Traded by Lisa McClain","logo_url":"https://logo.clearbit.com/bigbear.ai"},{"symbol":"SSYS","date":"2025-8-19","entry_price":10.609999656677246,"current_price":12.350000381469727,"pnl_float":0.16399630359058848,"pnl_text":"16.40%","gap_ups":"0","info":"Traded by Debbie Schultz who sits on military subcommittee","logo_url":"https://logo.clearbit.com/www.stratasys.com"},{"symbol":"IREN","date":"2025-7-11","entry_price":16.229999542236328,"current_price":55.19499969482422,"pnl_float":2.400801062944387,"pnl_text":"240.08%","gap_ups":"2","info":"Traded by Cleo Fields who sits on committee that oversees funding for enery infrastructure","logo_url":"https://logo.clearbit.com/iren.com"},{"symbol":"PANW","date":"2024-12-20","entry_price":186.77999877929688,"current_price":214.39999389648438,"pnl_float":0.14787447958934763,"pnl_text":"14.79%","gap_ups":"0","info":"Traded by Pelosi","logo_url":"https://logo.clearbit.com/www.paloaltonetworks.com"},{"symbol":"VSAT","date":"2024-11-20","entry_price":6.929999828338623,"current_price":36.68000030517578,"pnl_float":4.292929468076095,"pnl_text":"429.29%","gap_ups":"1","info":"Traded by Debbie Schultz who sits on military subcommittee","logo_url":"https://logo.clearbit.com/www.viasat.com"},{"symbol":"NVDA","date":"2024-06-26","entry_price":126.4000015258789,"current_price":181.16000366210938,"pnl_float":0.43322785977197165,"pnl_text":"43.32%","gap_ups":"0","info":"Traded by Pelosi","logo_url":"https://logo.clearbit.com/www.nvidia.com"},{"symbol":"AVGO","date":"2024-06-26","entry_price":159.1999969482422,"current_price":342.6600036621094,"pnl_float":1.1523869989363895,"pnl_text":"115.24%","gap_ups":"0","info":"Traded by Pelosi","logo_url":"https://logo.clearbit.com/www.broadcom.com"}]; } catch(e){ return []; } })();
+  if(!DATA || !DATA.length) return;
+
+  function buildHpCard(){
+    const card = document.createElement('div'); card.className='hpmini-card';
+    const title = document.createElement('div'); title.className='hpmini-title'; title.textContent='High-Profile Stocks';
+    const wrap = document.createElement('div'); wrap.className='hpmini-wrap';
+    wrap.innerHTML = `<table>
+      <thead><tr><th>Symbol</th><th>Date</th><th>Entry</th><th>Now</th><th>PNL</th><th>Gap Ups</th><th>Info</th></tr></thead>
+      <tbody>
+        ${DATA.map(r=>{
+          const ep = (r.entry_price!=null)?('$'+Number(r.entry_price).toFixed(2)):'—';
+          const cp = (r.current_price!=null)?('$'+Number(r.current_price).toFixed(2)):'—';
+          const logo = r.logo_url ? `<img src="${r.logo_url}" style="width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:6px">` : '';
+          const pnl = (r.pnl_float!=null)?`<span class="${r.pnl_float>=0?'hpmini-pct up':'hpmini-pct down'}">${(r.pnl_float*100).toFixed(2)}%</span>`:'—';
+          return `<tr>
+            <td>${logo}<strong>${r.symbol||'?'}</strong></td>
+            <td>${r.date||''}</td>
+            <td>${ep}</td>
+            <td>${cp}</td>
+            <td>${pnl}</td>
+            <td>${r.gap_ups||''}</td>
+            <td>${r.info||''}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+    card.appendChild(title); card.appendChild(wrap);
+    return card;
+  }
+
+  const host = document.getElementById('mini-portfolios');
+  if (host) { host.prepend(buildHpCard()); }
+})();
+</script>
+
 </body>
 </html>

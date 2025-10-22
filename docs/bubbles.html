@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Bubbles — Report</title>
+  <title>bubbles — Report</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root{--bg:#0b0f14;--card:#11161d;--muted:#8ea0b3;--text:#e7eef7;--green:#16a34a;--red:#dc2626;--border:#223142;--barbg:#2c3238}
@@ -115,7 +115,7 @@ details[open] > summary::after { content: "▴"; }
     <header class="head">
   <div class="left">
     <a class="back" href="overview.html">&larr; Back</a>
-    <h1>Bubbles</h1>
+    <h1>bubbles</h1>
   </div>
 </header>
 
@@ -124,15 +124,15 @@ details[open] > summary::after { content: "▴"; }
       <!-- Balance card (includes sparkline WITH axes, contained) -->
       <section class="card" style="grid-column: span 5;">
         <div class="section-title">Balance</div>
-        <div class="value" style="margin-bottom:6px">$10,000.00</div>
+        <div class="value" style="margin-bottom:6px">$8,899.54</div>
         <div id="balanceWrap"><canvas id="spark"></canvas></div>
       </section>
 
       <section class="card" style="grid-column: span 3;">
         <div class="section-title">Win Rate</div>
         <div class="donut">
-          <div class="pie" style="--p: 0.0%;"></div>
-          <div class="winrate-num">0.0%</div>
+          <div class="pie" style="--p: 33.33%;"></div>
+          <div class="winrate-num">33.0%</div>
         </div>
         <div class="muted" style="margin-top:6px">wins vs losses (closed trades)</div>
       </section>
@@ -143,16 +143,16 @@ details[open] > summary::after { content: "▴"; }
         <div class="bar-block">
           <div>
             <div class="muted">Average Win</div>
-            <div class="hbar"><div class="fill win" style="width: 0.0%;"></div></div>
+            <div class="hbar"><div class="fill win" style="width: 47.0%;"></div></div>
           </div>
           <div>
             <div class="muted">Average Loss</div>
-            <div class="hbar"><div class="fill loss" style="width: 0.0%;"></div></div>
+            <div class="hbar"><div class="fill loss" style="width: 100.0%;"></div></div>
           </div>
           <div class="legend">
             <span><span class="chip" style="background:var(--green)"></span>Avg Win PNL %</span>
             <span><span class="chip" style="background:var(--red)"></span>Avg Loss PNL %</span>
-            <span class="muted">0.0% vs 0.0%</span>
+            <span class="muted">7.99% vs -16.85%</span>
           </div>
         </div>
       </section>
@@ -203,7 +203,7 @@ details[open] > summary::after { content: "▴"; }
     
     <details style="margin-top:14px;">
       <summary>Portfolio Analysis</summary>
-      <div class="inner"><pre>Dev mode sample (no API key).</pre></div>
+      <div class="inner"><pre>Fully invested across MMM, CMC, and ARCT, all of which remain in today&#39;s candidate set. No superior rotation identified intraday; maintaining positions and risk profile. Insufficient cash for incremental buys without trimming winners; holding steady.</pre></div>
     </details>
     
 
@@ -212,9 +212,9 @@ details[open] > summary::after { content: "▴"; }
       <summary>Prompt</summary>
       <div class="inner"><pre>You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.
 
-- Starting balance for a new/first run: 10000.0.
+- Starting balance for a new/first run: 8899.538415.
 
-- Include only NEW actions since yesterday but ensure the final &#39;balance_after&#39; reflects current balance.
+- Include only NEW actions since 2025-10-21T14:45:01Z but ensure the final &#39;balance_after&#39; reflects current balance.
 
 - Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).
 
@@ -232,21 +232,21 @@ details[open] > summary::after { content: "▴"; }
 
 PRICES_TODAY (USD):
 
-ABAT=9.22, AREC=4.98, ASPI=13.32, BAIG=31.88, CRML=23.28, ELBM=7.02, GWH=9.05, HOVR=3.67, IMAB=5.79, LITM=5.94, LTBR=26.91, NAK=2.66, NKLR=18.26, OMEX=3.49, QBTS=40.62, QSI=2.08, REMX=79.22, RGTI=54.91, SOAR=3.46, STI=21.62, UAMY=16.71, WTI=2.52, WWR=2.56, XCH=1.68
+ACRS=2.38, ARCT=23.16, AVDL=17.87, BOF=2.80, BTSG=32.25, BYND=3.62, CMC=62.05, CRDL=1.21, GDXD=0.86, MGNX=2.02, MMM=166.64, MP=74.11, NUVB=4.21, PMI=12.63, QS=15.52, RANI=2.85, REMX=86.05, RYOJ=9.12, STLD=153.82
 
 CANDIDATES_TODAY:
 
-- gap_ups: ELBM, STI, XCH, GWH, CRML, LITM, WTI, ABAT, WWR, UAMY, AREC, REMX
-- pivots: ELBM, STI, XCH, GWH, SOAR, CRML, BAIG, LITM, HOVR, NAK, ASPI, OMEX, IMAB, QSI, NKLR, QBTS, RGTI, LTBR, WTI, ABAT
-(total candidates: 32)
+- gap_ups: RYOJ, BYND, RANI, AVDL, BOF, GDXD
+- pivots: RYOJ, BYND, RANI, MGNX, ACRS, NUVB, CRDL, AVDL, BOF, PMI, ARCT, BTSG, CMC, GDXD, MMM, STLD
+(total candidates: 22)
 
 CURRENT_PORTFOLIO_STATE:
 
-AVAILABLE_CASH_USD: 0.00
+AVAILABLE_CASH_USD: 0.39
 OPEN_POSITIONS:
-- MP: qty=40.916500, ref_price=97.7600, first_buy_time=2025-10-13T14:30:00Z
-- QS: qty=204.081600, ref_price=17.1500, first_buy_time=2025-10-13T14:31:00Z
-- REMX: qty=31.375500, ref_price=79.2200, first_buy_time=2025-10-13T14:32:00Z
+- MMM: qty=21.360000, ref_price=166.6400, first_buy_time=2025-10-21T14:31:04Z
+- CMC: qty=43.027500, ref_price=62.0500, first_buy_time=2025-10-21T14:31:05Z
+- ARCT: qty=115.279000, ref_price=23.1600, first_buy_time=2025-10-21T14:31:06Z
 
 Schema:
 
@@ -313,15 +313,32 @@ Example HOLD:
     
     <details style="margin-top:12px;">
       <summary>Response</summary>
-      <div class="inner"><pre>{&#34;model_name&#34;: &#34;bubbles&#34;, &#34;universe&#34;: &#34;ALL&#34;, &#34;starting_balance&#34;: 10000.0, &#34;portfolio_analysis&#34;: &#34;Dev mode sample (no API key).&#34;, &#34;trades&#34;: []}</pre></div>
+      <div class="inner"><pre>{
+  &#34;model_name&#34;: &#34;alpha-rotator-v1&#34;,
+  &#34;universe&#34;: &#34;ALL&#34;,
+  &#34;starting_balance&#34;: 8899.538415,
+  &#34;portfolio_analysis&#34;: &#34;Fully invested across MMM, CMC, and ARCT, all of which remain in today&#39;s candidate set. No superior rotation identified intraday; maintaining positions and risk profile. Insufficient cash for incremental buys without trimming winners; holding steady.&#34;,
+  &#34;trades&#34;: [
+    {
+      &#34;time&#34;: &#34;2025-10-22T14:46:00Z&#34;,
+      &#34;symbol&#34;: &#34;CASH&#34;,
+      &#34;side&#34;: &#34;hold&#34;,
+      &#34;qty&#34;: 0,
+      &#34;price&#34;: 0,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 8899.538415,
+      &#34;notes&#34;: &#34;No changes; retaining MMM, CMC, ARCT. Portfolio remains ~100% allocated using current prices.&#34;
+    }
+  ]
+}</pre></div>
     </details>
     
   </div>
 
   <script>
     // server-provided data
-    window.TRADES = [{"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Third entry; ~25% allocation via ETF for diversified exposure to rare earth miners.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "79.680000", "price_num": 79.68, "qty": "31.3755", "qty_num": 31.3755, "side": "buy", "symbol": "REMX", "time": "2025-10-13T14:32:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Second entry; ~35% allocation to strong pivot candidate with high liquidity.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "17.150000", "price_num": 17.15, "qty": "204.0816", "qty_num": 204.0816, "side": "buy", "symbol": "QS", "time": "2025-10-13T14:31:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Initial entry; ~40% allocation to liquid leader in rare earths.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "97.760000", "price_num": 97.76, "qty": "40.9165", "qty_num": 40.9165, "side": "buy", "symbol": "MP", "time": "2025-10-13T14:30:00Z"}];
-    const BAL = {"t":["2025-10-13T14:30:00Z","2025-10-13T14:31:00Z","2025-10-13T14:32:00Z"],"v":[10000.0,10000.0,10000.0]};
+    window.TRADES = [{"balance_after": "$8,899.54", "balance_after_num": 8899.538415, "balance_dir": 1, "notes": "No changes; retaining MMM, CMC, ARCT. Portfolio remains ~100% allocated using current prices.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.000000", "price_num": 0.0, "qty": "0", "qty_num": 0.0, "side": "hold", "symbol": "CASH", "time": "2025-10-22T14:46:00Z"}, {"balance_after": "$8,899.54", "balance_after_num": 8899.538415, "balance_dir": 1, "notes": "Hold existing positions (MMM, CMC, ARCT); fully invested and aligned with candidate list; no rebalance today.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.000000", "price_num": 0.0, "qty": "0", "qty_num": 0.0, "side": "hold", "symbol": "CASH", "time": "2025-10-21T14:45:01Z"}, {"balance_after": "$8,899.54", "balance_after_num": 8899.538247, "balance_dir": 1, "notes": "Momentum biotech from candidate list to complete diversified 3-name allocation.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "23.160000", "price_num": 23.16, "qty": "115.279", "qty_num": 115.279, "side": "buy", "symbol": "ARCT", "time": "2025-10-21T14:31:06Z"}, {"balance_after": "$8,899.54", "balance_after_num": 8899.538247, "balance_dir": 1, "notes": "Pivot candidate; strong relative strength.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "62.050000", "price_num": 62.05, "qty": "43.0275", "qty_num": 43.0275, "side": "buy", "symbol": "CMC", "time": "2025-10-21T14:31:05Z"}, {"balance_after": "$8,899.54", "balance_after_num": 8899.538247, "balance_dir": 1, "notes": "Pivot candidate; large-cap anchor allocation.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "166.640000", "price_num": 166.64, "qty": "21.36", "qty_num": 21.36, "side": "buy", "symbol": "MMM", "time": "2025-10-21T14:31:04Z"}, {"balance_after": "$8,899.54", "balance_after_num": 8899.538247, "balance_dir": -1, "notes": "Exit to concentrate capital in today\u2019s leaders.", "pnl_pct": "-24.19%", "pnl_pct_num": -0.2419, "price": "74.110000", "price_num": 74.11, "qty": "40.9165", "qty_num": 40.9165, "side": "sell", "symbol": "MP", "time": "2025-10-21T14:31:02Z"}, {"balance_after": "$8,899.54", "balance_after_num": 8899.538247, "balance_dir": -1, "notes": "Exit to rotate into stronger candidates.", "pnl_pct": "-9.50%", "pnl_pct_num": -0.095, "price": "15.520000", "price_num": 15.52, "qty": "204.0816", "qty_num": 204.0816, "side": "sell", "symbol": "QS", "time": "2025-10-21T14:31:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Third entry; ~25% allocation via ETF for diversified exposure to rare earth miners.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "79.680000", "price_num": 79.68, "qty": "31.3755", "qty_num": 31.3755, "side": "buy", "symbol": "REMX", "time": "2025-10-13T14:32:00Z"}, {"balance_after": "$10,299.58", "balance_after_num": 10299.58, "balance_dir": 1, "notes": "Third entry; ~25% allocation via ETF for diversified exposure to rare earth miners.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "86.050000", "price_num": 86.05, "qty": "31.3755", "qty_num": 31.3755, "side": "sell", "symbol": "REMX", "time": "2025-10-13T14:32:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Second entry; ~35% allocation to strong pivot candidate with high liquidity.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "17.150000", "price_num": 17.15, "qty": "204.0816", "qty_num": 204.0816, "side": "buy", "symbol": "QS", "time": "2025-10-13T14:31:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Initial entry; ~40% allocation to liquid leader in rare earths.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "97.760000", "price_num": 97.76, "qty": "40.9165", "qty_num": 40.9165, "side": "buy", "symbol": "MP", "time": "2025-10-13T14:30:00Z"}];
+    const BAL = {"t":["2025-10-13T14:30:00Z","2025-10-13T14:31:00Z","2025-10-13T14:32:00Z","2025-10-13T14:32:00Z","2025-10-21T14:31:00Z","2025-10-21T14:31:02Z","2025-10-21T14:31:04Z","2025-10-21T14:31:05Z","2025-10-21T14:31:06Z","2025-10-21T14:45:01Z","2025-10-22T14:46:00Z"],"v":[10000.0,10000.0,10000.0,10299.58,8899.538247,8899.538247,8899.538247,8899.538247,8899.538247,8899.538415,8899.538415]};
 
     const fmtMoney = v => (v==null ? "—" : "$"+Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}));
     const fmtPct   = v => (v==null ? "—" : (v*100).toFixed(2)+"%");

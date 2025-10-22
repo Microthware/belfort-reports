@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Julian — Report</title>
+  <title>julian — Report</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
     :root{--bg:#0b0f14;--card:#11161d;--muted:#8ea0b3;--text:#e7eef7;--green:#16a34a;--red:#dc2626;--border:#223142;--barbg:#2c3238}
@@ -115,7 +115,7 @@ details[open] > summary::after { content: "▴"; }
     <header class="head">
   <div class="left">
     <a class="back" href="overview.html">&larr; Back</a>
-    <h1>Julian</h1>
+    <h1>julian</h1>
   </div>
 </header>
 
@@ -203,7 +203,7 @@ details[open] > summary::after { content: "▴"; }
     
     <details style="margin-top:14px;">
       <summary>Portfolio Analysis</summary>
-      <div class="inner"><pre>Dev mode sample (no API key).</pre></div>
+      <div class="inner"><pre>Deployed capital across 7 liquid momentum candidates from today’s list (MMM, STLD, CMC, ARCT, AVDL, BTSG, PMI) to achieve diversified exposure while avoiding sub-$10/penny names. Equal-weight style sizing with small residual cash due to whole-share rounding.</pre></div>
     </details>
     
 
@@ -232,22 +232,18 @@ details[open] > summary::after { content: "▴"; }
 
 PRICES_TODAY (USD):
 
-ABAT=9.22, AREC=4.98, ASPI=13.32, BAIG=31.88, CRML=23.28, ELBM=7.02, GWH=9.05, HOVR=3.67, IMAB=5.79, LITM=5.94, LTBR=26.91, NAK=2.66, NKLR=18.26, OMEX=3.49, QBTS=40.62, QSI=2.08, REMX=79.22, RGTI=54.91, SOAR=3.46, STI=21.62, UAMY=16.71, WTI=2.52, WWR=2.56, XCH=1.68
+ACRS=2.38, ARCT=23.16, AVDL=17.87, BOF=2.80, BTSG=32.25, BYND=3.62, CMC=62.05, CRDL=1.21, GDXD=0.86, MGNX=2.02, MMM=166.64, NUVB=4.21, PMI=12.63, RANI=2.85, RYOJ=9.12, STLD=153.82
 
 CANDIDATES_TODAY:
 
-- gap_ups: ELBM, STI, XCH, GWH, CRML, LITM, WTI, ABAT, WWR, UAMY, AREC, REMX
-- pivots: ELBM, STI, XCH, GWH, SOAR, CRML, BAIG, LITM, HOVR, NAK, ASPI, OMEX, IMAB, QSI, NKLR, QBTS, RGTI, LTBR, WTI, ABAT
-(total candidates: 32)
+- gap_ups: RYOJ, BYND, RANI, AVDL, BOF, GDXD
+- pivots: RYOJ, BYND, RANI, MGNX, ACRS, NUVB, CRDL, AVDL, BOF, PMI, ARCT, BTSG, CMC, GDXD, MMM, STLD
+(total candidates: 22)
 
 CURRENT_PORTFOLIO_STATE:
 
-AVAILABLE_CASH_USD: 0.17
-OPEN_POSITIONS:
-- MP: qty=30.687300, ref_price=97.7600, first_buy_time=2025-10-13T14:30:00Z
-- QS: qty=145.770000, ref_price=17.1500, first_buy_time=2025-10-13T14:30:05Z
-- FLNC: qty=154.600000, ref_price=16.1700, first_buy_time=2025-10-13T14:30:10Z
-- REMX: qty=25.100400, ref_price=79.2200, first_buy_time=2025-10-13T14:30:15Z
+AVAILABLE_CASH_USD: 10000.00
+OPEN_POSITIONS: []
 
 Schema:
 
@@ -314,15 +310,92 @@ Example HOLD:
     
     <details style="margin-top:12px;">
       <summary>Response</summary>
-      <div class="inner"><pre>{&#34;model_name&#34;: &#34;julian&#34;, &#34;universe&#34;: &#34;ALL&#34;, &#34;starting_balance&#34;: 10000.0, &#34;portfolio_analysis&#34;: &#34;Dev mode sample (no API key).&#34;, &#34;trades&#34;: []}</pre></div>
+      <div class="inner"><pre>{
+  &#34;model_name&#34;: &#34;aggressive-momo-v1&#34;,
+  &#34;universe&#34;: &#34;ALL&#34;,
+  &#34;starting_balance&#34;: 10000.0,
+  &#34;portfolio_analysis&#34;: &#34;Deployed capital across 7 liquid momentum candidates from today’s list (MMM, STLD, CMC, ARCT, AVDL, BTSG, PMI) to achieve diversified exposure while avoiding sub-$10/penny names. Equal-weight style sizing with small residual cash due to whole-share rounding.&#34;,
+  &#34;trades&#34;: [
+    {
+      &#34;time&#34;: &#34;2025-10-22T13:31:00Z&#34;,
+      &#34;symbol&#34;: &#34;MMM&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 9,
+      &#34;price&#34;: 166.64,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 10000.0,
+      &#34;notes&#34;: &#34;Initiate position; large-cap momentum candidate from pivots.&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-22T13:32:00Z&#34;,
+      &#34;symbol&#34;: &#34;STLD&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 9,
+      &#34;price&#34;: 153.82,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 10000.0,
+      &#34;notes&#34;: &#34;Steel leader with strong trend and liquidity.&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-22T13:33:00Z&#34;,
+      &#34;symbol&#34;: &#34;CMC&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 22,
+      &#34;price&#34;: 62.05,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 10000.0,
+      &#34;notes&#34;: &#34;Metals momentum; complements STLD while spreading risk.&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-22T13:34:00Z&#34;,
+      &#34;symbol&#34;: &#34;ARCT&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 60,
+      &#34;price&#34;: 23.16,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 10000.0,
+      &#34;notes&#34;: &#34;Biotech candidate from pivots; acceptable liquidity and strength.&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-22T13:35:00Z&#34;,
+      &#34;symbol&#34;: &#34;AVDL&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 80,
+      &#34;price&#34;: 17.87,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 10000.0,
+      &#34;notes&#34;: &#34;Gap/pivot alignment; momentum continuation setup.&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-22T13:36:00Z&#34;,
+      &#34;symbol&#34;: &#34;BTSG&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 45,
+      &#34;price&#34;: 32.25,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 10000.0,
+      &#34;notes&#34;: &#34;Candidate with favorable trend and volatility-adjusted strength.&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-22T13:37:00Z&#34;,
+      &#34;symbol&#34;: &#34;PMI&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 110,
+      &#34;price&#34;: 12.63,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 10000.0,
+      &#34;notes&#34;: &#34;Pivot candidate &gt;$10; rounds out diversification. Residual cash $91.01.&#34;
+    }
+  ]
+}</pre></div>
     </details>
     
   </div>
 
   <script>
     // server-provided data
-    window.TRADES = [{"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Initiate ~20% allocation; ETF exposure to rare earths/miners adds diversification.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "79.680000", "price_num": 79.68, "qty": "25.1004", "qty_num": 25.1004, "side": "buy", "symbol": "REMX", "time": "2025-10-13T14:30:15Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Initiate ~25% allocation; energy storage leader showing pivot strength and solid liquidity.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "16.170000", "price_num": 16.17, "qty": "154.6", "qty_num": 154.6, "side": "buy", "symbol": "FLNC", "time": "2025-10-13T14:30:10Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Initiate ~25% allocation; battery tech momentum from candidate list with improving trend.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "17.150000", "price_num": 17.15, "qty": "145.77", "qty_num": 145.77, "side": "buy", "symbol": "QS", "time": "2025-10-13T14:30:05Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Initiate ~30% allocation; strong momentum and liquidity within rare earths theme.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "97.760000", "price_num": 97.76, "qty": "30.6873", "qty_num": 30.6873, "side": "buy", "symbol": "MP", "time": "2025-10-13T14:30:00Z"}];
-    const BAL = {"t":["2025-10-13T14:30:00Z","2025-10-13T14:30:05Z","2025-10-13T14:30:10Z","2025-10-13T14:30:15Z"],"v":[10000.0,10000.0,10000.0,10000.0]};
+    window.TRADES = [{"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Pivot candidate \u003e$10; rounds out diversification. Residual cash $91.01.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "12.630000", "price_num": 12.63, "qty": "110", "qty_num": 110.0, "side": "buy", "symbol": "PMI", "time": "2025-10-22T13:37:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Candidate with favorable trend and volatility-adjusted strength.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "32.250000", "price_num": 32.25, "qty": "45", "qty_num": 45.0, "side": "buy", "symbol": "BTSG", "time": "2025-10-22T13:36:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Gap/pivot alignment; momentum continuation setup.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "17.870000", "price_num": 17.87, "qty": "80", "qty_num": 80.0, "side": "buy", "symbol": "AVDL", "time": "2025-10-22T13:35:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Biotech candidate from pivots; acceptable liquidity and strength.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "23.160000", "price_num": 23.16, "qty": "60", "qty_num": 60.0, "side": "buy", "symbol": "ARCT", "time": "2025-10-22T13:34:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Metals momentum; complements STLD while spreading risk.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "62.050000", "price_num": 62.05, "qty": "22", "qty_num": 22.0, "side": "buy", "symbol": "CMC", "time": "2025-10-22T13:33:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Steel leader with strong trend and liquidity.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "153.820000", "price_num": 153.82, "qty": "9", "qty_num": 9.0, "side": "buy", "symbol": "STLD", "time": "2025-10-22T13:32:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Initiate position; large-cap momentum candidate from pivots.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "166.640000", "price_num": 166.64, "qty": "9", "qty_num": 9.0, "side": "buy", "symbol": "MMM", "time": "2025-10-22T13:31:00Z"}];
+    const BAL = {"t":["2025-10-22T13:31:00Z","2025-10-22T13:32:00Z","2025-10-22T13:33:00Z","2025-10-22T13:34:00Z","2025-10-22T13:35:00Z","2025-10-22T13:36:00Z","2025-10-22T13:37:00Z"],"v":[10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0]};
 
     const fmtMoney = v => (v==null ? "—" : "$"+Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}));
     const fmtPct   = v => (v==null ? "—" : (v*100).toFixed(2)+"%");

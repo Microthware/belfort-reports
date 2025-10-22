@@ -200,6 +200,91 @@
         ],
         "portfolio_analysis": "Fully invested across MMM, CMC, and ARCT, all of which remain in today's candidate set. No superior rotation identified intraday; maintaining positions and risk profile. Insufficient cash for incremental buys without trimming winners; holding steady."
       }
+    },
+    {
+      "saved_at": "2025-10-22T21:29:52.189307Z",
+      "ending_balance": 7472.34476,
+      "last_trade_time": "2025-10-22T15:03:13Z",
+      "raw": "{\n  \"model_name\": \"alpha-momentum-rotator-v2\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 8899.538415,\n  \"portfolio_analysis\": \"Rotated out of non-candidate holdings into today\u2019s higher-ranked candidates (AVY, PEGA, WGO, TNL), prioritizing liquidity and momentum while avoiding penny stocks. Fully invested across 4 positions with minimal residual cash.\",\n  \"trades\": [\n    {\n      \"time\": \"2025-10-22T15:02:11Z\",\n      \"symbol\": \"MMM\",\n      \"side\": \"sell\",\n      \"qty\": 21.36,\n      \"price\": 167.23,\n      \"pnl_pct\": 0.0,\n      \"balance_after\": 7472.34476,\n      \"notes\": \"Exit to rotate into stronger candidates.\"\n    },\n    {\n      \"time\": \"2025-10-22T15:02:15Z\",\n      \"symbol\": \"CMC\",\n      \"side\": \"sell\",\n      \"qty\": 43.0275,\n      \"price\": 59.72,\n      \"pnl_pct\": 0.0,\n      \"balance_after\": 7472.34476,\n      \"notes\": \"Exit to reallocate into momentum names.\"\n    },\n    {\n      \"time\": \"2025-10-22T15:02:19Z\",\n      \"symbol\": \"ARCT\",\n      \"side\": \"sell\",\n      \"qty\": 115.279,\n      \"price\": 11.54,\n      \"pnl_pct\": 0.0,\n      \"balance_after\": 7472.34476,\n      \"notes\": \"Exit to consolidate into today\u2019s setups.\"\n    },\n    {\n      \"time\": \"2025-10-22T15:03:00Z\",\n      \"symbol\": \"AVY\",\n      \"side\": \"buy\",\n      \"qty\": 12.5206,\n      \"price\": 179.04,\n      \"pnl_pct\": null,\n      \"balance_after\": 7472.34476,\n      \"notes\": \"Candidate (pivot); large-cap, strong relative strength.\"\n    },\n    {\n      \"time\": \"2025-10-22T15:03:05Z\",\n      \"symbol\": \"PEGA\",\n      \"side\": \"buy\",\n      \"qty\": 34.1775,\n      \"price\": 65.59,\n      \"pnl_pct\": null,\n      \"balance_after\": 7472.34476,\n      \"notes\": \"Candidate (pivot); momentum continuation setup.\"\n    },\n    {\n      \"time\": \"2025-10-22T15:03:09Z\",\n      \"symbol\": \"WGO\",\n      \"side\": \"buy\",\n      \"qty\": 36.7733,\n      \"price\": 40.64,\n      \"pnl_pct\": null,\n      \"balance_after\": 7472.34476,\n      \"notes\": \"Candidate (gap_up + pivot); fresh strength.\"\n    },\n    {\n      \"time\": \"2025-10-22T15:03:13Z\",\n      \"symbol\": \"TNL\",\n      \"side\": \"buy\",\n      \"qty\": 21.377,\n      \"price\": 69.91,\n      \"pnl_pct\": null,\n      \"balance_after\": 7472.34476,\n      \"notes\": \"Candidate (pivot); complements basket; avoids penny names.\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 8899.538415.\n\n- Include only NEW actions since 2025-10-22T14:46:00Z but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nARCT=11.54, AVY=179.04, BENF=1.49, CMC=59.72, EONR=0.63, MMM=167.23, MP=74.11, PEGA=65.59, QS=15.52, REMX=86.05, RZLT=9.83, TNL=69.91, WGO=40.64, XTKG=2.05\n\nCANDIDATES_TODAY:\n\n- gap_ups: BENF, EONR, WGO\n- pivots: BENF, EONR, TNL, WGO, RZLT, XTKG, AVY, PEGA\n(total candidates: 11)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 0.39\nOPEN_POSITIONS:\n- MMM: qty=21.360000, ref_price=167.2300, first_buy_time=2025-10-21T14:31:04Z\n- CMC: qty=43.027500, ref_price=59.7200, first_buy_time=2025-10-21T14:31:05Z\n- ARCT: qty=115.279000, ref_price=11.5400, first_buy_time=2025-10-21T14:31:06Z\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take high risk approach and concentrate the entire portfolio in 1\u20134 stocks at all times.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 1\u20134 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 1\u20134 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.). It\u2019s OK to be 100% in one.\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "bubbles",
+        "universe": "ALL",
+        "starting_balance": 8899.538415,
+        "trades": [
+          {
+            "time": "2025-10-22T15:03:13Z",
+            "symbol": "TNL",
+            "side": "buy",
+            "qty": 21.377,
+            "price": 69.91,
+            "pnl_pct": null,
+            "balance_after": 7472.34476,
+            "notes": "Candidate (pivot); complements basket; avoids penny names."
+          },
+          {
+            "time": "2025-10-22T15:03:09Z",
+            "symbol": "WGO",
+            "side": "buy",
+            "qty": 36.7733,
+            "price": 40.64,
+            "pnl_pct": null,
+            "balance_after": 7472.34476,
+            "notes": "Candidate (gap_up + pivot); fresh strength."
+          },
+          {
+            "time": "2025-10-22T15:03:05Z",
+            "symbol": "PEGA",
+            "side": "buy",
+            "qty": 34.1775,
+            "price": 65.59,
+            "pnl_pct": null,
+            "balance_after": 7472.34476,
+            "notes": "Candidate (pivot); momentum continuation setup."
+          },
+          {
+            "time": "2025-10-22T15:03:00Z",
+            "symbol": "AVY",
+            "side": "buy",
+            "qty": 12.5206,
+            "price": 179.04,
+            "pnl_pct": null,
+            "balance_after": 7472.34476,
+            "notes": "Candidate (pivot); large-cap, strong relative strength."
+          },
+          {
+            "time": "2025-10-22T15:02:19Z",
+            "symbol": "ARCT",
+            "side": "sell",
+            "qty": 115.279,
+            "price": 11.54,
+            "pnl_pct": 0.0,
+            "balance_after": 7472.34476,
+            "notes": "Exit to consolidate into today\u2019s setups."
+          },
+          {
+            "time": "2025-10-22T15:02:15Z",
+            "symbol": "CMC",
+            "side": "sell",
+            "qty": 43.0275,
+            "price": 59.72,
+            "pnl_pct": 0.0,
+            "balance_after": 7472.34476,
+            "notes": "Exit to reallocate into momentum names."
+          },
+          {
+            "time": "2025-10-22T15:02:11Z",
+            "symbol": "MMM",
+            "side": "sell",
+            "qty": 21.36,
+            "price": 167.23,
+            "pnl_pct": 0.0,
+            "balance_after": 7472.34476,
+            "notes": "Exit to rotate into stronger candidates."
+          }
+        ],
+        "portfolio_analysis": "Rotated out of non-candidate holdings into today\u2019s higher-ranked candidates (AVY, PEGA, WGO, TNL), prioritizing liquidity and momentum while avoiding penny stocks. Fully invested across 4 positions with minimal residual cash."
+      }
     }
   ]
 }

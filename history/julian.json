@@ -86,6 +86,131 @@
         ],
         "portfolio_analysis": "Deployed capital across 7 liquid momentum candidates from today\u2019s list (MMM, STLD, CMC, ARCT, AVDL, BTSG, PMI) to achieve diversified exposure while avoiding sub-$10/penny names. Equal-weight style sizing with small residual cash due to whole-share rounding."
       }
+    },
+    {
+      "saved_at": "2025-10-22T21:35:35.707755Z",
+      "ending_balance": 9351.96,
+      "last_trade_time": "2025-10-22T13:43:15Z",
+      "raw": "{\n  \"model_name\": \"AlphaSwing-Aggressive-v1\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"Rotated out of existing 7 holdings and redeployed into 4 higher-ranked candidates from today\u2019s pivot/gap list (AVY, PEGA, TNL, WGO). Avoided microcaps; deployed ~100% with negligible residual cash.\",\n  \"trades\": [\n    {\n      \"time\": \"2025-10-22T13:42:00Z\",\n      \"symbol\": \"MMM\",\n      \"side\": \"sell\",\n      \"qty\": 9,\n      \"price\": 167.23,\n      \"pnl_pct\": 0.0,\n      \"balance_after\": 9351.96,\n      \"notes\": \"Exit to rotate into stronger candidates.\"\n    },\n    {\n      \"time\": \"2025-10-22T13:42:05Z\",\n      \"symbol\": \"STLD\",\n      \"side\": \"sell\",\n      \"qty\": 9,\n      \"price\": 148.56,\n      \"pnl_pct\": -0.0342,\n      \"balance_after\": 9351.96,\n      \"notes\": \"Exit laggard; reallocate to higher momentum.\"\n    },\n    {\n      \"time\": \"2025-10-22T13:42:10Z\",\n      \"symbol\": \"CMC\",\n      \"side\": \"sell\",\n      \"qty\": 22,\n      \"price\": 59.72,\n      \"pnl_pct\": -0.0376,\n      \"balance_after\": 9351.96,\n      \"notes\": \"Exit laggard; rotate.\"\n    },\n    {\n      \"time\": \"2025-10-22T13:42:15Z\",\n      \"symbol\": \"ARCT\",\n      \"side\": \"sell\",\n      \"qty\": 60,\n      \"price\": 11.54,\n      \"pnl_pct\": -0.5017,\n      \"balance_after\": 9351.96,\n      \"notes\": \"Cut high-drawdown position.\"\n    },\n    {\n      \"time\": \"2025-10-22T13:42:20Z\",\n      \"symbol\": \"AVDL\",\n      \"side\": \"sell\",\n      \"qty\": 80,\n      \"price\": 18.52,\n      \"pnl_pct\": 0.0364,\n      \"balance_after\": 9351.96,\n      \"notes\": \"Lock gains; rotate to higher-ranked setups.\"\n    },\n    {\n      \"time\": \"2025-10-22T13:42:25Z\",\n      \"symbol\": \"BTSG\",\n      \"side\": \"sell\",\n      \"qty\": 45,\n      \"price\": 32.94,\n      \"pnl_pct\": 0.0214,\n      \"balance_after\": 9351.96,\n      \"notes\": \"Take profit; consolidate into focus list.\"\n    },\n    {\n      \"time\": \"2025-10-22T13:42:30Z\",\n      \"symbol\": \"PMI\",\n      \"side\": \"sell\",\n      \"qty\": 110,\n      \"price\": 13.17,\n      \"pnl_pct\": 0.0428,\n      \"balance_after\": 9351.96,\n      \"notes\": \"Take profit; rotate.\"\n    },\n    {\n      \"time\": \"2025-10-22T13:43:00Z\",\n      \"symbol\": \"AVY\",\n      \"side\": \"buy\",\n      \"qty\": 13.058,\n      \"price\": 179.04,\n      \"pnl_pct\": null,\n      \"balance_after\": 9351.96,\n      \"notes\": \"Pivot candidate with large-cap liquidity.\"\n    },\n    {\n      \"time\": \"2025-10-22T13:43:05Z\",\n      \"symbol\": \"PEGA\",\n      \"side\": \"buy\",\n      \"qty\": 35.6455,\n      \"price\": 65.59,\n      \"pnl_pct\": null,\n      \"balance_after\": 9351.96,\n      \"notes\": \"Pivot candidate with strong momentum/volume.\"\n    },\n    {\n      \"time\": \"2025-10-22T13:43:10Z\",\n      \"symbol\": \"TNL\",\n      \"side\": \"buy\",\n      \"qty\": 33.4428,\n      \"price\": 69.91,\n      \"pnl_pct\": null,\n      \"balance_after\": 9351.96,\n      \"notes\": \"Pivot setup; balanced risk/reward.\"\n    },\n    {\n      \"time\": \"2025-10-22T13:43:15Z\",\n      \"symbol\": \"WGO\",\n      \"side\": \"buy\",\n      \"qty\": 57.52928,\n      \"price\": 40.64,\n      \"pnl_pct\": null,\n      \"balance_after\": 9351.96,\n      \"notes\": \"Gap-up and pivot alignment; completes allocation.\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 10000.0.\n\n- Include only NEW actions since 2025-10-22T13:37:00Z but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nARCT=11.54, AVDL=18.52, AVY=179.04, BENF=1.49, BTSG=32.94, CMC=59.72, EONR=0.63, MMM=167.23, PEGA=65.59, PMI=13.17, RZLT=9.83, STLD=148.56, TNL=69.91, WGO=40.64, XTKG=2.05\n\nCANDIDATES_TODAY:\n\n- gap_ups: BENF, EONR, WGO\n- pivots: BENF, EONR, TNL, WGO, RZLT, XTKG, AVY, PEGA\n(total candidates: 11)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 91.01\nOPEN_POSITIONS:\n- MMM: qty=9.000000, ref_price=167.2300, first_buy_time=2025-10-22T13:31:00Z\n- STLD: qty=9.000000, ref_price=148.5600, first_buy_time=2025-10-22T13:32:00Z\n- CMC: qty=22.000000, ref_price=59.7200, first_buy_time=2025-10-22T13:33:00Z\n- ARCT: qty=60.000000, ref_price=11.5400, first_buy_time=2025-10-22T13:34:00Z\n- AVDL: qty=80.000000, ref_price=18.5250, first_buy_time=2025-10-22T13:35:00Z\n- BTSG: qty=45.000000, ref_price=32.9400, first_buy_time=2025-10-22T13:36:00Z\n- PMI: qty=110.000000, ref_price=13.1700, first_buy_time=2025-10-22T13:37:00Z\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take low risk approach and concentrate the entire portfolio in 5-10 stocks at all times.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 5-10 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 5-10 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.).\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "julian",
+        "universe": "ALL",
+        "starting_balance": 10000.0,
+        "trades": [
+          {
+            "time": "2025-10-22T13:43:15Z",
+            "symbol": "WGO",
+            "side": "buy",
+            "qty": 57.52928,
+            "price": 40.64,
+            "pnl_pct": null,
+            "balance_after": 9351.96,
+            "notes": "Gap-up and pivot alignment; completes allocation."
+          },
+          {
+            "time": "2025-10-22T13:43:10Z",
+            "symbol": "TNL",
+            "side": "buy",
+            "qty": 33.4428,
+            "price": 69.91,
+            "pnl_pct": null,
+            "balance_after": 9351.96,
+            "notes": "Pivot setup; balanced risk/reward."
+          },
+          {
+            "time": "2025-10-22T13:43:05Z",
+            "symbol": "PEGA",
+            "side": "buy",
+            "qty": 35.6455,
+            "price": 65.59,
+            "pnl_pct": null,
+            "balance_after": 9351.96,
+            "notes": "Pivot candidate with strong momentum/volume."
+          },
+          {
+            "time": "2025-10-22T13:43:00Z",
+            "symbol": "AVY",
+            "side": "buy",
+            "qty": 13.058,
+            "price": 179.04,
+            "pnl_pct": null,
+            "balance_after": 9351.96,
+            "notes": "Pivot candidate with large-cap liquidity."
+          },
+          {
+            "time": "2025-10-22T13:42:30Z",
+            "symbol": "PMI",
+            "side": "sell",
+            "qty": 110.0,
+            "price": 13.17,
+            "pnl_pct": 0.0428,
+            "balance_after": 9351.96,
+            "notes": "Take profit; rotate."
+          },
+          {
+            "time": "2025-10-22T13:42:25Z",
+            "symbol": "BTSG",
+            "side": "sell",
+            "qty": 45.0,
+            "price": 32.94,
+            "pnl_pct": 0.0214,
+            "balance_after": 9351.96,
+            "notes": "Take profit; consolidate into focus list."
+          },
+          {
+            "time": "2025-10-22T13:42:20Z",
+            "symbol": "AVDL",
+            "side": "sell",
+            "qty": 80.0,
+            "price": 18.52,
+            "pnl_pct": 0.0364,
+            "balance_after": 9351.96,
+            "notes": "Lock gains; rotate to higher-ranked setups."
+          },
+          {
+            "time": "2025-10-22T13:42:15Z",
+            "symbol": "ARCT",
+            "side": "sell",
+            "qty": 60.0,
+            "price": 11.54,
+            "pnl_pct": -0.5017,
+            "balance_after": 9351.96,
+            "notes": "Cut high-drawdown position."
+          },
+          {
+            "time": "2025-10-22T13:42:10Z",
+            "symbol": "CMC",
+            "side": "sell",
+            "qty": 22.0,
+            "price": 59.72,
+            "pnl_pct": -0.0376,
+            "balance_after": 9351.96,
+            "notes": "Exit laggard; rotate."
+          },
+          {
+            "time": "2025-10-22T13:42:05Z",
+            "symbol": "STLD",
+            "side": "sell",
+            "qty": 9.0,
+            "price": 148.56,
+            "pnl_pct": -0.0342,
+            "balance_after": 9351.96,
+            "notes": "Exit laggard; reallocate to higher momentum."
+          },
+          {
+            "time": "2025-10-22T13:42:00Z",
+            "symbol": "MMM",
+            "side": "sell",
+            "qty": 9.0,
+            "price": 167.23,
+            "pnl_pct": 0.0,
+            "balance_after": 9351.96,
+            "notes": "Exit to rotate into stronger candidates."
+          }
+        ],
+        "portfolio_analysis": "Rotated out of existing 7 holdings and redeployed into 4 higher-ranked candidates from today\u2019s pivot/gap list (AVY, PEGA, TNL, WGO). Avoided microcaps; deployed ~100% with negligible residual cash."
+      }
     }
   ]
 }

@@ -35,27 +35,31 @@
       "holdings": [
         {
           "ticker": "NVDA",
-          "weight": 0.2941411581147603
+          "weight": 0.26695374905492913
         },
         {
           "ticker": "PANW",
-          "weight": 0.2940913594015023
+          "weight": 0.20012491371092336
+        },
+        {
+          "ticker": "AAPL",
+          "weight": 0.19963183327306794
         },
         {
           "ticker": "AVGO",
-          "weight": 0.29404170765936055
-        },
-        {
-          "ticker": "VST",
-          "weight": 0.07353518542414933
+          "weight": 0.13349331054205976
         },
         {
           "ticker": "AMZN",
-          "weight": 0.0367924063355525
+          "weight": 0.06659873113967325
         },
         {
           "ticker": "TEM",
-          "weight": 0.007398183064675032
+          "weight": 0.06659873113967325
+        },
+        {
+          "ticker": "VST",
+          "weight": 0.06659873113967325
         }
       ]
     },
@@ -164,7 +168,133 @@
           "weight": 0.027777777777777776
         }
       ]
+    },
+    {
+      "name": "Josh Gottheimer",
+      "holdings": [
+        {
+          "ticker": "NTRA",
+          "weight": 0.0770366444579043
+        },
+        {
+          "ticker": "MTHRY",
+          "weight": 0.07699878861296185
+        },
+        {
+          "ticker": "CVLT",
+          "weight": 0.07699878861296185
+        },
+        {
+          "ticker": "TNDM",
+          "weight": 0.07699878861296185
+        },
+        {
+          "ticker": "AVGO",
+          "weight": 0.07688522107813446
+        },
+        {
+          "ticker": "NVDA",
+          "weight": 0.07688522107813446
+        },
+        {
+          "ticker": "CVNA",
+          "weight": 0.07688522107813446
+        },
+        {
+          "ticker": "NET",
+          "weight": 0.07688522107813446
+        },
+        {
+          "ticker": "INSM",
+          "weight": 0.07688522107813446
+        },
+        {
+          "ticker": "CB",
+          "weight": 0.07688522107813446
+        },
+        {
+          "ticker": "APP",
+          "weight": 0.07684736523319201
+        },
+        {
+          "ticker": "ABBV",
+          "weight": 0.07684736523319201
+        },
+        {
+          "ticker": "ASML",
+          "weight": 0.07684736523319201
+        },
+        {
+          "ticker": "IRT",
+          "weight": 7.571168988491823e-05
+        },
+        {
+          "ticker": "SSMXY",
+          "weight": 3.7855844942459115e-05
+        }
+      ]
+    },
+    {
+      "name": "Kevin Hern",
+      "holdings": [
+        {
+          "ticker": "XOM",
+          "weight": 0.18761350694123805
+        },
+        {
+          "ticker": "HD",
+          "weight": 0.06254809616154154
+        },
+        {
+          "ticker": "CB",
+          "weight": 0.06251731461815495
+        },
+        {
+          "ticker": "INRE",
+          "weight": 0.06251731461815495
+        },
+        {
+          "ticker": "LMT",
+          "weight": 0.06248653307476837
+        },
+        {
+          "ticker": "UNH",
+          "weight": 0.06248653307476837
+        },
+        {
+          "ticker": "WMB",
+          "weight": 0.06248653307476837
+        },
+        {
+          "ticker": "LIN",
+          "weight": 0.06248653307476837
+        },
+        {
+          "ticker": "NEE",
+          "weight": 0.06248653307476837
+        },
+        {
+          "ticker": "RTX",
+          "weight": 0.06248653307476837
+        },
+        {
+          "ticker": "EMR",
+          "weight": 0.06248653307476837
+        },
+        {
+          "ticker": "ROK",
+          "weight": 0.06248653307476837
+        },
+        {
+          "ticker": "GS",
+          "weight": 0.06245575153138178
+        },
+        {
+          "ticker": "BNPQY",
+          "weight": 0.06245575153138178
+        }
+      ]
     }
   ],
-  "updated_at": "10/22/25 12:12"
+  "updated_at": "10/22/25 12:19"
 }

@@ -285,6 +285,91 @@
         ],
         "portfolio_analysis": "Rotated out of non-candidate holdings into today\u2019s higher-ranked candidates (AVY, PEGA, WGO, TNL), prioritizing liquidity and momentum while avoiding penny stocks. Fully invested across 4 positions with minimal residual cash."
       }
+    },
+    {
+      "saved_at": "2025-10-23T21:32:16.276561Z",
+      "ending_balance": 7416.766535,
+      "last_trade_time": "2025-10-23T14:32:10Z",
+      "raw": "{\n  \"model_name\": \"aggressive_momo_v1\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 7472.34476,\n  \"portfolio_analysis\": \"Rotating out of prior holdings into stronger pivot/gap-up leaders (ATI, HXL, PI). Concentrating exposure across 3 high-momentum, liquid names while avoiding microcaps. Nearly fully invested with small cash buffer.\",\n  \"trades\": [\n    {\n      \"time\": \"2025-10-23T14:31:00Z\",\n      \"symbol\": \"AVY\",\n      \"side\": \"sell\",\n      \"qty\": 12.5206,\n      \"price\": 186.28,\n      \"pnl_pct\": 0.0404,\n      \"balance_after\": 7416.766535,\n      \"notes\": \"Exit to rotate into stronger candidates.\"\n    },\n    {\n      \"time\": \"2025-10-23T14:31:05Z\",\n      \"symbol\": \"WGO\",\n      \"side\": \"sell\",\n      \"qty\": 36.7733,\n      \"price\": 39.39,\n      \"pnl_pct\": -0.0308,\n      \"balance_after\": 7416.766535,\n      \"notes\": \"Exit to reallocate to momentum leaders.\"\n    },\n    {\n      \"time\": \"2025-10-23T14:31:10Z\",\n      \"symbol\": \"TNL\",\n      \"side\": \"sell\",\n      \"qty\": 21.377,\n      \"price\": 65.14,\n      \"pnl_pct\": -0.0682,\n      \"balance_after\": 7416.766535,\n      \"notes\": \"Exit laggard; capital rotation.\"\n    },\n    {\n      \"time\": \"2025-10-23T14:31:15Z\",\n      \"symbol\": \"PEGA\",\n      \"side\": \"sell\",\n      \"qty\": 34.1775,\n      \"price\": 65.64,\n      \"pnl_pct\": 0.0000762,\n      \"balance_after\": 7416.766535,\n      \"notes\": \"Exit to focus on higher-ranked setups.\"\n    },\n    {\n      \"time\": \"2025-10-23T14:32:00Z\",\n      \"symbol\": \"ATI\",\n      \"side\": \"buy\",\n      \"qty\": 33.129,\n      \"price\": 89.55,\n      \"pnl_pct\": null,\n      \"balance_after\": 7416.766535,\n      \"notes\": \"Pivot leader with strong momentum; ~40% allocation.\"\n    },\n    {\n      \"time\": \"2025-10-23T14:32:05Z\",\n      \"symbol\": \"HXL\",\n      \"side\": \"buy\",\n      \"qty\": 36.58,\n      \"price\": 70.95,\n      \"pnl_pct\": null,\n      \"balance_after\": 7416.766535,\n      \"notes\": \"Gap-up + pivot confluence; ~35% allocation.\"\n    },\n    {\n      \"time\": \"2025-10-23T14:32:10Z\",\n      \"symbol\": \"PI\",\n      \"side\": \"buy\",\n      \"qty\": 7.68,\n      \"price\": 241.17,\n      \"pnl_pct\": null,\n      \"balance_after\": 7416.766535,\n      \"notes\": \"High-momentum pivot name; ~25% allocation; small cash buffer retained.\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 7472.34476.\n\n- Include only NEW actions since 2025-10-22T15:03:13Z but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nADTN=9.76, ARCT=11.54, ATI=89.55, AVY=186.28, BETR=86.07, BFH=65.46, CLB=16.45, CMC=59.72, CRS=300.27, FTI=40.92, HAS=77.94, HXL=70.95, LUMN=7.79, MMM=167.23, MP=74.11, MSAI=1.35, NMRA=2.31, OIS=6.73, PEGA=65.64, PI=241.17, QS=15.52, REMX=86.05, RIG=3.89, RXT=1.83, SCNX=2.60, SNDK=167.05, TEX=56.82, TNL=65.14, VAL=56.31, WGO=39.39\n\nCANDIDATES_TODAY:\n\n- gap_ups: SCNX, MSAI, NMRA, RXT, HXL\n- pivots: SCNX, MSAI, NMRA, BETR, RXT, PI, SNDK, HXL, CRS, VAL, RIG, HAS, CLB, ATI, LUMN, FTI, BFH, TEX, ADTN, OIS\n(total candidates: 25)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 0.02\nOPEN_POSITIONS:\n- AVY: qty=12.520600, ref_price=186.2800, first_buy_time=2025-10-22T15:03:00Z\n- PEGA: qty=34.177500, ref_price=65.6350, first_buy_time=2025-10-22T15:03:05Z\n- WGO: qty=36.773300, ref_price=39.3900, first_buy_time=2025-10-22T15:03:09Z\n- TNL: qty=21.377000, ref_price=65.1400, first_buy_time=2025-10-22T15:03:13Z\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take high risk approach and concentrate the entire portfolio in 1\u20134 stocks at all times.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 1\u20134 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 1\u20134 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.). It\u2019s OK to be 100% in one.\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "bubbles",
+        "universe": "ALL",
+        "starting_balance": 7472.34476,
+        "trades": [
+          {
+            "time": "2025-10-23T14:32:10Z",
+            "symbol": "PI",
+            "side": "buy",
+            "qty": 7.68,
+            "price": 241.17,
+            "pnl_pct": null,
+            "balance_after": 7416.766535,
+            "notes": "High-momentum pivot name; ~25% allocation; small cash buffer retained."
+          },
+          {
+            "time": "2025-10-23T14:32:05Z",
+            "symbol": "HXL",
+            "side": "buy",
+            "qty": 36.58,
+            "price": 70.95,
+            "pnl_pct": null,
+            "balance_after": 7416.766535,
+            "notes": "Gap-up + pivot confluence; ~35% allocation."
+          },
+          {
+            "time": "2025-10-23T14:32:00Z",
+            "symbol": "ATI",
+            "side": "buy",
+            "qty": 33.129,
+            "price": 89.55,
+            "pnl_pct": null,
+            "balance_after": 7416.766535,
+            "notes": "Pivot leader with strong momentum; ~40% allocation."
+          },
+          {
+            "time": "2025-10-23T14:31:15Z",
+            "symbol": "PEGA",
+            "side": "sell",
+            "qty": 34.1775,
+            "price": 65.64,
+            "pnl_pct": 7.62e-05,
+            "balance_after": 7416.766535,
+            "notes": "Exit to focus on higher-ranked setups."
+          },
+          {
+            "time": "2025-10-23T14:31:10Z",
+            "symbol": "TNL",
+            "side": "sell",
+            "qty": 21.377,
+            "price": 65.14,
+            "pnl_pct": -0.0682,
+            "balance_after": 7416.766535,
+            "notes": "Exit laggard; capital rotation."
+          },
+          {
+            "time": "2025-10-23T14:31:05Z",
+            "symbol": "WGO",
+            "side": "sell",
+            "qty": 36.7733,
+            "price": 39.39,
+            "pnl_pct": -0.0308,
+            "balance_after": 7416.766535,
+            "notes": "Exit to reallocate to momentum leaders."
+          },
+          {
+            "time": "2025-10-23T14:31:00Z",
+            "symbol": "AVY",
+            "side": "sell",
+            "qty": 12.5206,
+            "price": 186.28,
+            "pnl_pct": 0.0404,
+            "balance_after": 7416.766535,
+            "notes": "Exit to rotate into stronger candidates."
+          }
+        ],
+        "portfolio_analysis": "Rotating out of prior holdings into stronger pivot/gap-up leaders (ATI, HXL, PI). Concentrating exposure across 3 high-momentum, liquid names while avoiding microcaps. Nearly fully invested with small cash buffer."
+      }
     }
   ]
 }

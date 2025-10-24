@@ -370,6 +370,71 @@
         ],
         "portfolio_analysis": "Rotating out of prior holdings into stronger pivot/gap-up leaders (ATI, HXL, PI). Concentrating exposure across 3 high-momentum, liquid names while avoiding microcaps. Nearly fully invested with small cash buffer."
       }
+    },
+    {
+      "saved_at": "2025-10-24T21:33:00.553240Z",
+      "ending_balance": 7433.11585,
+      "last_trade_time": "2025-10-24T14:30:04Z",
+      "raw": "{\n  \"model_name\": \"AggressiveMomentum_v2\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 7416.766535,\n  \"portfolio_analysis\": \"Rotate out of ATI/HXL/PI into higher-ranked pivots IBM and F; stay concentrated and fully invested.\",\n  \"trades\": [\n    {\n      \"time\": \"2025-10-24T14:30:00Z\",\n      \"symbol\": \"ATI\",\n      \"side\": \"sell\",\n      \"qty\": 33.129,\n      \"price\": 89.25,\n      \"pnl_pct\": 0,\n      \"balance_after\": 7433.11585,\n      \"notes\": \"Exit to rotate into stronger candidates.\"\n    },\n    {\n      \"time\": \"2025-10-24T14:30:01Z\",\n      \"symbol\": \"HXL\",\n      \"side\": \"sell\",\n      \"qty\": 36.58,\n      \"price\": 72.79,\n      \"pnl_pct\": 0.0259,\n      \"balance_after\": 7433.11585,\n      \"notes\": \"Exit as part of rotation; locking small gain per FIFO.\"\n    },\n    {\n      \"time\": \"2025-10-24T14:30:02Z\",\n      \"symbol\": \"PI\",\n      \"side\": \"sell\",\n      \"qty\": 7.68,\n      \"price\": 235.83,\n      \"pnl_pct\": -0.0221,\n      \"balance_after\": 7433.11585,\n      \"notes\": \"Exit to free capital; small FIFO loss.\"\n    },\n    {\n      \"time\": \"2025-10-24T14:30:03Z\",\n      \"symbol\": \"IBM\",\n      \"side\": \"buy\",\n      \"qty\": 14.5055,\n      \"price\": 307.46,\n      \"pnl_pct\": null,\n      \"balance_after\": 7433.11585,\n      \"notes\": \"Pivot candidate; large-cap momentum; ~60% allocation.\"\n    },\n    {\n      \"time\": \"2025-10-24T14:30:04Z\",\n      \"symbol\": \"F\",\n      \"side\": \"buy\",\n      \"qty\": 214.8305,\n      \"price\": 13.84,\n      \"pnl_pct\": null,\n      \"balance_after\": 7433.11585,\n      \"notes\": \"Pivot candidate; deploy remaining cash without exceeding available.\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 7416.766535.\n\n- Include only NEW actions since 2025-10-23T14:32:10Z but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nARCT=11.54, ATI=89.25, AVY=186.28, AXTI=6.06, CCO=1.99, CLOV=3.82, CMC=59.72, CYH=4.10, DVLT=3.42, F=13.84, FATE=1.65, GTX=16.99, HXL=72.79, IBM=307.46, MMM=167.23, MP=74.11, MUU=68.75, NEGG=66.72, NMRA=2.63, NUVB=4.85, PEGA=65.64, PI=235.83, QS=15.52, REMX=86.05, SGMT=9.14, SNDK=186.16, TNL=65.14, WGO=39.39\n\nCANDIDATES_TODAY:\n\n- gap_ups: CYH, NMRA\n- pivots: DVLT, NEGG, SGMT, CLOV, CYH, GTX, AXTI, NMRA, FATE, NUVB, F, IBM, SNDK, MUU, CCO\n(total candidates: 17)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 2.52\nOPEN_POSITIONS:\n- ATI: qty=33.129000, ref_price=89.2500, first_buy_time=2025-10-23T14:32:00Z\n- HXL: qty=36.580000, ref_price=72.7900, first_buy_time=2025-10-23T14:32:05Z\n- PI: qty=7.680000, ref_price=235.8300, first_buy_time=2025-10-23T14:32:10Z\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take high risk approach and concentrate the entire portfolio in 1\u20134 stocks at all times.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 1\u20134 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 1\u20134 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.). It\u2019s OK to be 100% in one.\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "bubbles",
+        "universe": "ALL",
+        "starting_balance": 7416.766535,
+        "trades": [
+          {
+            "time": "2025-10-24T14:30:04Z",
+            "symbol": "F",
+            "side": "buy",
+            "qty": 214.8305,
+            "price": 13.84,
+            "pnl_pct": null,
+            "balance_after": 7433.11585,
+            "notes": "Pivot candidate; deploy remaining cash without exceeding available."
+          },
+          {
+            "time": "2025-10-24T14:30:03Z",
+            "symbol": "IBM",
+            "side": "buy",
+            "qty": 14.5055,
+            "price": 307.46,
+            "pnl_pct": null,
+            "balance_after": 7433.11585,
+            "notes": "Pivot candidate; large-cap momentum; ~60% allocation."
+          },
+          {
+            "time": "2025-10-24T14:30:02Z",
+            "symbol": "PI",
+            "side": "sell",
+            "qty": 7.68,
+            "price": 235.83,
+            "pnl_pct": -0.0221,
+            "balance_after": 7433.11585,
+            "notes": "Exit to free capital; small FIFO loss."
+          },
+          {
+            "time": "2025-10-24T14:30:01Z",
+            "symbol": "HXL",
+            "side": "sell",
+            "qty": 36.58,
+            "price": 72.79,
+            "pnl_pct": 0.0259,
+            "balance_after": 7433.11585,
+            "notes": "Exit as part of rotation; locking small gain per FIFO."
+          },
+          {
+            "time": "2025-10-24T14:30:00Z",
+            "symbol": "ATI",
+            "side": "sell",
+            "qty": 33.129,
+            "price": 89.25,
+            "pnl_pct": 0.0,
+            "balance_after": 7433.11585,
+            "notes": "Exit to rotate into stronger candidates."
+          }
+        ],
+        "portfolio_analysis": "Rotate out of ATI/HXL/PI into higher-ranked pivots IBM and F; stay concentrated and fully invested."
+      }
     }
   ]
 }

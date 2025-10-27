@@ -435,6 +435,71 @@
         ],
         "portfolio_analysis": "Rotate out of ATI/HXL/PI into higher-ranked pivots IBM and F; stay concentrated and fully invested."
       }
+    },
+    {
+      "saved_at": "2025-10-27T21:33:04.802122Z",
+      "ending_balance": 7390.189425,
+      "last_trade_time": "2025-10-27T14:30:09Z",
+      "raw": "{\n  \"model_name\": \"aggressive-momo-v1\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 7433.11585,\n  \"portfolio_analysis\": \"Rotated out of IBM and F into higher-ranked candidates (QCOM, BBIO, IDYA). Fully invested across 3 momentum names with minimal residual cash.\",\n  \"trades\": [\n    {\n      \"time\": \"2025-10-27T14:30:05Z\",\n      \"symbol\": \"IBM\",\n      \"side\": \"sell\",\n      \"qty\": 14.5055,\n      \"price\": 313.09,\n      \"pnl_pct\": 0.0183,\n      \"balance_after\": 7390.189425,\n      \"notes\": \"Exit non-candidate to free capital.\"\n    },\n    {\n      \"time\": \"2025-10-27T14:30:06Z\",\n      \"symbol\": \"F\",\n      \"side\": \"sell\",\n      \"qty\": 214.8305,\n      \"price\": 13.26,\n      \"pnl_pct\": -0.0419,\n      \"balance_after\": 7390.189425,\n      \"notes\": \"Rotate capital to stronger setups.\"\n    },\n    {\n      \"time\": \"2025-10-27T14:30:07Z\",\n      \"symbol\": \"QCOM\",\n      \"side\": \"buy\",\n      \"qty\": 23.6200,\n      \"price\": 187.68,\n      \"pnl_pct\": null,\n      \"balance_after\": 7390.189425,\n      \"notes\": \"Top-ranked gap/momentum; ~60% allocation.\"\n    },\n    {\n      \"time\": \"2025-10-27T14:30:08Z\",\n      \"symbol\": \"BBIO\",\n      \"side\": \"buy\",\n      \"qty\": 29.0600,\n      \"price\": 63.56,\n      \"pnl_pct\": null,\n      \"balance_after\": 7390.189425,\n      \"notes\": \"Momentum pivot; ~25% allocation.\"\n    },\n    {\n      \"time\": \"2025-10-27T14:30:09Z\",\n      \"symbol\": \"IDYA\",\n      \"side\": \"buy\",\n      \"qty\": 34.2400,\n      \"price\": 32.37,\n      \"pnl_pct\": null,\n      \"balance_after\": 7390.189425,\n      \"notes\": \"Momentum/relative strength; ~15% allocation.\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 7433.11585.\n\n- Include only NEW actions since 2025-10-24T14:30:04Z but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nARCT=11.54, ATI=89.25, AVY=186.28, BBIO=63.56, CMC=59.72, CODX=1.26, DGXX=5.77, ELDN=3.83, EW=80.82, F=13.26, GLUE=12.32, HXL=72.79, IBM=313.09, IDYA=32.37, IFRX=1.66, IMVT=21.43, KURA=11.04, LUMN=9.36, MMM=167.23, MP=74.11, PEGA=65.64, PI=235.83, QCOM=187.68, QS=15.52, RCUS=18.60, REMX=86.05, TGS=30.75, TNL=65.14, URGN=20.85, WGO=39.39\n\nCANDIDATES_TODAY:\n\n- gap_ups: CODX, DGXX, QCOM\n- pivots: CODX, IFRX, DGXX, KURA, IMVT, BBIO, QCOM, URGN, IDYA, GLUE, LUMN, ELDN, TGS, RCUS, EW\n(total candidates: 18)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 0.01\nOPEN_POSITIONS:\n- IBM: qty=14.505500, ref_price=313.0900, first_buy_time=2025-10-24T14:30:03Z\n- F: qty=214.830500, ref_price=13.2600, first_buy_time=2025-10-24T14:30:04Z\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take high risk approach and concentrate the entire portfolio in 1\u20134 stocks at all times.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 1\u20134 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 1\u20134 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.). It\u2019s OK to be 100% in one.\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "bubbles",
+        "universe": "ALL",
+        "starting_balance": 7433.11585,
+        "trades": [
+          {
+            "time": "2025-10-27T14:30:09Z",
+            "symbol": "IDYA",
+            "side": "buy",
+            "qty": 34.24,
+            "price": 32.37,
+            "pnl_pct": null,
+            "balance_after": 7390.189425,
+            "notes": "Momentum/relative strength; ~15% allocation."
+          },
+          {
+            "time": "2025-10-27T14:30:08Z",
+            "symbol": "BBIO",
+            "side": "buy",
+            "qty": 29.06,
+            "price": 63.56,
+            "pnl_pct": null,
+            "balance_after": 7390.189425,
+            "notes": "Momentum pivot; ~25% allocation."
+          },
+          {
+            "time": "2025-10-27T14:30:07Z",
+            "symbol": "QCOM",
+            "side": "buy",
+            "qty": 23.62,
+            "price": 187.68,
+            "pnl_pct": null,
+            "balance_after": 7390.189425,
+            "notes": "Top-ranked gap/momentum; ~60% allocation."
+          },
+          {
+            "time": "2025-10-27T14:30:06Z",
+            "symbol": "F",
+            "side": "sell",
+            "qty": 214.8305,
+            "price": 13.26,
+            "pnl_pct": -0.0419,
+            "balance_after": 7390.189425,
+            "notes": "Rotate capital to stronger setups."
+          },
+          {
+            "time": "2025-10-27T14:30:05Z",
+            "symbol": "IBM",
+            "side": "sell",
+            "qty": 14.5055,
+            "price": 313.09,
+            "pnl_pct": 0.0183,
+            "balance_after": 7390.189425,
+            "notes": "Exit non-candidate to free capital."
+          }
+        ],
+        "portfolio_analysis": "Rotated out of IBM and F into higher-ranked candidates (QCOM, BBIO, IDYA). Fully invested across 3 momentum names with minimal residual cash."
+      }
     }
   ]
 }

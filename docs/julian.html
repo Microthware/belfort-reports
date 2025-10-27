@@ -124,15 +124,15 @@ details[open] > summary::after { content: "▴"; }
       <!-- Balance card (includes sparkline WITH axes, contained) -->
       <section class="card" style="grid-column: span 5;">
         <div class="section-title">Balance</div>
-        <div class="value" style="margin-bottom:6px">$9,223.46</div>
+        <div class="value" style="margin-bottom:6px">$9,302.83</div>
         <div id="balanceWrap"><canvas id="spark"></canvas></div>
       </section>
 
       <section class="card" style="grid-column: span 3;">
         <div class="section-title">Win Rate</div>
         <div class="donut">
-          <div class="pie" style="--p: 57.14%;"></div>
-          <div class="winrate-num">57.0%</div>
+          <div class="pie" style="--p: 55.56%;"></div>
+          <div class="winrate-num">56.0%</div>
         </div>
         <div class="muted" style="margin-top:6px">wins vs losses (closed trades)</div>
       </section>
@@ -143,7 +143,7 @@ details[open] > summary::after { content: "▴"; }
         <div class="bar-block">
           <div>
             <div class="muted">Average Win</div>
-            <div class="hbar"><div class="fill win" style="width: 14.0%;"></div></div>
+            <div class="hbar"><div class="fill win" style="width: 15.0%;"></div></div>
           </div>
           <div>
             <div class="muted">Average Loss</div>
@@ -152,7 +152,7 @@ details[open] > summary::after { content: "▴"; }
           <div class="legend">
             <span><span class="chip" style="background:var(--green)"></span>Avg Win PNL %</span>
             <span><span class="chip" style="background:var(--red)"></span>Avg Loss PNL %</span>
-            <span class="muted">2.6% vs -19.12%</span>
+            <span class="muted">2.36% vs -15.81%</span>
           </div>
         </div>
       </section>
@@ -203,7 +203,7 @@ details[open] > summary::after { content: "▴"; }
     
     <details style="margin-top:14px;">
       <summary>Portfolio Analysis</summary>
-      <div class="inner"><pre>Fully invested across 4 positions with negligible cash; no superior high-conviction rotation versus current holdings based on today’s signals and liquidity constraints. Monitoring candidates (e.g., IBM, NEGG, MUU) for potential rotation when signals strengthen.</pre></div>
+      <div class="inner"><pre>Rotated out of lagging cyclicals (WGO, TNL) into higher-ranked candidates (QCOM, EW). Kept AVY and PEGA. Stayed essentially fully invested while respecting cash and FIFO PnL.</pre></div>
     </details>
     
 
@@ -212,9 +212,9 @@ details[open] > summary::after { content: "▴"; }
       <summary>Prompt</summary>
       <div class="inner"><pre>You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.
 
-- Starting balance for a new/first run: 9216.8471912.
+- Starting balance for a new/first run: 9223.456229.
 
-- Include only NEW actions since 2025-10-23T14:30:00Z but ensure the final &#39;balance_after&#39; reflects current balance.
+- Include only NEW actions since 2025-10-24T14:30:00Z but ensure the final &#39;balance_after&#39; reflects current balance.
 
 - Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).
 
@@ -232,22 +232,22 @@ details[open] > summary::after { content: "▴"; }
 
 PRICES_TODAY (USD):
 
-ARCT=11.54, AVDL=18.52, AVY=181.59, AXTI=6.06, BTSG=32.94, CCO=1.99, CLOV=3.82, CMC=59.72, CYH=4.10, DVLT=3.42, F=13.84, FATE=1.65, GTX=16.99, IBM=307.46, MMM=167.23, MUU=68.75, NEGG=66.72, NMRA=2.63, NUVB=4.85, PEGA=66.27, PMI=13.17, SGMT=9.14, SNDK=186.16, STLD=148.56, TNL=65.19, WGO=40.15
+ARCT=11.54, AVDL=18.52, AVY=180.47, BBIO=63.56, BTSG=32.94, CMC=59.72, CODX=1.26, DGXX=5.77, ELDN=3.83, EW=80.82, GLUE=12.32, IDYA=32.37, IFRX=1.66, IMVT=21.43, KURA=11.04, LUMN=9.36, MMM=167.23, PEGA=66.64, PMI=13.17, QCOM=187.68, RCUS=18.60, STLD=148.56, TGS=30.75, TNL=65.80, URGN=20.85, WGO=41.20
 
 CANDIDATES_TODAY:
 
-- gap_ups: CYH, NMRA
-- pivots: DVLT, NEGG, SGMT, CLOV, CYH, GTX, AXTI, NMRA, FATE, NUVB, F, IBM, SNDK, MUU, CCO
-(total candidates: 17)
+- gap_ups: CODX, DGXX, QCOM
+- pivots: CODX, IFRX, DGXX, KURA, IMVT, BBIO, QCOM, URGN, IDYA, GLUE, LUMN, ELDN, TGS, RCUS, EW
+(total candidates: 18)
 
 CURRENT_PORTFOLIO_STATE:
 
 AVAILABLE_CASH_USD: 0.09
 OPEN_POSITIONS:
-- AVY: qty=13.058000, ref_price=181.5900, first_buy_time=2025-10-22T13:43:00Z
-- PEGA: qty=35.645500, ref_price=66.2700, first_buy_time=2025-10-22T13:43:05Z
-- TNL: qty=33.442800, ref_price=65.1900, first_buy_time=2025-10-22T13:43:10Z
-- WGO: qty=57.529280, ref_price=40.1500, first_buy_time=2025-10-22T13:43:15Z
+- AVY: qty=13.058000, ref_price=180.4700, first_buy_time=2025-10-22T13:43:00Z
+- PEGA: qty=35.645500, ref_price=66.6400, first_buy_time=2025-10-22T13:43:05Z
+- TNL: qty=33.442800, ref_price=65.8000, first_buy_time=2025-10-22T13:43:10Z
+- WGO: qty=57.529280, ref_price=41.2000, first_buy_time=2025-10-22T13:43:15Z
 
 Schema:
 
@@ -315,20 +315,50 @@ Example HOLD:
     <details style="margin-top:12px;">
       <summary>Response</summary>
       <div class="inner"><pre>{
-  &#34;model_name&#34;: &#34;aggressive-rotator-v1&#34;,
+  &#34;model_name&#34;: &#34;aggressive_momo_v1&#34;,
   &#34;universe&#34;: &#34;ALL&#34;,
-  &#34;starting_balance&#34;: 9216.8471912,
-  &#34;portfolio_analysis&#34;: &#34;Fully invested across 4 positions with negligible cash; no superior high-conviction rotation versus current holdings based on today’s signals and liquidity constraints. Monitoring candidates (e.g., IBM, NEGG, MUU) for potential rotation when signals strengthen.&#34;,
+  &#34;starting_balance&#34;: 9223.456229,
+  &#34;portfolio_analysis&#34;: &#34;Rotated out of lagging cyclicals (WGO, TNL) into higher-ranked candidates (QCOM, EW). Kept AVY and PEGA. Stayed essentially fully invested while respecting cash and FIFO PnL.&#34;,
   &#34;trades&#34;: [
     {
-      &#34;time&#34;: &#34;2025-10-24T14:30:00Z&#34;,
-      &#34;symbol&#34;: &#34;CASH&#34;,
-      &#34;side&#34;: &#34;hold&#34;,
-      &#34;qty&#34;: 0,
-      &#34;price&#34;: 0,
+      &#34;time&#34;: &#34;2025-10-27T14:30:01Z&#34;,
+      &#34;symbol&#34;: &#34;WGO&#34;,
+      &#34;side&#34;: &#34;sell&#34;,
+      &#34;qty&#34;: 57.52928,
+      &#34;price&#34;: 41.2,
+      &#34;pnl_pct&#34;: 0.0138,
+      &#34;balance_after&#34;: 9302.825956,
+      &#34;notes&#34;: &#34;Exit to rotate into stronger momentum candidate; FIFO realized.&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-27T14:30:02Z&#34;,
+      &#34;symbol&#34;: &#34;TNL&#34;,
+      &#34;side&#34;: &#34;sell&#34;,
+      &#34;qty&#34;: 33.4428,
+      &#34;price&#34;: 65.8,
+      &#34;pnl_pct&#34;: -0.0588,
+      &#34;balance_after&#34;: 9302.825956,
+      &#34;notes&#34;: &#34;Exit weaker name to free capital for candidates; FIFO realized.&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-27T14:30:03Z&#34;,
+      &#34;symbol&#34;: &#34;QCOM&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 12.177196,
+      &#34;price&#34;: 187.68,
       &#34;pnl_pct&#34;: null,
-      &#34;balance_after&#34;: 9223.456229,
-      &#34;notes&#34;: &#34;No changes; maintaining AVY, PEGA, TNL, WGO. Available cash: $0.09.&#34;
+      &#34;balance_after&#34;: 9302.825956,
+      &#34;notes&#34;: &#34;Top gap-up candidate with strong liquidity and trend.&#34;
+    },
+    {
+      &#34;time&#34;: &#34;2025-10-27T14:30:04Z&#34;,
+      &#34;symbol&#34;: &#34;EW&#34;,
+      &#34;side&#34;: &#34;buy&#34;,
+      &#34;qty&#34;: 28.2778573,
+      &#34;price&#34;: 80.82,
+      &#34;pnl_pct&#34;: null,
+      &#34;balance_after&#34;: 9302.825956,
+      &#34;notes&#34;: &#34;Candidate showing improving momentum; healthcare diversification.&#34;
     }
   ]
 }</pre></div>
@@ -338,8 +368,8 @@ Example HOLD:
 
   <script>
     // server-provided data
-    window.TRADES = [{"balance_after": "$9,223.46", "balance_after_num": 9223.456229, "balance_dir": 1, "notes": "No changes; maintaining AVY, PEGA, TNL, WGO. Available cash: $0.09.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.000000", "price_num": 0.0, "qty": "0", "qty_num": 0.0, "side": "hold", "symbol": "CASH", "time": "2025-10-24T14:30:00Z"}, {"balance_after": "$9,216.85", "balance_after_num": 9216.8471912, "balance_dir": 1, "notes": "No new entries due to insufficient cash; maintaining AVY, PEGA, TNL, WGO at today\u2019s marks.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.000000", "price_num": 0.0, "qty": "0", "qty_num": 0.0, "side": "hold", "symbol": "CASH", "time": "2025-10-23T14:30:00Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Gap-up and pivot alignment; completes allocation.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "40.640000", "price_num": 40.64, "qty": "57.52928", "qty_num": 57.52928, "side": "buy", "symbol": "WGO", "time": "2025-10-22T13:43:15Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Pivot setup; balanced risk/reward.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "69.910000", "price_num": 69.91, "qty": "33.4428", "qty_num": 33.4428, "side": "buy", "symbol": "TNL", "time": "2025-10-22T13:43:10Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Pivot candidate with strong momentum/volume.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "65.590000", "price_num": 65.59, "qty": "35.6455", "qty_num": 35.6455, "side": "buy", "symbol": "PEGA", "time": "2025-10-22T13:43:05Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Pivot candidate with large-cap liquidity.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "179.040000", "price_num": 179.04, "qty": "13.058", "qty_num": 13.058, "side": "buy", "symbol": "AVY", "time": "2025-10-22T13:43:00Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Take profit; rotate.", "pnl_pct": "4.28%", "pnl_pct_num": 0.0428, "price": "13.170000", "price_num": 13.17, "qty": "110", "qty_num": 110.0, "side": "sell", "symbol": "PMI", "time": "2025-10-22T13:42:30Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Take profit; consolidate into focus list.", "pnl_pct": "2.14%", "pnl_pct_num": 0.0214, "price": "32.940000", "price_num": 32.94, "qty": "45", "qty_num": 45.0, "side": "sell", "symbol": "BTSG", "time": "2025-10-22T13:42:25Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Lock gains; rotate to higher-ranked setups.", "pnl_pct": "3.64%", "pnl_pct_num": 0.0364, "price": "18.520000", "price_num": 18.52, "qty": "80", "qty_num": 80.0, "side": "sell", "symbol": "AVDL", "time": "2025-10-22T13:42:20Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": -1, "notes": "Cut high-drawdown position.", "pnl_pct": "-50.17%", "pnl_pct_num": -0.5017, "price": "11.540000", "price_num": 11.54, "qty": "60", "qty_num": 60.0, "side": "sell", "symbol": "ARCT", "time": "2025-10-22T13:42:15Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": -1, "notes": "Exit laggard; rotate.", "pnl_pct": "-3.76%", "pnl_pct_num": -0.0376, "price": "59.720000", "price_num": 59.72, "qty": "22", "qty_num": 22.0, "side": "sell", "symbol": "CMC", "time": "2025-10-22T13:42:10Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": -1, "notes": "Exit laggard; reallocate to higher momentum.", "pnl_pct": "-3.42%", "pnl_pct_num": -0.0342, "price": "148.560000", "price_num": 148.56, "qty": "9", "qty_num": 9.0, "side": "sell", "symbol": "STLD", "time": "2025-10-22T13:42:05Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Exit to rotate into stronger candidates.", "pnl_pct": "0.00%", "pnl_pct_num": 0.0, "price": "167.230000", "price_num": 167.23, "qty": "9", "qty_num": 9.0, "side": "sell", "symbol": "MMM", "time": "2025-10-22T13:42:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Pivot candidate \u003e$10; rounds out diversification. Residual cash $91.01.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "12.630000", "price_num": 12.63, "qty": "110", "qty_num": 110.0, "side": "buy", "symbol": "PMI", "time": "2025-10-22T13:37:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Candidate with favorable trend and volatility-adjusted strength.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "32.250000", "price_num": 32.25, "qty": "45", "qty_num": 45.0, "side": "buy", "symbol": "BTSG", "time": "2025-10-22T13:36:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Gap/pivot alignment; momentum continuation setup.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "17.870000", "price_num": 17.87, "qty": "80", "qty_num": 80.0, "side": "buy", "symbol": "AVDL", "time": "2025-10-22T13:35:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Biotech candidate from pivots; acceptable liquidity and strength.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "23.160000", "price_num": 23.16, "qty": "60", "qty_num": 60.0, "side": "buy", "symbol": "ARCT", "time": "2025-10-22T13:34:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Metals momentum; complements STLD while spreading risk.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "62.050000", "price_num": 62.05, "qty": "22", "qty_num": 22.0, "side": "buy", "symbol": "CMC", "time": "2025-10-22T13:33:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Steel leader with strong trend and liquidity.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "153.820000", "price_num": 153.82, "qty": "9", "qty_num": 9.0, "side": "buy", "symbol": "STLD", "time": "2025-10-22T13:32:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Initiate position; large-cap momentum candidate from pivots.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "166.640000", "price_num": 166.64, "qty": "9", "qty_num": 9.0, "side": "buy", "symbol": "MMM", "time": "2025-10-22T13:31:00Z"}];
-    const BAL = {"t":["2025-10-22T13:31:00Z","2025-10-22T13:32:00Z","2025-10-22T13:33:00Z","2025-10-22T13:34:00Z","2025-10-22T13:35:00Z","2025-10-22T13:36:00Z","2025-10-22T13:37:00Z","2025-10-22T13:42:00Z","2025-10-22T13:42:05Z","2025-10-22T13:42:10Z","2025-10-22T13:42:15Z","2025-10-22T13:42:20Z","2025-10-22T13:42:25Z","2025-10-22T13:42:30Z","2025-10-22T13:43:00Z","2025-10-22T13:43:05Z","2025-10-22T13:43:10Z","2025-10-22T13:43:15Z","2025-10-23T14:30:00Z","2025-10-24T14:30:00Z"],"v":[10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,9351.96,9351.96,9351.96,9351.96,9351.96,9351.96,9351.96,9351.96,9351.96,9351.96,9351.96,9216.8471912,9223.456229]};
+    window.TRADES = [{"balance_after": "$9,302.83", "balance_after_num": 9302.825956, "balance_dir": 1, "notes": "Candidate showing improving momentum; healthcare diversification.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "80.820000", "price_num": 80.82, "qty": "28.277857", "qty_num": 28.2778573, "side": "buy", "symbol": "EW", "time": "2025-10-27T14:30:04Z"}, {"balance_after": "$9,302.83", "balance_after_num": 9302.825956, "balance_dir": 1, "notes": "Top gap-up candidate with strong liquidity and trend.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "187.680000", "price_num": 187.68, "qty": "12.177196", "qty_num": 12.177196, "side": "buy", "symbol": "QCOM", "time": "2025-10-27T14:30:03Z"}, {"balance_after": "$9,302.83", "balance_after_num": 9302.825956, "balance_dir": -1, "notes": "Exit weaker name to free capital for candidates; FIFO realized.", "pnl_pct": "-5.88%", "pnl_pct_num": -0.0588, "price": "65.800000", "price_num": 65.8, "qty": "33.4428", "qty_num": 33.4428, "side": "sell", "symbol": "TNL", "time": "2025-10-27T14:30:02Z"}, {"balance_after": "$9,302.83", "balance_after_num": 9302.825956, "balance_dir": 1, "notes": "Exit to rotate into stronger momentum candidate; FIFO realized.", "pnl_pct": "1.38%", "pnl_pct_num": 0.0138, "price": "41.200000", "price_num": 41.2, "qty": "57.52928", "qty_num": 57.52928, "side": "sell", "symbol": "WGO", "time": "2025-10-27T14:30:01Z"}, {"balance_after": "$9,223.46", "balance_after_num": 9223.456229, "balance_dir": 1, "notes": "No changes; maintaining AVY, PEGA, TNL, WGO. Available cash: $0.09.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.000000", "price_num": 0.0, "qty": "0", "qty_num": 0.0, "side": "hold", "symbol": "CASH", "time": "2025-10-24T14:30:00Z"}, {"balance_after": "$9,216.85", "balance_after_num": 9216.8471912, "balance_dir": 1, "notes": "No new entries due to insufficient cash; maintaining AVY, PEGA, TNL, WGO at today\u2019s marks.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "0.000000", "price_num": 0.0, "qty": "0", "qty_num": 0.0, "side": "hold", "symbol": "CASH", "time": "2025-10-23T14:30:00Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Gap-up and pivot alignment; completes allocation.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "40.640000", "price_num": 40.64, "qty": "57.52928", "qty_num": 57.52928, "side": "buy", "symbol": "WGO", "time": "2025-10-22T13:43:15Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Pivot setup; balanced risk/reward.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "69.910000", "price_num": 69.91, "qty": "33.4428", "qty_num": 33.4428, "side": "buy", "symbol": "TNL", "time": "2025-10-22T13:43:10Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Pivot candidate with strong momentum/volume.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "65.590000", "price_num": 65.59, "qty": "35.6455", "qty_num": 35.6455, "side": "buy", "symbol": "PEGA", "time": "2025-10-22T13:43:05Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Pivot candidate with large-cap liquidity.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "179.040000", "price_num": 179.04, "qty": "13.058", "qty_num": 13.058, "side": "buy", "symbol": "AVY", "time": "2025-10-22T13:43:00Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Take profit; rotate.", "pnl_pct": "4.28%", "pnl_pct_num": 0.0428, "price": "13.170000", "price_num": 13.17, "qty": "110", "qty_num": 110.0, "side": "sell", "symbol": "PMI", "time": "2025-10-22T13:42:30Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Take profit; consolidate into focus list.", "pnl_pct": "2.14%", "pnl_pct_num": 0.0214, "price": "32.940000", "price_num": 32.94, "qty": "45", "qty_num": 45.0, "side": "sell", "symbol": "BTSG", "time": "2025-10-22T13:42:25Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Lock gains; rotate to higher-ranked setups.", "pnl_pct": "3.64%", "pnl_pct_num": 0.0364, "price": "18.520000", "price_num": 18.52, "qty": "80", "qty_num": 80.0, "side": "sell", "symbol": "AVDL", "time": "2025-10-22T13:42:20Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": -1, "notes": "Cut high-drawdown position.", "pnl_pct": "-50.17%", "pnl_pct_num": -0.5017, "price": "11.540000", "price_num": 11.54, "qty": "60", "qty_num": 60.0, "side": "sell", "symbol": "ARCT", "time": "2025-10-22T13:42:15Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": -1, "notes": "Exit laggard; rotate.", "pnl_pct": "-3.76%", "pnl_pct_num": -0.0376, "price": "59.720000", "price_num": 59.72, "qty": "22", "qty_num": 22.0, "side": "sell", "symbol": "CMC", "time": "2025-10-22T13:42:10Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": -1, "notes": "Exit laggard; reallocate to higher momentum.", "pnl_pct": "-3.42%", "pnl_pct_num": -0.0342, "price": "148.560000", "price_num": 148.56, "qty": "9", "qty_num": 9.0, "side": "sell", "symbol": "STLD", "time": "2025-10-22T13:42:05Z"}, {"balance_after": "$9,351.96", "balance_after_num": 9351.96, "balance_dir": 1, "notes": "Exit to rotate into stronger candidates.", "pnl_pct": "0.00%", "pnl_pct_num": 0.0, "price": "167.230000", "price_num": 167.23, "qty": "9", "qty_num": 9.0, "side": "sell", "symbol": "MMM", "time": "2025-10-22T13:42:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Pivot candidate \u003e$10; rounds out diversification. Residual cash $91.01.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "12.630000", "price_num": 12.63, "qty": "110", "qty_num": 110.0, "side": "buy", "symbol": "PMI", "time": "2025-10-22T13:37:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Candidate with favorable trend and volatility-adjusted strength.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "32.250000", "price_num": 32.25, "qty": "45", "qty_num": 45.0, "side": "buy", "symbol": "BTSG", "time": "2025-10-22T13:36:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Gap/pivot alignment; momentum continuation setup.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "17.870000", "price_num": 17.87, "qty": "80", "qty_num": 80.0, "side": "buy", "symbol": "AVDL", "time": "2025-10-22T13:35:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Biotech candidate from pivots; acceptable liquidity and strength.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "23.160000", "price_num": 23.16, "qty": "60", "qty_num": 60.0, "side": "buy", "symbol": "ARCT", "time": "2025-10-22T13:34:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Metals momentum; complements STLD while spreading risk.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "62.050000", "price_num": 62.05, "qty": "22", "qty_num": 22.0, "side": "buy", "symbol": "CMC", "time": "2025-10-22T13:33:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Steel leader with strong trend and liquidity.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "153.820000", "price_num": 153.82, "qty": "9", "qty_num": 9.0, "side": "buy", "symbol": "STLD", "time": "2025-10-22T13:32:00Z"}, {"balance_after": "$10,000.00", "balance_after_num": 10000.0, "balance_dir": 1, "notes": "Initiate position; large-cap momentum candidate from pivots.", "pnl_pct": "\u2014", "pnl_pct_num": 0.0, "price": "166.640000", "price_num": 166.64, "qty": "9", "qty_num": 9.0, "side": "buy", "symbol": "MMM", "time": "2025-10-22T13:31:00Z"}];
+    const BAL = {"t":["2025-10-22T13:31:00Z","2025-10-22T13:32:00Z","2025-10-22T13:33:00Z","2025-10-22T13:34:00Z","2025-10-22T13:35:00Z","2025-10-22T13:36:00Z","2025-10-22T13:37:00Z","2025-10-22T13:42:00Z","2025-10-22T13:42:05Z","2025-10-22T13:42:10Z","2025-10-22T13:42:15Z","2025-10-22T13:42:20Z","2025-10-22T13:42:25Z","2025-10-22T13:42:30Z","2025-10-22T13:43:00Z","2025-10-22T13:43:05Z","2025-10-22T13:43:10Z","2025-10-22T13:43:15Z","2025-10-23T14:30:00Z","2025-10-24T14:30:00Z","2025-10-27T14:30:01Z","2025-10-27T14:30:02Z","2025-10-27T14:30:03Z","2025-10-27T14:30:04Z"],"v":[10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,10000.0,9351.96,9351.96,9351.96,9351.96,9351.96,9351.96,9351.96,9351.96,9351.96,9351.96,9351.96,9216.8471912,9223.456229,9302.825956,9302.825956,9302.825956,9302.825956]};
 
     const fmtMoney = v => (v==null ? "—" : "$"+Number(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}));
     const fmtPct   = v => (v==null ? "—" : (v*100).toFixed(2)+"%");

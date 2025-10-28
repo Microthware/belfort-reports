@@ -316,6 +316,61 @@
         ],
         "portfolio_analysis": "Rotated out of lagging cyclicals (WGO, TNL) into higher-ranked candidates (QCOM, EW). Kept AVY and PEGA. Stayed essentially fully invested while respecting cash and FIFO PnL."
       }
+    },
+    {
+      "saved_at": "2025-10-28T21:38:41.433428Z",
+      "ending_balance": 9202.62051371,
+      "last_trade_time": "2025-10-28T14:35:30Z",
+      "raw": "{\n  \"model_name\": \"alpha-momentum-rotator-v3\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 9302.825956,\n  \"portfolio_analysis\": \"Rotated out of AVY and PEGA to redeploy into stronger candidates CCJ and REGN from today\u2019s list; maintained QCOM and EW. Fully invested across four names.\",\n  \"trades\": [\n    {\n      \"time\": \"2025-10-28T14:35:00Z\",\n      \"symbol\": \"AVY\",\n      \"side\": \"sell\",\n      \"qty\": 13.058,\n      \"price\": 179.17,\n      \"pnl_pct\": 0,\n      \"balance_after\": 9202.62051371,\n      \"notes\": \"Exit to rotate into higher-momentum candidates.\"\n    },\n    {\n      \"time\": \"2025-10-28T14:35:10Z\",\n      \"symbol\": \"PEGA\",\n      \"side\": \"sell\",\n      \"qty\": 35.6455,\n      \"price\": 65.49,\n      \"pnl_pct\": 0,\n      \"balance_after\": 9202.62051371,\n      \"notes\": \"Exit to free capital for candidate entries.\"\n    },\n    {\n      \"time\": \"2025-10-28T14:35:20Z\",\n      \"symbol\": \"CCJ\",\n      \"side\": \"buy\",\n      \"qty\": 21.8596,\n      \"price\": 106.91,\n      \"pnl_pct\": null,\n      \"balance_after\": 9202.62051371,\n      \"notes\": \"Candidate buy (gap/pivot strength).\"\n    },\n    {\n      \"time\": \"2025-10-28T14:35:30Z\",\n      \"symbol\": \"REGN\",\n      \"side\": \"buy\",\n      \"qty\": 3.5707979,\n      \"price\": 654.48,\n      \"pnl_pct\": null,\n      \"balance_after\": 9202.62051371,\n      \"notes\": \"Candidate buy (mega-cap momentum).\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 9302.825956.\n\n- Include only NEW actions since 2025-10-27T14:30:04Z but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nARCT=11.54, ARQT=24.95, AVDL=18.52, AVY=179.17, BTSG=32.94, CCJ=106.91, CMC=59.72, EW=82.19, GCI=4.07, HUBB=455.34, JANX=29.76, LEG=10.59, LUMN=10.05, MMM=167.23, MSCI=593.76, NOK=7.77, NUVB=5.37, NVDL=106.69, NVDU=149.28, NVDX=21.69, PEGA=65.49, PMI=13.17, QCOM=181.03, RCUS=19.88, REGN=654.48, SKYX=1.79, STLD=148.56, TNL=65.80, TV=2.75, W=106.52, WGO=41.20, WGS=137.47, WULF=15.94\n\nCANDIDATES_TODAY:\n\n- gap_ups: NOK, SKYX, ARQT, CCJ\n- pivots: NOK, SKYX, LEG, GCI, ARQT, TV, WULF, W, JANX, NVDL, NVDU, HUBB, NVDX, LUMN, MSCI, REGN, WGS, NUVB, RCUS, CCJ\n(total candidates: 24)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 0.00\nOPEN_POSITIONS:\n- AVY: qty=13.058000, ref_price=179.1700, first_buy_time=2025-10-22T13:43:00Z\n- PEGA: qty=35.645500, ref_price=65.4900, first_buy_time=2025-10-22T13:43:05Z\n- QCOM: qty=12.177196, ref_price=181.0300, first_buy_time=2025-10-27T14:30:03Z\n- EW: qty=28.277857, ref_price=82.1900, first_buy_time=2025-10-27T14:30:04Z\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take low risk approach and concentrate the entire portfolio in 5-10 stocks at all times.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 5-10 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 5-10 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.).\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "julian",
+        "universe": "ALL",
+        "starting_balance": 9302.825956,
+        "trades": [
+          {
+            "time": "2025-10-28T14:35:30Z",
+            "symbol": "REGN",
+            "side": "buy",
+            "qty": 3.5707979,
+            "price": 654.48,
+            "pnl_pct": null,
+            "balance_after": 9202.62051371,
+            "notes": "Candidate buy (mega-cap momentum)."
+          },
+          {
+            "time": "2025-10-28T14:35:20Z",
+            "symbol": "CCJ",
+            "side": "buy",
+            "qty": 21.8596,
+            "price": 106.91,
+            "pnl_pct": null,
+            "balance_after": 9202.62051371,
+            "notes": "Candidate buy (gap/pivot strength)."
+          },
+          {
+            "time": "2025-10-28T14:35:10Z",
+            "symbol": "PEGA",
+            "side": "sell",
+            "qty": 35.6455,
+            "price": 65.49,
+            "pnl_pct": 0.0,
+            "balance_after": 9202.62051371,
+            "notes": "Exit to free capital for candidate entries."
+          },
+          {
+            "time": "2025-10-28T14:35:00Z",
+            "symbol": "AVY",
+            "side": "sell",
+            "qty": 13.058,
+            "price": 179.17,
+            "pnl_pct": 0.0,
+            "balance_after": 9202.62051371,
+            "notes": "Exit to rotate into higher-momentum candidates."
+          }
+        ],
+        "portfolio_analysis": "Rotated out of AVY and PEGA to redeploy into stronger candidates CCJ and REGN from today\u2019s list; maintained QCOM and EW. Fully invested across four names."
+      }
     }
   ]
 }

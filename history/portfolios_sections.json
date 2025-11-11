@@ -4,6 +4,20 @@
     "name": "Nancy Pelosi",
     "rows": [
       {
+        "published_date": "2025-10-27",
+        "traded_date": "2025-10-22",
+        "issuer": "Apple Inc",
+        "ticker": "AAPL",
+        "type": "sell",
+        "size_range": "2025-10",
+        "price": "$258.45",
+        "shares": "",
+        "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20033337.pdf",
+        "detail_url": "https://www.capitoltrades.com/trades/20003792108",
+        "since_trade_pct": "0.042484",
+        "since_trade_spy_pct": "0.020425"
+      },
+      {
         "published_date": "2025-07-10",
         "traded_date": "2025-06-20",
         "issuer": "Broadcom Inc",
@@ -14,8 +28,8 @@
         "shares": "20,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030630.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003787955",
-        "since_trade_pct": "0.370695",
-        "since_trade_spy_pct": "0.129585"
+        "since_trade_pct": "0.433617",
+        "since_trade_spy_pct": "0.146665"
       },
       {
         "published_date": "2025-07-10",
@@ -29,7 +43,7 @@
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030630.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003787956",
         "since_trade_pct": "0.110794",
-        "since_trade_spy_pct": "0.129585"
+        "since_trade_spy_pct": "0.146665"
       },
       {
         "published_date": "2025-01-20",
@@ -42,8 +56,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026590.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780585",
-        "since_trade_pct": "0.320574",
-        "since_trade_spy_pct": "0.153043"
+        "since_trade_pct": "0.529579",
+        "since_trade_spy_pct": "0.170477"
       },
       {
         "published_date": "2025-01-20",
@@ -56,8 +70,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026590.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780586",
-        "since_trade_pct": "0.019609",
-        "since_trade_spy_pct": "0.153043"
+        "since_trade_pct": "0.140705",
+        "since_trade_spy_pct": "0.170477"
       },
       {
         "published_date": "2025-01-20",
@@ -70,8 +84,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026590.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780590",
-        "since_trade_pct": "0.374924",
-        "since_trade_spy_pct": "0.153043"
+        "since_trade_pct": "0.510701",
+        "since_trade_spy_pct": "0.170477"
       },
       {
         "published_date": "2025-01-20",
@@ -84,8 +98,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026590.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780592",
-        "since_trade_pct": "1.799246",
-        "since_trade_spy_pct": "0.153043"
+        "since_trade_pct": "1.255105",
+        "since_trade_spy_pct": "0.170477"
       },
       {
         "published_date": "2025-01-20",
@@ -98,8 +112,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026590.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780593",
-        "since_trade_pct": "0.093895",
-        "since_trade_spy_pct": "0.153043"
+        "since_trade_pct": "0.104217",
+        "since_trade_spy_pct": "0.170477"
       },
       {
         "published_date": "2025-01-20",
@@ -112,8 +126,8 @@
         "shares": "31,600",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026590.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780587",
-        "since_trade_pct": "0.049317",
-        "since_trade_spy_pct": "0.145390"
+        "since_trade_pct": "0.075912",
+        "since_trade_spy_pct": "0.162708"
       },
       {
         "published_date": "2025-01-20",
@@ -126,8 +140,8 @@
         "shares": "10,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026590.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780588",
-        "since_trade_pct": "0.349021",
-        "since_trade_spy_pct": "0.145390"
+        "since_trade_pct": "0.482240",
+        "since_trade_spy_pct": "0.162708"
       },
       {
         "published_date": "2025-01-20",
@@ -140,8 +154,8 @@
         "shares": "50,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026590.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780589",
-        "since_trade_pct": "0.344915",
-        "since_trade_spy_pct": "0.135566"
+        "since_trade_pct": "0.477728",
+        "since_trade_spy_pct": "0.152736"
       },
       {
         "published_date": "2025-01-20",
@@ -154,8 +168,8 @@
         "shares": "14,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026590.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780591",
-        "since_trade_pct": "0.147874",
-        "since_trade_spy_pct": "0.135566"
+        "since_trade_pct": "0.159332",
+        "since_trade_spy_pct": "0.152736"
       },
       {
         "published_date": "2024-09-12",
@@ -182,8 +196,8 @@
         "shares": "5,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025535.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003775096",
-        "since_trade_pct": "0.217250",
-        "since_trade_spy_pct": "0.232992"
+        "since_trade_pct": "0.189832",
+        "since_trade_spy_pct": "0.251635"
       },
       {
         "published_date": "2024-07-31",
@@ -196,8 +210,8 @@
         "shares": "10,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025535.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003775097",
-        "since_trade_pct": "0.602335",
-        "since_trade_spy_pct": "0.232992"
+        "since_trade_pct": "0.760570",
+        "since_trade_spy_pct": "0.251635"
       },
       {
         "published_date": "2024-07-03",
@@ -210,8 +224,8 @@
         "shares": "2,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025368.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774419",
-        "since_trade_pct": "0.318986",
-        "since_trade_spy_pct": "0.230957"
+        "since_trade_pct": "0.272033",
+        "since_trade_spy_pct": "0.249569"
       },
       {
         "published_date": "2024-07-03",
@@ -224,8 +238,8 @@
         "shares": "10,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025368.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774417",
-        "since_trade_pct": "0.433228",
-        "since_trade_spy_pct": "0.230573"
+        "since_trade_pct": "0.574763",
+        "since_trade_spy_pct": "0.249180"
       },
       {
         "published_date": "2024-07-03",
@@ -238,8 +252,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025368.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774416",
-        "since_trade_pct": "1.152103",
-        "since_trade_spy_pct": "0.236854"
+        "since_trade_pct": "1.250897",
+        "since_trade_spy_pct": "0.255555"
       },
       {
         "published_date": "2024-07-03",
@@ -252,8 +266,8 @@
         "shares": "2,500",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025368.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774418",
-        "since_trade_pct": "1.424143",
-        "since_trade_spy_pct": "0.236854"
+        "since_trade_pct": "1.438548",
+        "since_trade_spy_pct": "0.255555"
       },
       {
         "published_date": "2024-03-22",
@@ -280,8 +294,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20024542.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003771189",
-        "since_trade_pct": "0.636829",
-        "since_trade_spy_pct": "0.350114"
+        "since_trade_pct": "0.653166",
+        "since_trade_spy_pct": "0.370528"
       },
       {
         "published_date": "2024-02-26",
@@ -294,8 +308,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20024542.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003771188",
-        "since_trade_pct": "0.152781",
-        "since_trade_spy_pct": "0.339954"
+        "since_trade_pct": "0.164287",
+        "since_trade_spy_pct": "0.360214"
       },
       {
         "published_date": "2023-12-22",
@@ -308,8 +322,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20024186.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003770148",
-        "since_trade_pct": "2.718696",
-        "since_trade_spy_pct": "0.475298"
+        "since_trade_pct": "3.085927",
+        "since_trade_spy_pct": "0.497605"
       },
       {
         "published_date": "2023-06-23",
@@ -322,8 +336,8 @@
         "shares": "5,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20023192.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003764520",
-        "since_trade_pct": "0.412666",
-        "since_trade_spy_pct": "0.516697"
+        "since_trade_pct": "0.448471",
+        "since_trade_spy_pct": "0.539629"
       },
       {
         "published_date": "2023-06-23",
@@ -336,8 +350,8 @@
         "shares": "5,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20023192.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003764521",
-        "since_trade_pct": "0.487101",
-        "since_trade_spy_pct": "0.516697"
+        "since_trade_pct": "0.453605",
+        "since_trade_spy_pct": "0.539629"
       },
       {
         "published_date": "2023-06-07",
@@ -350,8 +364,8 @@
         "shares": "2,900",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20023080.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003763735",
-        "since_trade_pct": "0.514524",
-        "since_trade_spy_pct": "0.626423"
+        "since_trade_pct": "0.552911",
+        "since_trade_spy_pct": "0.651015"
       },
       {
         "published_date": "2023-04-07",
@@ -364,8 +378,8 @@
         "shares": "10,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022664.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003761537",
-        "since_trade_pct": "0.695290",
-        "since_trade_spy_pct": "0.721301"
+        "since_trade_pct": "0.738258",
+        "since_trade_spy_pct": "0.747327"
       },
       {
         "published_date": "2023-04-07",
@@ -378,8 +392,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022664.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003761538",
-        "since_trade_pct": "0.744937",
-        "since_trade_spy_pct": "0.714399"
+        "since_trade_pct": "0.789163",
+        "since_trade_spy_pct": "0.740321"
       },
       {
         "published_date": "2023-01-26",
@@ -392,8 +406,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022320.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758590",
-        "since_trade_pct": "2.763708",
-        "since_trade_spy_pct": "0.695691"
+        "since_trade_pct": "1.977954",
+        "since_trade_spy_pct": "0.721330"
       },
       {
         "published_date": "2023-01-13",
@@ -406,8 +420,8 @@
         "shares": "1,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022260.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758473",
-        "since_trade_pct": "3.209678",
-        "since_trade_spy_pct": "0.755328"
+        "since_trade_pct": "2.798392",
+        "since_trade_spy_pct": "0.781869"
       },
       {
         "published_date": "2023-01-13",
@@ -420,8 +434,8 @@
         "shares": "1,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022260.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758472",
-        "since_trade_pct": "3.264049",
-        "since_trade_spy_pct": "0.750704"
+        "since_trade_pct": "2.847451",
+        "since_trade_spy_pct": "0.777175"
       },
       {
         "published_date": "2023-01-13",
@@ -434,8 +448,8 @@
         "shares": "20,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022260.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758468",
-        "since_trade_pct": "0.209478",
-        "since_trade_spy_pct": "0.782217"
+        "since_trade_pct": "0.188953",
+        "since_trade_spy_pct": "0.809165"
       },
       {
         "published_date": "2023-01-13",
@@ -448,8 +462,8 @@
         "shares": "10,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022260.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758469",
-        "since_trade_pct": "1.911649",
-        "since_trade_spy_pct": "0.782217"
+        "since_trade_pct": "2.372472",
+        "since_trade_spy_pct": "0.809165"
       },
       {
         "published_date": "2023-01-13",
@@ -462,8 +476,8 @@
         "shares": "5,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022260.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758475",
-        "since_trade_pct": "0.037010",
-        "since_trade_spy_pct": "0.782217"
+        "since_trade_pct": "-0.019245",
+        "since_trade_spy_pct": "0.809165"
       },
       {
         "published_date": "2023-01-13",
@@ -476,8 +490,8 @@
         "shares": "5,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022260.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758477",
-        "since_trade_pct": "4.090214",
-        "since_trade_spy_pct": "0.782217"
+        "since_trade_pct": "3.027523",
+        "since_trade_spy_pct": "0.809165"
       },
       {
         "published_date": "2023-01-13",
@@ -490,8 +504,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022260.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758476",
-        "since_trade_pct": "0.175763",
-        "since_trade_spy_pct": "0.760068"
+        "since_trade_pct": "0.155810",
+        "since_trade_spy_pct": "0.786681"
       },
       {
         "published_date": "2023-01-13",
@@ -504,8 +518,8 @@
         "shares": "10,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022260.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758471",
-        "since_trade_pct": "1.795937",
-        "since_trade_spy_pct": "0.738058"
+        "since_trade_pct": "2.238446",
+        "since_trade_spy_pct": "0.764337"
       },
       {
         "published_date": "2023-01-13",
@@ -518,8 +532,8 @@
         "shares": "5,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022260.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758474",
-        "since_trade_pct": "0.012137",
-        "since_trade_spy_pct": "0.738058"
+        "since_trade_pct": "-0.042768",
+        "since_trade_spy_pct": "0.764337"
       },
       {
         "published_date": "2023-01-13",
@@ -532,8 +546,8 @@
         "shares": "10,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022260.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758480",
-        "since_trade_pct": "0.315002",
-        "since_trade_spy_pct": "0.738058"
+        "since_trade_pct": "0.291302",
+        "since_trade_spy_pct": "0.764337"
       },
       {
         "published_date": "2023-01-13",
@@ -546,8 +560,8 @@
         "shares": "10,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022260.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758470",
-        "since_trade_pct": "1.813525",
-        "since_trade_spy_pct": "0.764046"
+        "since_trade_pct": "2.258818",
+        "since_trade_spy_pct": "0.790718"
       },
       {
         "published_date": "2023-01-13",
@@ -560,8 +574,8 @@
         "shares": "13,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022260.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758478",
-        "since_trade_pct": "1.050681",
-        "since_trade_spy_pct": "0.764046"
+        "since_trade_pct": "0.881744",
+        "since_trade_spy_pct": "0.790718"
       },
       {
         "published_date": "2023-01-13",
@@ -574,8 +588,8 @@
         "shares": "5,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2023/20022260.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003758479",
-        "since_trade_pct": "2.211901",
-        "since_trade_spy_pct": "0.764046"
+        "since_trade_pct": "2.230987",
+        "since_trade_spy_pct": "0.790718"
       },
       {
         "published_date": "2022-12-01",
@@ -588,51 +602,51 @@
         "shares": "20,000",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2022/20022063.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003756320",
-        "since_trade_pct": "0.720735",
-        "since_trade_spy_pct": "0.757304"
+        "since_trade_pct": "0.659481",
+        "since_trade_spy_pct": "0.783874"
       }
     ],
     "holdings": [
       {
         "ticker": "NVDA",
-        "weight": 0.26695374905492913,
-        "change": 0.8041558770606086,
+        "weight": 0.28609173536250265,
+        "change": 0.9823207702780282,
         "logo_url": "https://logo.clearbit.com/www.nvidia.com"
       },
       {
         "ticker": "PANW",
-        "weight": 0.20012491371092336,
-        "change": 0.31222426478318005,
+        "weight": 0.21447192277883464,
+        "change": 0.32532190045992115,
         "logo_url": "https://logo.clearbit.com/www.paloaltonetworks.com"
       },
       {
-        "ticker": "AAPL",
-        "weight": 0.19963183327306794,
-        "change": 0.48290421882700835,
-        "logo_url": "https://logo.clearbit.com/www.apple.com"
-      },
-      {
         "ticker": "AVGO",
-        "weight": 0.13349331054205976,
-        "change": 0.7613027911844373,
+        "weight": 0.14306348199816812,
+        "change": 0.8421563745382911,
         "logo_url": "https://logo.clearbit.com/www.broadcom.com"
       },
       {
+        "ticker": "AAPL",
+        "weight": 0.14225322341999577,
+        "change": 0.4406254421182266,
+        "logo_url": "https://logo.clearbit.com/www.apple.com"
+      },
+      {
         "ticker": "AMZN",
-        "weight": 0.06659873113967325,
-        "change": 0.019609,
+        "weight": 0.07137321214683294,
+        "change": 0.140705,
         "logo_url": "https://logo.clearbit.com/www.aboutamazon.com"
       },
       {
         "ticker": "TEM",
-        "weight": 0.06659873113967325,
-        "change": 1.799246,
+        "weight": 0.07137321214683294,
+        "change": 1.255105,
         "logo_url": "https://logo.clearbit.com/www.tempus.com"
       },
       {
         "ticker": "VST",
-        "weight": 0.06659873113967325,
-        "change": 0.093895,
+        "weight": 0.07137321214683294,
+        "change": 0.104217,
         "logo_url": "https://logo.clearbit.com/vistracorp.com"
       }
     ]
@@ -652,8 +666,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063419",
-        "since_trade_pct": "-0.109200",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "-0.054800",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -666,8 +680,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063420",
-        "since_trade_pct": "0.129839",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "0.068548",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -680,8 +694,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063422",
-        "since_trade_pct": "0.274353",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "0.359285",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -694,8 +708,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063423",
-        "since_trade_pct": "0.602329",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "0.855927",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -708,8 +722,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063424",
-        "since_trade_pct": "0.019777",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "0.096038",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -722,8 +736,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063425",
-        "since_trade_pct": "0.299941",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "0.332888",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -736,8 +750,8 @@
         "shares": "1,086",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063426",
-        "since_trade_pct": "0.339700",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "0.215542",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -750,8 +764,8 @@
         "shares": "1,793",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063427",
-        "since_trade_pct": "0.280645",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "0.258781",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -764,8 +778,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063428",
-        "since_trade_pct": "-0.230012",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "-0.301262",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -778,8 +792,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063429",
-        "since_trade_pct": "0.065068",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "0.020251",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -792,8 +806,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063430",
-        "since_trade_pct": "0.494379",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "0.569631",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -806,8 +820,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063431",
-        "since_trade_pct": "0.055984",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "0.276632",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -820,8 +834,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063432",
-        "since_trade_pct": "0.105628",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "0.068770",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -834,8 +848,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063433",
-        "since_trade_pct": "0.342027",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "0.311798",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-05-15",
@@ -848,8 +862,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063434",
-        "since_trade_pct": "0.218110",
-        "since_trade_spy_pct": "0.248656"
+        "since_trade_pct": "0.237879",
+        "since_trade_spy_pct": "0.267536"
       },
       {
         "published_date": "2025-02-14",
@@ -862,8 +876,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063042",
-        "since_trade_pct": "0.003297",
-        "since_trade_spy_pct": "0.156420"
+        "since_trade_pct": "0.015937",
+        "since_trade_spy_pct": "0.173905"
       },
       {
         "published_date": "2025-02-14",
@@ -876,8 +890,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063043",
-        "since_trade_pct": "-0.100586",
-        "since_trade_spy_pct": "0.156420"
+        "since_trade_pct": "-0.138024",
+        "since_trade_spy_pct": "0.173905"
       },
       {
         "published_date": "2025-02-14",
@@ -890,8 +904,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063044",
-        "since_trade_pct": "-0.048961",
-        "since_trade_spy_pct": "0.156420"
+        "since_trade_pct": "-0.155509",
+        "since_trade_spy_pct": "0.173905"
       },
       {
         "published_date": "2025-02-14",
@@ -904,8 +918,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063045",
-        "since_trade_pct": "-0.171530",
-        "since_trade_spy_pct": "0.156420"
+        "since_trade_pct": "-0.196059",
+        "since_trade_spy_pct": "0.173905"
       },
       {
         "published_date": "2025-02-14",
@@ -918,8 +932,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063046",
-        "since_trade_pct": "0.235613",
-        "since_trade_spy_pct": "0.156420"
+        "since_trade_pct": "0.207781",
+        "since_trade_spy_pct": "0.173905"
       },
       {
         "published_date": "2025-02-14",
@@ -932,8 +946,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000063047",
-        "since_trade_pct": "0.109436",
-        "since_trade_spy_pct": "0.156420"
+        "since_trade_pct": "0.137555",
+        "since_trade_spy_pct": "0.173905"
       },
       {
         "published_date": "2024-11-15",
@@ -946,8 +960,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062808",
-        "since_trade_pct": "-0.263376",
-        "since_trade_spy_pct": "0.153875"
+        "since_trade_pct": "-0.322504",
+        "since_trade_spy_pct": "0.171322"
       },
       {
         "published_date": "2024-11-15",
@@ -960,8 +974,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062809",
-        "since_trade_pct": "0.124535",
-        "since_trade_spy_pct": "0.153875"
+        "since_trade_pct": "0.153036",
+        "since_trade_spy_pct": "0.171322"
       },
       {
         "published_date": "2024-11-15",
@@ -974,8 +988,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062810",
-        "since_trade_pct": "0.019411",
-        "since_trade_spy_pct": "0.153875"
+        "since_trade_pct": "0.078467",
+        "since_trade_spy_pct": "0.171322"
       },
       {
         "published_date": "2024-11-15",
@@ -988,8 +1002,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062811",
-        "since_trade_pct": "0.015050",
-        "since_trade_spy_pct": "0.153875"
+        "since_trade_pct": "0.009954",
+        "since_trade_spy_pct": "0.171322"
       },
       {
         "published_date": "2024-11-15",
@@ -1002,8 +1016,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062812",
-        "since_trade_pct": "0.198576",
-        "since_trade_spy_pct": "0.153875"
+        "since_trade_pct": "0.176901",
+        "since_trade_spy_pct": "0.171322"
       },
       {
         "published_date": "2024-11-15",
@@ -1016,8 +1030,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062813",
-        "since_trade_pct": "-0.107501",
-        "since_trade_spy_pct": "0.153875"
+        "since_trade_pct": "-0.233589",
+        "since_trade_spy_pct": "0.171322"
       },
       {
         "published_date": "2024-11-15",
@@ -1030,8 +1044,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062814",
-        "since_trade_pct": "0.042305",
-        "since_trade_spy_pct": "0.153875"
+        "since_trade_pct": "0.013898",
+        "since_trade_spy_pct": "0.171322"
       },
       {
         "published_date": "2024-11-15",
@@ -1044,8 +1058,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062815",
-        "since_trade_pct": "0.198426",
-        "since_trade_spy_pct": "0.153875"
+        "since_trade_pct": "0.171432",
+        "since_trade_spy_pct": "0.171322"
       },
       {
         "published_date": "2024-11-15",
@@ -1058,8 +1072,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062816",
-        "since_trade_pct": "0.080013",
-        "since_trade_spy_pct": "0.153875"
+        "since_trade_pct": "0.031900",
+        "since_trade_spy_pct": "0.171322"
       },
       {
         "published_date": "2024-11-15",
@@ -1072,8 +1086,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062817",
-        "since_trade_pct": "-0.085528",
-        "since_trade_spy_pct": "0.153875"
+        "since_trade_pct": "-0.109599",
+        "since_trade_spy_pct": "0.171322"
       },
       {
         "published_date": "2024-11-15",
@@ -1086,8 +1100,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062818",
-        "since_trade_pct": "-0.277796",
-        "since_trade_spy_pct": "0.153875"
+        "since_trade_pct": "-0.428769",
+        "since_trade_spy_pct": "0.171322"
       },
       {
         "published_date": "2024-11-15",
@@ -1100,8 +1114,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062819",
-        "since_trade_pct": "0.083122",
-        "since_trade_spy_pct": "0.153875"
+        "since_trade_pct": "0.135601",
+        "since_trade_spy_pct": "0.171322"
       },
       {
         "published_date": "2024-09-13",
@@ -1114,8 +1128,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062674",
-        "since_trade_pct": "0.156660",
-        "since_trade_spy_pct": "0.197043"
+        "since_trade_pct": "0.185976",
+        "since_trade_spy_pct": "0.215143"
       },
       {
         "published_date": "2024-09-13",
@@ -1128,8 +1142,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062675",
-        "since_trade_pct": "0.072644",
-        "since_trade_spy_pct": "0.197043"
+        "since_trade_pct": "0.037161",
+        "since_trade_spy_pct": "0.215143"
       },
       {
         "published_date": "2024-09-13",
@@ -1142,8 +1156,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062676",
-        "since_trade_pct": "0.414651",
-        "since_trade_spy_pct": "0.197043"
+        "since_trade_pct": "0.320954",
+        "since_trade_spy_pct": "0.215143"
       },
       {
         "published_date": "2024-09-13",
@@ -1156,8 +1170,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062677",
-        "since_trade_pct": "-0.318737",
-        "since_trade_spy_pct": "0.197043"
+        "since_trade_pct": "-0.280056",
+        "since_trade_spy_pct": "0.215143"
       },
       {
         "published_date": "2024-09-13",
@@ -1170,8 +1184,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062678",
-        "since_trade_pct": "-0.025090",
-        "since_trade_spy_pct": "0.197043"
+        "since_trade_pct": "-0.026284",
+        "since_trade_spy_pct": "0.215143"
       },
       {
         "published_date": "2024-09-13",
@@ -1184,8 +1198,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062679",
-        "since_trade_pct": "-0.000864",
-        "since_trade_spy_pct": "0.197043"
+        "since_trade_pct": "-0.009507",
+        "since_trade_spy_pct": "0.215143"
       },
       {
         "published_date": "2024-06-14",
@@ -1198,8 +1212,8 @@
         "shares": "8,195",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062454",
-        "since_trade_pct": "0.249426",
-        "since_trade_spy_pct": "0.288687"
+        "since_trade_pct": "0.260243",
+        "since_trade_spy_pct": "0.308172"
       },
       {
         "published_date": "2024-06-14",
@@ -1212,8 +1226,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062451",
-        "since_trade_pct": "1.065471",
-        "since_trade_spy_pct": "0.288860"
+        "since_trade_pct": "0.930103",
+        "since_trade_spy_pct": "0.308348"
       },
       {
         "published_date": "2024-06-14",
@@ -1226,8 +1240,8 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062452",
-        "since_trade_pct": "0.229492",
-        "since_trade_spy_pct": "0.297956"
+        "since_trade_pct": "0.235439",
+        "since_trade_spy_pct": "0.317582"
       },
       {
         "published_date": "2024-06-14",
@@ -1240,27 +1254,27 @@
         "shares": "",
         "pdf_url": "",
         "detail_url": "https://www.capitoltrades.com/trades/10000062450",
-        "since_trade_pct": "0.946213",
-        "since_trade_spy_pct": "0.298082"
+        "since_trade_pct": "0.818661",
+        "since_trade_spy_pct": "0.317709"
       }
     ],
     "holdings": [
       {
         "ticker": "ARKK",
         "weight": 0.4998152481832738,
-        "change": 1.005842,
+        "change": 0.8743820000000001,
         "logo_url": "https://ui-avatars.com/api/?name=ARKK&background=1f2937&color=ffffff&size=96&bold=true"
       },
       {
         "ticker": "ABNDX",
         "weight": 0.2502771277250893,
-        "change": -0.000864,
+        "change": -0.009507,
         "logo_url": "https://ui-avatars.com/api/?name=ABNDX&background=1f2937&color=ffffff&size=96&bold=true"
       },
       {
         "ticker": "XBI",
         "weight": 0.2499076240916369,
-        "change": 0.229492,
+        "change": 0.235439,
         "logo_url": "https://ui-avatars.com/api/?name=XBI&background=1f2937&color=ffffff&size=96&bold=true"
       }
     ]
@@ -1280,8 +1294,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791823",
-        "since_trade_pct": "-0.005459",
-        "since_trade_spy_pct": "0.007671"
+        "since_trade_pct": "-0.004367",
+        "since_trade_spy_pct": "0.022907"
       },
       {
         "published_date": "2025-10-13",
@@ -1294,8 +1308,8 @@
         "shares": "19,973",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791825",
-        "since_trade_pct": "0.009786",
-        "since_trade_spy_pct": "0.007671"
+        "since_trade_pct": "0.006591",
+        "since_trade_spy_pct": "0.022907"
       },
       {
         "published_date": "2025-10-13",
@@ -1308,8 +1322,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791855",
-        "since_trade_pct": "0.029652",
-        "since_trade_spy_pct": "0.007671"
+        "since_trade_pct": "0.052174",
+        "since_trade_spy_pct": "0.022907"
       },
       {
         "published_date": "2025-10-13",
@@ -1322,8 +1336,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791824",
-        "since_trade_pct": "-0.005459",
-        "since_trade_spy_pct": "0.011466"
+        "since_trade_pct": "-0.004367",
+        "since_trade_spy_pct": "0.026760"
       },
       {
         "published_date": "2025-10-13",
@@ -1336,8 +1350,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791826",
-        "since_trade_pct": "-0.004310",
-        "since_trade_spy_pct": "0.011466"
+        "since_trade_pct": "-0.006465",
+        "since_trade_spy_pct": "0.026760"
       },
       {
         "published_date": "2025-10-13",
@@ -1350,8 +1364,8 @@
         "shares": "9,991",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791828",
-        "since_trade_pct": "0.010190",
-        "since_trade_spy_pct": "0.011466"
+        "since_trade_pct": "0.006993",
+        "since_trade_spy_pct": "0.026760"
       },
       {
         "published_date": "2025-10-13",
@@ -1364,8 +1378,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791829",
-        "since_trade_pct": "-0.006543",
-        "since_trade_spy_pct": "0.020120"
+        "since_trade_pct": "-0.005453",
+        "since_trade_spy_pct": "0.035544"
       },
       {
         "published_date": "2025-10-13",
@@ -1378,8 +1392,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791840",
-        "since_trade_pct": "0.024918",
-        "since_trade_spy_pct": "0.020120"
+        "since_trade_pct": "-0.056945",
+        "since_trade_spy_pct": "0.035544"
       },
       {
         "published_date": "2025-10-13",
@@ -1392,8 +1406,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791864",
-        "since_trade_pct": "0.216632",
-        "since_trade_spy_pct": "0.020120"
+        "since_trade_pct": "0.163727",
+        "since_trade_spy_pct": "0.035544"
       },
       {
         "published_date": "2025-10-13",
@@ -1406,8 +1420,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791838",
-        "since_trade_pct": "-0.006543",
-        "since_trade_spy_pct": "0.012183"
+        "since_trade_pct": "-0.005453",
+        "since_trade_spy_pct": "0.027487"
       },
       {
         "published_date": "2025-10-13",
@@ -1420,8 +1434,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791833",
-        "since_trade_pct": "-0.006543",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "-0.005453",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-13",
@@ -1434,8 +1448,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791841",
-        "since_trade_pct": "0.061526",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "0.002958",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-13",
@@ -1448,8 +1462,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791843",
-        "since_trade_pct": "-0.010420",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "-0.061397",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-13",
@@ -1462,8 +1476,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791847",
-        "since_trade_pct": "-0.084784",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "-0.234684",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-13",
@@ -1476,8 +1490,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791848",
-        "since_trade_pct": "-0.016199",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "-0.123116",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-13",
@@ -1490,8 +1504,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791849",
-        "since_trade_pct": "-0.020163",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "-0.064235",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-13",
@@ -1504,8 +1518,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791850",
-        "since_trade_pct": "0.087780",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "0.076935",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-13",
@@ -1518,8 +1532,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791851",
-        "since_trade_pct": "-0.021816",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "-0.068930",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-13",
@@ -1532,8 +1546,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791861",
-        "since_trade_pct": "0.003453",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "-0.211049",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-13",
@@ -1546,8 +1560,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791832",
-        "since_trade_pct": "-0.005459",
-        "since_trade_spy_pct": "0.017106"
+        "since_trade_pct": "-0.004367",
+        "since_trade_spy_pct": "0.032485"
       },
       {
         "published_date": "2025-10-13",
@@ -1560,8 +1574,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791844",
-        "since_trade_pct": "0.034019",
-        "since_trade_spy_pct": "0.017106"
+        "since_trade_pct": "-0.067005",
+        "since_trade_spy_pct": "0.032485"
       },
       {
         "published_date": "2025-10-13",
@@ -1574,8 +1588,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791854",
-        "since_trade_pct": "0.051851",
-        "since_trade_spy_pct": "0.017106"
+        "since_trade_pct": "0.118852",
+        "since_trade_spy_pct": "0.032485"
       },
       {
         "published_date": "2025-10-13",
@@ -1588,8 +1602,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791863",
-        "since_trade_pct": "0.015523",
-        "since_trade_spy_pct": "0.021113"
+        "since_trade_pct": "0.037736",
+        "since_trade_spy_pct": "0.036553"
       },
       {
         "published_date": "2025-10-13",
@@ -1602,8 +1616,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791852",
-        "since_trade_pct": "-0.153703",
-        "since_trade_spy_pct": "0.020772"
+        "since_trade_pct": "-0.292315",
+        "since_trade_spy_pct": "0.036206"
       },
       {
         "published_date": "2025-10-13",
@@ -1616,8 +1630,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791857",
-        "since_trade_pct": "0.067836",
-        "since_trade_spy_pct": "0.020772"
+        "since_trade_pct": "0.036937",
+        "since_trade_spy_pct": "0.036206"
       },
       {
         "published_date": "2025-10-13",
@@ -1630,8 +1644,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791860",
-        "since_trade_pct": "-0.047629",
-        "since_trade_spy_pct": "0.020772"
+        "since_trade_pct": "-0.151131",
+        "since_trade_spy_pct": "0.036206"
       },
       {
         "published_date": "2025-10-13",
@@ -1644,8 +1658,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791866",
-        "since_trade_pct": "-0.106250",
-        "since_trade_spy_pct": "0.020772"
+        "since_trade_pct": "-0.217729",
+        "since_trade_spy_pct": "0.036206"
       },
       {
         "published_date": "2025-10-13",
@@ -1658,8 +1672,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791834",
-        "since_trade_pct": "-0.003282",
-        "since_trade_spy_pct": "0.029254"
+        "since_trade_pct": "-0.002188",
+        "since_trade_spy_pct": "0.044817"
       },
       {
         "published_date": "2025-10-13",
@@ -1672,8 +1686,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791856",
-        "since_trade_pct": "0.136057",
-        "since_trade_spy_pct": "0.032230"
+        "since_trade_pct": "0.086657",
+        "since_trade_spy_pct": "0.047837"
       },
       {
         "published_date": "2025-10-13",
@@ -1686,8 +1700,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791858",
-        "since_trade_pct": "0.017792",
-        "since_trade_spy_pct": "0.032230"
+        "since_trade_pct": "0.064514",
+        "since_trade_spy_pct": "0.047837"
       },
       {
         "published_date": "2025-10-13",
@@ -1700,8 +1714,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791862",
-        "since_trade_pct": "0.064751",
-        "since_trade_spy_pct": "0.032230"
+        "since_trade_pct": "-0.011962",
+        "since_trade_spy_pct": "0.047837"
       },
       {
         "published_date": "2025-10-13",
@@ -1714,8 +1728,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791842",
-        "since_trade_pct": "-0.008650",
-        "since_trade_spy_pct": "0.034616"
+        "since_trade_pct": "0.036858",
+        "since_trade_spy_pct": "0.050260"
       },
       {
         "published_date": "2025-10-13",
@@ -1728,8 +1742,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791845",
-        "since_trade_pct": "-0.004372",
-        "since_trade_spy_pct": "0.037158"
+        "since_trade_pct": "-0.003279",
+        "since_trade_spy_pct": "0.052840"
       },
       {
         "published_date": "2025-10-13",
@@ -1742,8 +1756,8 @@
         "shares": "1,596",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791846",
-        "since_trade_pct": "-0.054762",
-        "since_trade_spy_pct": "0.037158"
+        "since_trade_pct": "-0.034086",
+        "since_trade_spy_pct": "0.052840"
       },
       {
         "published_date": "2025-10-13",
@@ -1756,8 +1770,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791853",
-        "since_trade_pct": "0.062908",
-        "since_trade_spy_pct": "0.034154"
+        "since_trade_pct": "-0.013672",
+        "since_trade_spy_pct": "0.049790"
       },
       {
         "published_date": "2025-10-13",
@@ -1770,135 +1784,135 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/9115684.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791865",
-        "since_trade_pct": "0.078175",
-        "since_trade_spy_pct": "0.034154"
+        "since_trade_pct": "0.248816",
+        "since_trade_spy_pct": "0.049790"
       }
     ],
     "holdings": [
       {
         "ticker": "FFRHX",
         "weight": 0.2222222222222222,
-        "change": -0.0054575,
+        "change": -0.004365875000000001,
         "logo_url": "https://ui-avatars.com/api/?name=FFRHX&background=1f2937&color=ffffff&size=96&bold=true"
       },
       {
         "ticker": "LDNXF",
         "weight": 0.08333333333333333,
-        "change": -0.0031956666666666652,
+        "change": 0.018608,
         "logo_url": "https://logo.clearbit.com/www.lseg.com"
       },
       {
         "ticker": "VTEB",
         "weight": 0.05555555555555555,
-        "change": 0.009987999999999999,
+        "change": 0.006792,
         "logo_url": "https://ui-avatars.com/api/?name=VTEB&background=1f2937&color=ffffff&size=96&bold=true"
       },
       {
         "ticker": "DHR",
         "weight": 0.05555555555555555,
-        "change": 0.1763445,
+        "change": 0.125192,
         "logo_url": "https://logo.clearbit.com/www.danaher.com"
       },
       {
         "ticker": "NSIT",
         "weight": 0.05555555555555555,
-        "change": -0.11924350000000002,
+        "change": -0.2634995,
         "logo_url": "https://logo.clearbit.com/www.insight.com"
       },
       {
         "ticker": "ATR",
         "weight": 0.05555555555555555,
-        "change": -0.031914000000000005,
+        "change": -0.1371235,
         "logo_url": "https://logo.clearbit.com/www.aptar.com"
       },
       {
         "ticker": "AVGO",
         "weight": 0.05555555555555555,
-        "change": 0.004570999999999999,
+        "change": 0.050686,
         "logo_url": "https://logo.clearbit.com/www.broadcom.com"
       },
       {
         "ticker": "WDAY",
         "weight": 0.05555555555555555,
-        "change": 0.0638295,
+        "change": -0.012817,
         "logo_url": "https://logo.clearbit.com/www.workday.com"
       },
       {
         "ticker": "ARTFX",
         "weight": 0.027777777777777776,
-        "change": -0.00431,
+        "change": -0.006465,
         "logo_url": "https://ui-avatars.com/api/?name=ARTFX&background=1f2937&color=ffffff&size=96&bold=true"
       },
       {
         "ticker": "NOW",
         "weight": 0.027777777777777776,
-        "change": 0.024918,
+        "change": -0.056945,
         "logo_url": "https://logo.clearbit.com/www.servicenow.com"
       },
       {
         "ticker": "CNM",
         "weight": 0.027777777777777776,
-        "change": 0.061526,
+        "change": 0.002958,
         "logo_url": "https://logo.clearbit.com/www.coreandmain.com"
       },
       {
         "ticker": "CSL",
         "weight": 0.027777777777777776,
-        "change": -0.010420000000000002,
+        "change": -0.061397,
         "logo_url": "https://logo.clearbit.com/www.carlisle.com"
       },
       {
         "ticker": "PRI",
         "weight": 0.027777777777777776,
-        "change": -0.020163,
+        "change": -0.064235,
         "logo_url": "https://logo.clearbit.com/www.primerica.com"
       },
       {
         "ticker": "WTM",
         "weight": 0.027777777777777776,
-        "change": 0.08778,
+        "change": 0.076935,
         "logo_url": "https://logo.clearbit.com/www.whitemountains.com"
       },
       {
         "ticker": "MSA",
         "weight": 0.027777777777777776,
-        "change": -0.021816,
+        "change": -0.06893,
         "logo_url": "https://logo.clearbit.com/www.msasafety.com"
       },
       {
         "ticker": "DXCM",
         "weight": 0.027777777777777776,
-        "change": 0.003453,
+        "change": -0.211049,
         "logo_url": "https://logo.clearbit.com/www.dexcom.com"
       },
       {
         "ticker": "NFLX",
         "weight": 0.027777777777777776,
-        "change": 0.034019,
+        "change": -0.067005,
         "logo_url": "https://logo.clearbit.com/www.netflix.com"
       },
       {
         "ticker": "HWM",
         "weight": 0.027777777777777776,
-        "change": 0.051851,
+        "change": 0.118852,
         "logo_url": "https://logo.clearbit.com/www.howmet.com"
       },
       {
         "ticker": "PLXS",
         "weight": 0.027777777777777776,
-        "change": 0.067836,
+        "change": 0.036937,
         "logo_url": "https://logo.clearbit.com/www.plexus.com"
       },
       {
         "ticker": "ORCL",
         "weight": 0.027777777777777776,
-        "change": -0.10625,
+        "change": -0.217729,
         "logo_url": "https://logo.clearbit.com/www.oracle.com"
       },
       {
         "ticker": "GOOGL",
         "weight": 0.027777777777777776,
-        "change": 0.078175,
+        "change": 0.248816,
         "logo_url": "https://logo.clearbit.com/abc.xyz"
       }
     ]
@@ -1918,8 +1932,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032246.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791942",
-        "since_trade_pct": "-0.120958",
-        "since_trade_spy_pct": "0.007671"
+        "since_trade_pct": "-0.178443",
+        "since_trade_spy_pct": "0.022907"
       },
       {
         "published_date": "2025-10-16",
@@ -1932,8 +1946,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032246.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791938",
-        "since_trade_pct": "-0.088117",
-        "since_trade_spy_pct": "0.012183"
+        "since_trade_pct": "-0.320194",
+        "since_trade_spy_pct": "0.027487"
       },
       {
         "published_date": "2025-10-16",
@@ -1946,8 +1960,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032246.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791946",
-        "since_trade_pct": "-0.211197",
-        "since_trade_spy_pct": "0.012183"
+        "since_trade_pct": "-0.112303",
+        "since_trade_spy_pct": "0.027487"
       },
       {
         "published_date": "2025-10-16",
@@ -1960,8 +1974,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032246.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791939",
-        "since_trade_pct": "0.020525",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "-0.009690",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-16",
@@ -1974,8 +1988,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032246.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791940",
-        "since_trade_pct": "-0.048738",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "-0.042278",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-16",
@@ -1988,8 +2002,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032246.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791943",
-        "since_trade_pct": "0.042915",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "0.153134",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-16",
@@ -2002,8 +2016,8 @@
         "shares": "1,189",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032246.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791944",
-        "since_trade_pct": "-0.049921",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "-0.146593",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-16",
@@ -2016,8 +2030,8 @@
         "shares": "1,149",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032246.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791945",
-        "since_trade_pct": "0.178407",
-        "since_trade_spy_pct": "0.006673"
+        "since_trade_pct": "0.253446",
+        "since_trade_spy_pct": "0.021894"
       },
       {
         "published_date": "2025-10-16",
@@ -2030,8 +2044,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032246.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791947",
-        "since_trade_pct": "0.191866",
-        "since_trade_spy_pct": "0.020772"
+        "since_trade_pct": "-0.043767",
+        "since_trade_spy_pct": "0.036206"
       },
       {
         "published_date": "2025-10-16",
@@ -2044,8 +2058,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032246.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791941",
-        "since_trade_pct": "0.048869",
-        "since_trade_spy_pct": "0.042797"
+        "since_trade_pct": "0.306043",
+        "since_trade_spy_pct": "0.058564"
       },
       {
         "published_date": "2025-09-08",
@@ -2058,8 +2072,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20031032.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003790056",
-        "since_trade_pct": "0.128502",
-        "since_trade_spy_pct": "0.040260"
+        "since_trade_pct": "0.247766",
+        "since_trade_spy_pct": "0.055989"
       },
       {
         "published_date": "2025-09-08",
@@ -2072,8 +2086,8 @@
         "shares": "1,133",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20031032.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003790057",
-        "since_trade_pct": "-0.088906",
-        "since_trade_spy_pct": "0.056235"
+        "since_trade_pct": "-0.181611",
+        "since_trade_spy_pct": "0.072205"
       },
       {
         "published_date": "2025-09-08",
@@ -2086,8 +2100,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20031032.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003790055",
-        "since_trade_pct": "0.201389",
-        "since_trade_spy_pct": "0.044500"
+        "since_trade_pct": "0.316736",
+        "since_trade_spy_pct": "0.060293"
       },
       {
         "published_date": "2025-09-08",
@@ -2100,8 +2114,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20031032.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003790058",
-        "since_trade_pct": "0.031092",
-        "since_trade_spy_pct": "0.044500"
+        "since_trade_pct": "-0.005613",
+        "since_trade_spy_pct": "0.060293"
       },
       {
         "published_date": "2025-09-08",
@@ -2114,8 +2128,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20031032.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003790059",
-        "since_trade_pct": "0.023162",
-        "since_trade_spy_pct": "0.079730"
+        "since_trade_pct": "-0.013261",
+        "since_trade_spy_pct": "0.096056"
       },
       {
         "published_date": "2025-08-12",
@@ -2128,8 +2142,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030848.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788809",
-        "since_trade_pct": "0.088208",
-        "since_trade_spy_pct": "0.053930"
+        "since_trade_pct": "0.049278",
+        "since_trade_spy_pct": "0.069865"
       },
       {
         "published_date": "2025-08-12",
@@ -2142,8 +2156,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030848.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788805",
-        "since_trade_pct": "0.085977",
-        "since_trade_spy_pct": "0.053665"
+        "since_trade_pct": "0.190243",
+        "since_trade_spy_pct": "0.069597"
       },
       {
         "published_date": "2025-08-12",
@@ -2156,8 +2170,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030848.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788806",
-        "since_trade_pct": "0.335620",
-        "since_trade_spy_pct": "0.067471"
+        "since_trade_pct": "0.476772",
+        "since_trade_spy_pct": "0.083612"
       },
       {
         "published_date": "2025-08-12",
@@ -2170,8 +2184,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030848.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788803",
-        "since_trade_pct": "0.031293",
-        "since_trade_spy_pct": "0.069648"
+        "since_trade_pct": "0.017951",
+        "since_trade_spy_pct": "0.085822"
       },
       {
         "published_date": "2025-08-12",
@@ -2184,8 +2198,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030848.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788804",
-        "since_trade_pct": "-0.061414",
-        "since_trade_spy_pct": "0.075406"
+        "since_trade_pct": "-0.055041",
+        "since_trade_spy_pct": "0.091666"
       },
       {
         "published_date": "2025-08-12",
@@ -2198,8 +2212,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030848.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788808",
-        "since_trade_pct": "-0.009387",
-        "since_trade_spy_pct": "0.074391"
+        "since_trade_pct": "-0.044650",
+        "since_trade_spy_pct": "0.090636"
       },
       {
         "published_date": "2025-08-12",
@@ -2226,8 +2240,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788313",
-        "since_trade_pct": "0.003410",
-        "since_trade_spy_pct": "0.097112"
+        "since_trade_pct": "-0.032309",
+        "since_trade_spy_pct": "0.113701"
       },
       {
         "published_date": "2025-07-17",
@@ -2240,8 +2254,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788299",
-        "since_trade_pct": "0.294767",
-        "since_trade_spy_pct": "0.105696"
+        "since_trade_pct": "0.354204",
+        "since_trade_spy_pct": "0.122414"
       },
       {
         "published_date": "2025-07-17",
@@ -2254,8 +2268,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788314",
-        "since_trade_pct": "0.005648",
-        "since_trade_spy_pct": "0.105696"
+        "since_trade_pct": "-0.030151",
+        "since_trade_spy_pct": "0.122414"
       },
       {
         "published_date": "2025-07-17",
@@ -2268,8 +2282,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788303",
-        "since_trade_pct": "-0.033337",
-        "since_trade_spy_pct": "0.106315"
+        "since_trade_pct": "-0.012977",
+        "since_trade_spy_pct": "0.123043"
       },
       {
         "published_date": "2025-07-17",
@@ -2282,8 +2296,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788307",
-        "since_trade_pct": "0.224882",
-        "since_trade_spy_pct": "0.106315"
+        "since_trade_pct": "0.345842",
+        "since_trade_spy_pct": "0.123043"
       },
       {
         "published_date": "2025-07-17",
@@ -2296,8 +2310,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788315",
-        "since_trade_pct": "-0.012570",
-        "since_trade_spy_pct": "0.106315"
+        "since_trade_pct": "-0.047721",
+        "since_trade_spy_pct": "0.123043"
       },
       {
         "published_date": "2025-07-17",
@@ -2310,8 +2324,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788300",
-        "since_trade_pct": "0.112476",
-        "since_trade_spy_pct": "0.129585"
+        "since_trade_pct": "0.007471",
+        "since_trade_spy_pct": "0.146665"
       },
       {
         "published_date": "2025-07-17",
@@ -2324,8 +2338,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788302",
-        "since_trade_pct": "0.187842",
-        "since_trade_spy_pct": "0.129585"
+        "since_trade_pct": "0.341495",
+        "since_trade_spy_pct": "0.146665"
       },
       {
         "published_date": "2025-07-17",
@@ -2338,8 +2352,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788306",
-        "since_trade_pct": "0.069645",
-        "since_trade_spy_pct": "0.129585"
+        "since_trade_pct": "0.040493",
+        "since_trade_spy_pct": "0.146665"
       },
       {
         "published_date": "2025-07-17",
@@ -2352,8 +2366,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788312",
-        "since_trade_pct": "0.025519",
-        "since_trade_spy_pct": "0.129585"
+        "since_trade_pct": "-0.010987",
+        "since_trade_spy_pct": "0.146665"
       },
       {
         "published_date": "2025-07-17",
@@ -2366,8 +2380,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788305",
-        "since_trade_pct": "0.627227",
-        "since_trade_spy_pct": "0.113841"
+        "since_trade_pct": "0.889162",
+        "since_trade_spy_pct": "0.130683"
       },
       {
         "published_date": "2025-07-17",
@@ -2380,8 +2394,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788301",
-        "since_trade_pct": "-0.061125",
-        "since_trade_spy_pct": "0.124439"
+        "since_trade_pct": "0.005091",
+        "since_trade_spy_pct": "0.141441"
       },
       {
         "published_date": "2025-07-17",
@@ -2394,8 +2408,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788310",
-        "since_trade_pct": "0.554619",
-        "since_trade_spy_pct": "0.131928"
+        "since_trade_pct": "0.563857",
+        "since_trade_spy_pct": "0.149043"
       },
       {
         "published_date": "2025-07-17",
@@ -2408,8 +2422,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788309",
-        "since_trade_pct": "0.000912",
-        "since_trade_spy_pct": "0.126458"
+        "since_trade_pct": "-0.081544",
+        "since_trade_spy_pct": "0.143490"
       },
       {
         "published_date": "2025-07-17",
@@ -2422,8 +2436,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788311",
-        "since_trade_pct": "0.025671",
-        "since_trade_spy_pct": "0.126458"
+        "since_trade_pct": "0.013628",
+        "since_trade_spy_pct": "0.143490"
       },
       {
         "published_date": "2025-07-17",
@@ -2436,8 +2450,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788298",
-        "since_trade_pct": "-0.012453",
-        "since_trade_spy_pct": "0.126155"
+        "since_trade_pct": "0.130108",
+        "since_trade_spy_pct": "0.143183"
       },
       {
         "published_date": "2025-07-17",
@@ -2450,8 +2464,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788304",
-        "since_trade_pct": "-0.155228",
-        "since_trade_spy_pct": "0.126155"
+        "since_trade_pct": "-0.183429",
+        "since_trade_spy_pct": "0.143183"
       },
       {
         "published_date": "2025-07-17",
@@ -2464,8 +2478,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030621.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003788308",
-        "since_trade_pct": "0.064240",
-        "since_trade_spy_pct": "0.126155"
+        "since_trade_pct": "0.044540",
+        "since_trade_spy_pct": "0.143183"
       },
       {
         "published_date": "2025-06-12",
@@ -2478,8 +2492,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030462.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003786733",
-        "since_trade_pct": "0.416082",
-        "since_trade_spy_pct": "0.142174"
+        "since_trade_pct": "0.668939",
+        "since_trade_spy_pct": "0.159444"
       },
       {
         "published_date": "2025-06-12",
@@ -2492,8 +2506,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030462.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003786731",
-        "since_trade_pct": "0.267613",
-        "since_trade_spy_pct": "0.151263"
+        "since_trade_pct": "0.198148",
+        "since_trade_spy_pct": "0.168670"
       },
       {
         "published_date": "2025-06-12",
@@ -2506,8 +2520,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030462.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003786734",
-        "since_trade_pct": "0.383853",
-        "since_trade_spy_pct": "0.151263"
+        "since_trade_pct": "0.402444",
+        "since_trade_spy_pct": "0.168670"
       },
       {
         "published_date": "2025-06-12",
@@ -2520,8 +2534,8 @@
         "shares": "1,556",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030462.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003786735",
-        "since_trade_pct": "-0.037068",
-        "since_trade_spy_pct": "0.142446"
+        "since_trade_pct": "-0.013966",
+        "since_trade_spy_pct": "0.159720"
       },
       {
         "published_date": "2025-06-12",
@@ -2534,99 +2548,99 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030462.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003786732",
-        "since_trade_pct": "0.623412",
-        "since_trade_spy_pct": "0.187998"
+        "since_trade_pct": "0.880347",
+        "since_trade_spy_pct": "0.205960"
       }
     ],
     "holdings": [
       {
         "ticker": "NTRA",
         "weight": 0.0770366444579043,
-        "change": 0.16896434103951466,
+        "change": 0.29250426922446304,
         "logo_url": "https://logo.clearbit.com/www.natera.com"
       },
       {
         "ticker": "MTHRY",
         "weight": 0.07699878861296185,
-        "change": -0.120958,
+        "change": -0.178443,
         "logo_url": "https://logo.clearbit.com/corporate.m3.com"
       },
       {
         "ticker": "CVLT",
         "weight": 0.07699878861296185,
-        "change": -0.088117,
+        "change": -0.320194,
         "logo_url": "https://logo.clearbit.com/www.commvault.com"
       },
       {
         "ticker": "TNDM",
         "weight": 0.07699878861296185,
-        "change": 0.178407,
+        "change": 0.253446,
         "logo_url": "https://logo.clearbit.com/www.tandemdiabetes.com"
       },
       {
         "ticker": "AVGO",
         "weight": 0.07688522107813446,
-        "change": 0.294767,
+        "change": 0.354204,
         "logo_url": "https://logo.clearbit.com/www.broadcom.com"
       },
       {
         "ticker": "NVDA",
         "weight": 0.07688522107813446,
-        "change": 0.224882,
+        "change": 0.345842,
         "logo_url": "https://logo.clearbit.com/www.nvidia.com"
       },
       {
         "ticker": "CVNA",
         "weight": 0.07688522107813446,
-        "change": 0.112476,
+        "change": 0.007471,
         "logo_url": "https://logo.clearbit.com/www.carvana.com"
       },
       {
         "ticker": "NET",
         "weight": 0.07688522107813446,
-        "change": 0.187842,
+        "change": 0.341495,
         "logo_url": "https://logo.clearbit.com/www.cloudflare.com"
       },
       {
         "ticker": "INSM",
         "weight": 0.07688522107813446,
-        "change": 0.627227,
+        "change": 0.889162,
         "logo_url": "https://logo.clearbit.com/www.insmed.com"
       },
       {
         "ticker": "CB",
         "weight": 0.07688522107813446,
-        "change": -0.061125,
+        "change": 0.005091,
         "logo_url": "https://logo.clearbit.com/www.chubb.com"
       },
       {
         "ticker": "APP",
         "weight": 0.07684736523319201,
-        "change": 0.416082,
+        "change": 0.668939,
         "logo_url": "https://logo.clearbit.com/www.applovin.com"
       },
       {
         "ticker": "ABBV",
         "weight": 0.07684736523319201,
-        "change": 0.267613,
+        "change": 0.198148,
         "logo_url": "https://logo.clearbit.com/www.abbvie.com"
       },
       {
         "ticker": "ASML",
         "weight": 0.07684736523319201,
-        "change": 0.383853,
+        "change": 0.402444,
         "logo_url": "https://logo.clearbit.com/www.asml.com"
       },
       {
         "ticker": "IRT",
         "weight": 7.571168988491823e-05,
-        "change": -0.05507288243974422,
+        "change": -0.0486563610427939,
         "logo_url": "https://logo.clearbit.com/www.irtliving.com"
       },
       {
         "ticker": "SSMXY",
         "weight": 3.7855844942459115e-05,
-        "change": -0.06940870715515121,
+        "change": -0.16409769486107695,
         "logo_url": "https://logo.clearbit.com/www.sysmex.co.jp"
       }
     ]
@@ -2646,8 +2660,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032284.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791948",
-        "since_trade_pct": "0.048291",
-        "since_trade_spy_pct": "0.014309"
+        "since_trade_pct": "0.023350",
+        "since_trade_spy_pct": "0.029646"
       },
       {
         "published_date": "2025-10-16",
@@ -2660,8 +2674,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032284.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791949",
-        "since_trade_pct": "-0.046795",
-        "since_trade_spy_pct": "0.014309"
+        "since_trade_pct": "-0.096710",
+        "since_trade_spy_pct": "0.029646"
       },
       {
         "published_date": "2025-10-16",
@@ -2674,8 +2688,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032284.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791950",
-        "since_trade_pct": "0.049010",
-        "since_trade_spy_pct": "0.014309"
+        "since_trade_pct": "0.021924",
+        "since_trade_spy_pct": "0.029646"
       },
       {
         "published_date": "2025-10-16",
@@ -2688,8 +2702,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20032284.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003791951",
-        "since_trade_pct": "0.012122",
-        "since_trade_spy_pct": "0.014309"
+        "since_trade_pct": "-0.010675",
+        "since_trade_spy_pct": "0.029646"
       },
       {
         "published_date": "2025-05-14",
@@ -2702,8 +2716,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030339.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003785155",
-        "since_trade_pct": "0.391679",
-        "since_trade_spy_pct": "0.227917"
+        "since_trade_pct": "0.461760",
+        "since_trade_spy_pct": "0.246483"
       },
       {
         "published_date": "2025-05-14",
@@ -2716,8 +2730,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20030339.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003785153",
-        "since_trade_pct": "0.052349",
-        "since_trade_spy_pct": "0.328550"
+        "since_trade_pct": "0.044295",
+        "since_trade_spy_pct": "0.348638"
       },
       {
         "published_date": "2025-04-24",
@@ -2758,8 +2772,8 @@
         "shares": "1,070",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026597.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780555",
-        "since_trade_pct": "0.158643",
-        "since_trade_spy_pct": "0.145390"
+        "since_trade_pct": "0.125695",
+        "since_trade_spy_pct": "0.162708"
       },
       {
         "published_date": "2025-01-16",
@@ -2772,8 +2786,8 @@
         "shares": "15,277",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026597.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780557",
-        "since_trade_pct": "-0.020470",
-        "since_trade_spy_pct": "0.145390"
+        "since_trade_pct": "0.036358",
+        "since_trade_spy_pct": "0.162708"
       },
       {
         "published_date": "2025-01-16",
@@ -2786,8 +2800,8 @@
         "shares": "1,286",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026597.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780558",
-        "since_trade_pct": "-0.103125",
-        "since_trade_spy_pct": "0.145390"
+        "since_trade_pct": "-0.294844",
+        "since_trade_spy_pct": "0.162708"
       },
       {
         "published_date": "2025-01-16",
@@ -2800,8 +2814,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026597.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780559",
-        "since_trade_pct": "0.314217",
-        "since_trade_spy_pct": "0.145390"
+        "since_trade_pct": "0.195385",
+        "since_trade_spy_pct": "0.162708"
       },
       {
         "published_date": "2025-01-16",
@@ -2814,8 +2828,8 @@
         "shares": "4,988",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026597.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780562",
-        "since_trade_pct": "0.901247",
-        "since_trade_spy_pct": "0.145390"
+        "since_trade_pct": "0.917706",
+        "since_trade_spy_pct": "0.162708"
       },
       {
         "published_date": "2025-01-16",
@@ -2828,8 +2842,8 @@
         "shares": "1,729",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026597.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780563",
-        "since_trade_pct": "0.326788",
-        "since_trade_spy_pct": "0.145390"
+        "since_trade_pct": "0.302794",
+        "since_trade_spy_pct": "0.162708"
       },
       {
         "published_date": "2025-01-16",
@@ -2842,8 +2856,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026597.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780561",
-        "since_trade_pct": "-0.056754",
-        "since_trade_spy_pct": "0.110800"
+        "since_trade_pct": "-0.106148",
+        "since_trade_spy_pct": "0.127596"
       },
       {
         "published_date": "2025-01-16",
@@ -2856,8 +2870,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026597.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780560",
-        "since_trade_pct": "0.000355",
-        "since_trade_spy_pct": "0.113620"
+        "since_trade_pct": "0.049259",
+        "since_trade_spy_pct": "0.130458"
       },
       {
         "published_date": "2025-01-16",
@@ -2870,8 +2884,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2025/20026597.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003780556",
-        "since_trade_pct": "0.375665",
-        "since_trade_spy_pct": "0.111573"
+        "since_trade_pct": "0.421031",
+        "since_trade_spy_pct": "0.128380"
       },
       {
         "published_date": "2024-12-17",
@@ -2898,8 +2912,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20026222.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003779499",
-        "since_trade_pct": "0.042305",
-        "since_trade_spy_pct": "0.153875"
+        "since_trade_pct": "0.013898",
+        "since_trade_spy_pct": "0.171322"
       },
       {
         "published_date": "2024-11-18",
@@ -2912,8 +2926,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20026222.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003779500",
-        "since_trade_pct": "0.013281",
-        "since_trade_spy_pct": "0.182223"
+        "since_trade_pct": "-0.014335",
+        "since_trade_spy_pct": "0.200099"
       },
       {
         "published_date": "2024-10-17",
@@ -2926,8 +2940,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20026033.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003778574",
-        "since_trade_pct": "0.569990",
-        "since_trade_spy_pct": "0.178384"
+        "since_trade_pct": "0.621764",
+        "since_trade_spy_pct": "0.196201"
       },
       {
         "published_date": "2024-08-12",
@@ -2940,8 +2954,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025634.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003776163",
-        "since_trade_pct": "0.434559",
-        "since_trade_spy_pct": "0.232992"
+        "since_trade_pct": "0.435360",
+        "since_trade_spy_pct": "0.251635"
       },
       {
         "published_date": "2024-08-12",
@@ -2954,8 +2968,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025634.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003776162",
-        "since_trade_pct": "0.440828",
-        "since_trade_spy_pct": "0.222773"
+        "since_trade_pct": "0.441633",
+        "since_trade_spy_pct": "0.241261"
       },
       {
         "published_date": "2024-08-12",
@@ -2968,8 +2982,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025634.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003776164",
-        "since_trade_pct": "0.064311",
-        "since_trade_spy_pct": "0.208922"
+        "since_trade_pct": "0.139373",
+        "since_trade_spy_pct": "0.227201"
       },
       {
         "published_date": "2024-08-12",
@@ -2982,8 +2996,8 @@
         "shares": "1,250",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025634.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003776165",
-        "since_trade_pct": "28124.000710",
-        "since_trade_spy_pct": "0.208922"
+        "since_trade_pct": "27499.000695",
+        "since_trade_spy_pct": "0.227201"
       },
       {
         "published_date": "2024-07-16",
@@ -2996,8 +3010,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025473.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774811",
-        "since_trade_pct": "-0.323629",
-        "since_trade_spy_pct": "0.233490"
+        "since_trade_pct": "-0.284388",
+        "since_trade_spy_pct": "0.252141"
       },
       {
         "published_date": "2024-07-16",
@@ -3010,8 +3024,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025473.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774820",
-        "since_trade_pct": "0.047955",
-        "since_trade_spy_pct": "0.233490"
+        "since_trade_pct": "-0.032113",
+        "since_trade_spy_pct": "0.252141"
       },
       {
         "published_date": "2024-07-16",
@@ -3024,8 +3038,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025473.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774824",
-        "since_trade_pct": "-0.245882",
-        "since_trade_spy_pct": "0.232109"
+        "since_trade_pct": "-0.336264",
+        "since_trade_spy_pct": "0.250739"
       },
       {
         "published_date": "2024-07-16",
@@ -3038,8 +3052,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025473.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774825",
-        "since_trade_pct": "0.446068",
-        "since_trade_spy_pct": "0.236854"
+        "since_trade_pct": "0.405706",
+        "since_trade_spy_pct": "0.255555"
       },
       {
         "published_date": "2024-07-16",
@@ -3052,8 +3066,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025473.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774819",
-        "since_trade_pct": "0.016556",
-        "since_trade_spy_pct": "0.232833"
+        "since_trade_pct": "-0.049870",
+        "since_trade_spy_pct": "0.251474"
       },
       {
         "published_date": "2024-07-16",
@@ -3066,8 +3080,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025473.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774810",
-        "since_trade_pct": "0.073014",
-        "since_trade_spy_pct": "0.227221"
+        "since_trade_pct": "0.042501",
+        "since_trade_spy_pct": "0.245777"
       },
       {
         "published_date": "2024-07-16",
@@ -3080,8 +3094,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025473.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774821",
-        "since_trade_pct": "0.161527",
-        "since_trade_spy_pct": "0.226997"
+        "since_trade_pct": "0.172314",
+        "since_trade_spy_pct": "0.245549"
       },
       {
         "published_date": "2024-07-16",
@@ -3094,8 +3108,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025473.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774816",
-        "since_trade_pct": "0.123663",
-        "since_trade_spy_pct": "0.237515"
+        "since_trade_pct": "0.064821",
+        "since_trade_spy_pct": "0.256226"
       },
       {
         "published_date": "2024-07-16",
@@ -3108,8 +3122,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025473.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774823",
-        "since_trade_pct": "0.647529",
-        "since_trade_spy_pct": "0.237515"
+        "since_trade_pct": "0.704561",
+        "since_trade_spy_pct": "0.256226"
       },
       {
         "published_date": "2024-07-16",
@@ -3122,8 +3136,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025473.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774813",
-        "since_trade_pct": "0.215580",
-        "since_trade_spy_pct": "0.253202"
+        "since_trade_pct": "0.195530",
+        "since_trade_spy_pct": "0.272150"
       },
       {
         "published_date": "2024-07-16",
@@ -3136,8 +3150,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025473.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774814",
-        "since_trade_pct": "-0.003272",
-        "since_trade_spy_pct": "0.253202"
+        "since_trade_pct": "0.045455",
+        "since_trade_spy_pct": "0.272150"
       },
       {
         "published_date": "2024-07-16",
@@ -3150,8 +3164,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025473.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774822",
-        "since_trade_pct": "0.387611",
-        "since_trade_spy_pct": "0.253202"
+        "since_trade_pct": "0.532892",
+        "since_trade_spy_pct": "0.272150"
       },
       {
         "published_date": "2024-07-16",
@@ -3164,8 +3178,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025473.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774818",
-        "since_trade_pct": "0.298241",
-        "since_trade_spy_pct": "0.270444"
+        "since_trade_pct": "0.274763",
+        "since_trade_spy_pct": "0.289653"
       },
       {
         "published_date": "2024-06-10",
@@ -3178,8 +3192,8 @@
         "shares": "",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025232.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774067",
-        "since_trade_pct": "-0.174841",
-        "since_trade_spy_pct": "0.267901"
+        "since_trade_pct": "-0.194473",
+        "since_trade_spy_pct": "0.287071"
       },
       {
         "published_date": "2024-06-10",
@@ -3192,93 +3206,93 @@
         "shares": "2,156",
         "pdf_url": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2024/20025232.pdf",
         "detail_url": "https://www.capitoltrades.com/trades/20003774068",
-        "since_trade_pct": "-0.028362",
-        "since_trade_spy_pct": "0.312934"
+        "since_trade_pct": "0.019138",
+        "since_trade_spy_pct": "0.332786"
       }
     ],
     "holdings": [
       {
         "ticker": "XOM",
         "weight": 0.18761350694123805,
-        "change": -0.010412777358490567,
+        "change": 0.037964885315832655,
         "logo_url": "https://logo.clearbit.com/corporate.exxonmobil.com"
       },
       {
         "ticker": "HD",
         "weight": 0.06254809616154154,
-        "change": 0.00660716655737705,
+        "change": -0.0461047275409836,
         "logo_url": "https://logo.clearbit.com/www.homedepot.com"
       },
       {
         "ticker": "CB",
         "weight": 0.06251731461815495,
-        "change": 0.064311,
+        "change": 0.139373,
         "logo_url": "https://logo.clearbit.com/www.chubb.com"
       },
       {
         "ticker": "INRE",
         "weight": 0.06251731461815495,
-        "change": 28124.00071,
+        "change": 27499.000695,
         "logo_url": "https://ui-avatars.com/api/?name=INRE&background=1f2937&color=ffffff&size=96&bold=true"
       },
       {
         "ticker": "LMT",
         "weight": 0.06248653307476837,
-        "change": 0.047955,
+        "change": -0.032113,
         "logo_url": "https://logo.clearbit.com/www.lockheedmartin.com"
       },
       {
         "ticker": "UNH",
         "weight": 0.06248653307476837,
-        "change": -0.245882,
+        "change": -0.336264,
         "logo_url": "https://logo.clearbit.com/www.unitedhealthgroup.com"
       },
       {
         "ticker": "WMB",
         "weight": 0.06248653307476837,
-        "change": 0.446068,
+        "change": 0.405706,
         "logo_url": "https://logo.clearbit.com/www.williams.com"
       },
       {
         "ticker": "LIN",
         "weight": 0.06248653307476837,
-        "change": 0.016556,
+        "change": -0.04987,
         "logo_url": "https://logo.clearbit.com/www.linde.com"
       },
       {
         "ticker": "NEE",
         "weight": 0.06248653307476837,
-        "change": 0.161527,
+        "change": 0.172314,
         "logo_url": "https://logo.clearbit.com/www.nexteraenergy.com"
       },
       {
         "ticker": "RTX",
         "weight": 0.06248653307476837,
-        "change": 0.647529,
+        "change": 0.704561,
         "logo_url": "https://logo.clearbit.com/www.rtx.com"
       },
       {
         "ticker": "EMR",
         "weight": 0.06248653307476837,
-        "change": 0.21558,
+        "change": 0.19553,
         "logo_url": "https://logo.clearbit.com/www.emerson.com"
       },
       {
         "ticker": "ROK",
         "weight": 0.06248653307476837,
-        "change": 0.387611,
+        "change": 0.532892,
         "logo_url": "https://logo.clearbit.com/www.rockwellautomation.com"
       },
       {
         "ticker": "GS",
         "weight": 0.06245575153138178,
-        "change": 0.391679,
+        "change": 0.46176,
         "logo_url": "https://logo.clearbit.com/www.goldmansachs.com"
       },
       {
         "ticker": "BNPQY",
         "weight": 0.06245575153138178,
-        "change": 0.052349,
+        "change": 0.044295,
         "logo_url": "https://logo.clearbit.com/group.bnpparibas"
       }
     ]

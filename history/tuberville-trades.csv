@@ -1,50 +1,50 @@
 published_date,traded_date,issuer,ticker,type,size_range,price,shares,pdf_url,detail_url,since_trade_pct,since_trade_spy_pct
-2025-11-15,2025-10-07,CITY OF BIRMINGHAM ALABAMA,ORCL,sell,2025-10,$284.24,,,https://www.capitoltrades.com/trades/10000064195,-0.245954,0.022821
-2025-11-15,2025-10-07,Alphabet Inc,GOOGL,sell,2025-10,$284.24,,,https://www.capitoltrades.com/trades/10000064197,0.292399,0.022821
-2025-11-15,2025-10-07,Apple Inc,AAPL,sell,2025-10,$284.24,,,https://www.capitoltrades.com/trades/10000064198,0.094432,0.022821
-2025-11-15,2025-10-07,Microsoft Corp,MSFT,sell,2025-10,$284.24,,,https://www.capitoltrades.com/trades/10000064199,-0.082331,0.022821
-2025-11-15,2025-10-07,Owens Corning,OC,sell,2025-10,$284.24,,,https://www.capitoltrades.com/trades/10000064200,-0.160294,0.022821
-2025-11-15,2025-10-07,PepsiCo Inc,PEP,sell,2025-10,$284.24,,,https://www.capitoltrades.com/trades/10000064201,0.043469,0.022821
-2025-05-15,2025-04-15,Bristol-Myers Squibb Co,BMY,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063419,0.039000,0.273023
-2025-05-15,2025-04-15,PayPal Holdings Inc,PYPL,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063420,-0.004355,0.273023
-2025-05-15,2025-04-15,JPMorgan Chase & Co,JPM,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063422,0.355896,0.273023
-2025-05-15,2025-04-15,Alphabet Inc,GOOGL,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063423,1.031988,0.273023
-2025-05-15,2025-04-15,Amgen Inc,AMGN,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063424,0.151913,0.273023
-2025-05-15,2025-04-15,Apple Inc,AAPL,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063425,0.388642,0.273023
-2025-05-15,2025-04-15,Archer-Daniels-Midland Co,ADM,sell,2025-04,$50.00,"1,086",,https://www.capitoltrades.com/trades/10000063426,0.288474,0.273023
-2025-05-15,2025-04-15,CSX Corp,CSX,sell,2025-04,$50.00,"1,793",,https://www.capitoltrades.com/trades/10000063427,0.296774,0.273023
-2025-05-15,2025-04-15,Constellation Brands Inc,STZ,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063428,-0.249266,0.273023
-2025-05-15,2025-04-15,Duke Energy Corp,DUK,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063429,-0.020915,0.273023
-2025-05-15,2025-04-15,The Goldman Sachs Group Inc,GS,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063430,0.649629,0.273023
-2025-05-15,2025-04-15,Eli Lilly and Co,LLY,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063431,0.339827,0.273023
-2025-05-15,2025-04-15,Mastercard Inc,MA,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063432,0.048185,0.273023
-2025-05-15,2025-04-15,Microsoft Corp,MSFT,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063433,0.246571,0.273023
-2025-05-15,2025-04-15,QUALCOMM Inc,QCOM,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063434,0.257936,0.273023
-2025-02-14,2025-01-10,Tractor Supply Co,TSCO,sell,2025-01,$54.59,,,https://www.capitoltrades.com/trades/10000063042,-0.003847,0.178987
-2025-02-14,2025-01-10,Carrier Global Corp,CARR,sell,2025-01,$54.59,,,https://www.capitoltrades.com/trades/10000063043,-0.180574,0.178987
-2025-02-14,2025-01-10,Texas Instruments Inc,TXN,sell,2025-01,$54.59,,,https://www.capitoltrades.com/trades/10000063044,-0.052748,0.178987
-2025-02-14,2025-01-10,Diageo PLC,DEO,sell,2025-01,$54.59,,,https://www.capitoltrades.com/trades/10000063045,-0.243086,0.178987
-2025-02-14,2025-01-10,Microsoft Corp,MSFT,sell,2025-01,$54.59,,,https://www.capitoltrades.com/trades/10000063046,0.147726,0.178987
-2025-02-14,2025-01-10,Apple Inc,AAPL,sell,2025-01,$54.59,,,https://www.capitoltrades.com/trades/10000063047,0.185138,0.178987
-2024-11-15,2024-10-29,Adobe Inc,ADBE,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062808,-0.322751,0.176393
-2024-11-15,2024-10-29,Apple Inc,AAPL,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062809,0.201267,0.176393
-2024-11-15,2024-10-29,Corteva Inc,CTVA,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062810,0.090475,0.176393
-2024-11-15,2024-10-29,Honeywell International Inc,HON,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062811,-0.009826,0.176393
-2024-11-15,2024-10-29,Johnson & Johnson,JNJ,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062812,0.264789,0.176393
-2024-11-15,2024-10-29,Kimberly-Clark Corp,KMB,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062813,-0.219835,0.176393
-2024-11-15,2024-10-29,McDonald's Corp,MCD,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062814,0.045898,0.176393
-2024-11-15,2024-10-29,Microsoft Corp,MSFT,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062815,0.113184,0.176393
-2024-11-15,2024-10-29,"Nestle SA, Cham Und Vevey",NSRGY,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062816,0.031796,0.176393
-2024-11-15,2024-10-29,Otis Worldwide Corp,OTIS,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062817,-0.142646,0.176393
-2024-11-15,2024-10-29,Owens Corning,OC,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062818,-0.381079,0.176393
-2024-11-15,2024-10-29,The Travelers Companies Inc,TRV,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062819,0.137451,0.176393
-2024-09-13,2024-08-26,Apple Inc,AAPL,sell,2024-08,$227.18,,,https://www.capitoltrades.com/trades/10000062674,0.235584,0.220403
-2024-09-13,2024-08-26,Medtronic PLC,MDT,sell,2024-08,$227.18,,,https://www.capitoltrades.com/trades/10000062675,0.141594,0.220403
-2024-09-13,2024-08-26,CVS Health Corp,CVS,sell,2024-08,$227.18,,,https://www.capitoltrades.com/trades/10000062676,0.307496,0.220403
-2024-09-13,2024-08-26,United Parcel Service Inc,UPS,sell,2024-08,$227.18,,,https://www.capitoltrades.com/trades/10000062677,-0.266904,0.220403
-2024-09-13,2024-08-26,EATON VANCE FLOATING RATE FUND,EIBLX,sell,2024-08,$227.18,,,https://www.capitoltrades.com/trades/10000062678,-0.027479,0.220403
-2024-09-13,2024-08-26,AMERICAN FUNDS THE BOND FUND OF AMERICA,ABNDX,buy,2024-08,$227.18,,,https://www.capitoltrades.com/trades/10000062679,-0.008643,0.220403
-2024-06-14,2024-05-13,Intel Corp,INTC,sell,2024-05,$30.51,"8,195",,https://www.capitoltrades.com/trades/10000062454,0.327434,0.313835
-2024-06-14,2024-05-10,ARK ETF Trust - ARK Innovation ETF,ARKK,buy,2024-05,$45.00,,,https://www.capitoltrades.com/trades/10000062451,0.925676,0.314012
-2024-06-14,2024-05-08,SPDR S&P Biotech ETF,XBI,buy,2024-05,$100.00,,,https://www.capitoltrades.com/trades/10000062452,0.383122,0.323285
-2024-06-14,2024-05-07,ARK ETF Trust - ARK Innovation ETF,ARKK,buy,2024-05,$51.00,,,https://www.capitoltrades.com/trades/10000062450,0.814490,0.323413
+2025-11-15,2025-10-07,CITY OF BIRMINGHAM ALABAMA,ORCL,sell,2025-10,$284.24,,,https://www.capitoltrades.com/trades/10000064195,-0.234520,0.024764
+2025-11-15,2025-10-07,Alphabet Inc,GOOGL,sell,2025-10,$284.24,,,https://www.capitoltrades.com/trades/10000064197,0.307251,0.024764
+2025-11-15,2025-10-07,Apple Inc,AAPL,sell,2025-10,$284.24,,,https://www.capitoltrades.com/trades/10000064198,0.086946,0.024764
+2025-11-15,2025-10-07,Microsoft Corp,MSFT,sell,2025-10,$284.24,,,https://www.capitoltrades.com/trades/10000064199,-0.077904,0.024764
+2025-11-15,2025-10-07,Owens Corning,OC,sell,2025-10,$284.24,,,https://www.capitoltrades.com/trades/10000064200,-0.148073,0.024764
+2025-11-15,2025-10-07,PepsiCo Inc,PEP,sell,2025-10,$284.24,,,https://www.capitoltrades.com/trades/10000064201,0.030045,0.024764
+2025-05-15,2025-04-15,Bristol-Myers Squibb Co,BMY,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063419,0.043000,0.275441
+2025-05-15,2025-04-15,PayPal Holdings Inc,PYPL,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063420,0.004516,0.275441
+2025-05-15,2025-04-15,JPMorgan Chase & Co,JPM,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063422,0.351349,0.275441
+2025-05-15,2025-04-15,Alphabet Inc,GOOGL,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063423,1.055339,0.275441
+2025-05-15,2025-04-15,Amgen Inc,AMGN,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063424,0.117135,0.275441
+2025-05-15,2025-04-15,Apple Inc,AAPL,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063425,0.379143,0.275441
+2025-05-15,2025-04-15,Archer-Daniels-Midland Co,ADM,sell,2025-04,$50.00,"1,086",,https://www.capitoltrades.com/trades/10000063426,0.280877,0.275441
+2025-05-15,2025-04-15,CSX Corp,CSX,sell,2025-04,$50.00,"1,793",,https://www.capitoltrades.com/trades/10000063427,0.301075,0.275441
+2025-05-15,2025-04-15,Constellation Brands Inc,STZ,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063428,-0.225661,0.275441
+2025-05-15,2025-04-15,Duke Energy Corp,DUK,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063429,-0.032949,0.275441
+2025-05-15,2025-04-15,The Goldman Sachs Group Inc,GS,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063430,0.682569,0.275441
+2025-05-15,2025-04-15,Eli Lilly and Co,LLY,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063431,0.334306,0.275441
+2025-05-15,2025-04-15,Mastercard Inc,MA,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063432,0.054389,0.275441
+2025-05-15,2025-04-15,Microsoft Corp,MSFT,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063433,0.252586,0.275441
+2025-05-15,2025-04-15,QUALCOMM Inc,QCOM,sell,2025-04,$50.00,,,https://www.capitoltrades.com/trades/10000063434,0.261255,0.275441
+2025-02-14,2025-01-10,Tractor Supply Co,TSCO,sell,2025-01,$54.59,,,https://www.capitoltrades.com/trades/10000063042,-0.009342,0.181226
+2025-02-14,2025-01-10,Carrier Global Corp,CARR,sell,2025-01,$54.59,,,https://www.capitoltrades.com/trades/10000063043,-0.183732,0.181226
+2025-02-14,2025-01-10,Texas Instruments Inc,TXN,sell,2025-01,$54.59,,,https://www.capitoltrades.com/trades/10000063044,-0.040021,0.181226
+2025-02-14,2025-01-10,Diageo PLC,DEO,sell,2025-01,$54.59,,,https://www.capitoltrades.com/trades/10000063045,-0.251797,0.181226
+2025-02-14,2025-01-10,Microsoft Corp,MSFT,sell,2025-01,$54.59,,,https://www.capitoltrades.com/trades/10000063046,0.153264,0.181226
+2025-02-14,2025-01-10,Apple Inc,AAPL,sell,2025-01,$54.59,,,https://www.capitoltrades.com/trades/10000063047,0.177032,0.181226
+2024-11-15,2024-10-29,Adobe Inc,ADBE,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062808,-0.286635,0.178627
+2024-11-15,2024-10-29,Apple Inc,AAPL,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062809,0.193050,0.178627
+2024-11-15,2024-10-29,Corteva Inc,CTVA,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062810,0.085705,0.178627
+2024-11-15,2024-10-29,Honeywell International Inc,HON,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062811,-0.014462,0.178627
+2024-11-15,2024-10-29,Johnson & Johnson,JNJ,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062812,0.261353,0.178627
+2024-11-15,2024-10-29,Kimberly-Clark Corp,KMB,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062813,-0.234555,0.178627
+2024-11-15,2024-10-29,McDonald's Corp,MCD,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062814,0.055017,0.178627
+2024-11-15,2024-10-29,Microsoft Corp,MSFT,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062815,0.118555,0.178627
+2024-11-15,2024-10-29,"Nestle SA, Cham Und Vevey",NSRGY,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062816,0.021650,0.178627
+2024-11-15,2024-10-29,Otis Worldwide Corp,OTIS,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062817,-0.147184,0.178627
+2024-11-15,2024-10-29,Owens Corning,OC,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062818,-0.372071,0.178627
+2024-11-15,2024-10-29,The Travelers Companies Inc,TRV,sell,2024-10,$485.39,,,https://www.capitoltrades.com/trades/10000062819,0.129569,0.178627
+2024-09-13,2024-08-26,Apple Inc,AAPL,sell,2024-08,$227.18,,,https://www.capitoltrades.com/trades/10000062674,0.227133,0.222722
+2024-09-13,2024-08-26,Medtronic PLC,MDT,sell,2024-08,$227.18,,,https://www.capitoltrades.com/trades/10000062675,0.134542,0.222722
+2024-09-13,2024-08-26,CVS Health Corp,CVS,sell,2024-08,$227.18,,,https://www.capitoltrades.com/trades/10000062676,0.288416,0.222722
+2024-09-13,2024-08-26,United Parcel Service Inc,UPS,sell,2024-08,$227.18,,,https://www.capitoltrades.com/trades/10000062677,-0.266053,0.222722
+2024-09-13,2024-08-26,EATON VANCE FLOATING RATE FUND,EIBLX,sell,2024-08,$227.18,,,https://www.capitoltrades.com/trades/10000062678,-0.027479,0.222722
+2024-09-13,2024-08-26,AMERICAN FUNDS THE BOND FUND OF AMERICA,ABNDX,buy,2024-08,$227.18,,,https://www.capitoltrades.com/trades/10000062679,-0.010372,0.222722
+2024-06-14,2024-05-13,Intel Corp,INTC,sell,2024-05,$30.51,"8,195",,https://www.capitoltrades.com/trades/10000062454,0.357260,0.316331
+2024-06-14,2024-05-10,ARK ETF Trust - ARK Innovation ETF,ARKK,buy,2024-05,$45.00,,,https://www.capitoltrades.com/trades/10000062451,0.908434,0.316508
+2024-06-14,2024-05-08,SPDR S&P Biotech ETF,XBI,buy,2024-05,$100.00,,,https://www.capitoltrades.com/trades/10000062452,0.384918,0.325799
+2024-06-14,2024-05-07,ARK ETF Trust - ARK Innovation ETF,ARKK,buy,2024-05,$51.00,,,https://www.capitoltrades.com/trades/10000062450,0.798244,0.325927

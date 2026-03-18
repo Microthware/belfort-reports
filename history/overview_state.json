@@ -7,25 +7,25 @@
       "win_rate_num": 0.38095238095238093,
       "avg_win": "3.49%",
       "avg_loss": "-9.26%",
-      "balance": "$5,705.62",
+      "balance": "$5,868.73",
       "balance_dir": -1,
-      "trades": 55,
-      "total_actions": 55,
-      "updated": "03/17/26 21:45",
+      "trades": 56,
+      "total_actions": 56,
+      "updated": "03/18/26 21:40",
       "link": "bubbles.html"
     },
     {
       "name": "Julian",
       "symbols": "ALL",
-      "win_rate": "54.55%",
-      "win_rate_num": 0.5454545454545454,
-      "avg_win": "1.98%",
+      "win_rate": "61.54%",
+      "win_rate_num": 0.6153846153846154,
+      "avg_win": "3.47%",
       "avg_loss": "-12.68%",
-      "balance": "$9,133.57",
+      "balance": "$8,973.33",
       "balance_dir": -1,
-      "trades": 38,
-      "total_actions": 38,
-      "updated": "03/17/26 21:46",
+      "trades": 42,
+      "total_actions": 42,
+      "updated": "03/18/26 21:43",
       "link": "julian.html"
     }
   ],
@@ -400,5 +400,5 @@
       ]
     }
   ],
-  "updated_at": "03/18/26 11:48"
+  "updated_at": "03/18/26 21:43"
 }

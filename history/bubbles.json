@@ -890,6 +890,61 @@
         ],
         "portfolio_analysis": "No available cash to rotate; holding existing NET and FSLR positions. Candidates reviewed but entries not allowed under today\u2019s cash constraint. Portfolio fully invested and marked to market."
       }
+    },
+    {
+      "saved_at": "2026-03-19T21:45:01.569740Z",
+      "ending_balance": 5835.0061802,
+      "last_trade_time": "2026-03-19T14:32:35Z",
+      "raw": "{\n  \"model_name\": \"Atlas-Aggressive-Alpha\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 5868.726097,\n  \"portfolio_analysis\": \"Rotate out of lagging holdings (NET, FSLR) into higher-ranked pivots (TSEM, FIVE). Fully invested across two liquid momentum names; tiny residual cash from fractional rounding.\",\n  \"trades\": [\n    {\n      \"time\": \"2026-03-19T14:32:10Z\",\n      \"symbol\": \"NET\",\n      \"side\": \"sell\",\n      \"qty\": 14.20372,\n      \"price\": 221.36,\n      \"pnl_pct\": -0.1261,\n      \"balance_after\": 5835.0061802,\n      \"notes\": \"Exit legacy position to reallocate into stronger pivots; realized loss per FIFO.\"\n    },\n    {\n      \"time\": \"2026-03-19T14:32:15Z\",\n      \"symbol\": \"FSLR\",\n      \"side\": \"sell\",\n      \"qty\": 13.47794,\n      \"price\": 199.65,\n      \"pnl_pct\": -0.2521,\n      \"balance_after\": 5835.0061802,\n      \"notes\": \"Exit to rotate capital; realized loss per FIFO.\"\n    },\n    {\n      \"time\": \"2026-03-19T14:32:30Z\",\n      \"symbol\": \"TSEM\",\n      \"side\": \"buy\",\n      \"qty\": 17.5668,\n      \"price\": 166.08,\n      \"pnl_pct\": null,\n      \"balance_after\": 5835.0061802,\n      \"notes\": \"Pivot/momentum candidate; ~50% allocation.\"\n    },\n    {\n      \"time\": \"2026-03-19T14:32:35Z\",\n      \"symbol\": \"FIVE\",\n      \"side\": \"buy\",\n      \"qty\": 12.4059,\n      \"price\": 235.17,\n      \"pnl_pct\": null,\n      \"balance_after\": 5835.0061802,\n      \"notes\": \"High-liquidity pivot; deploy remaining capital (minor rounding cash left).\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 5868.726097.\n\n- Include only NEW actions since 2026-03-18T14:32:00Z but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nACXP=6.63, AGRO=14.61, ARCT=11.54, ATI=89.25, AVY=186.28, BBIO=66.62, BCRX=9.81, CMC=59.72, EGY=6.14, ELVN=30.05, F=13.26, FIVE=235.17, FSLR=199.65, GNRC=168.02, HXL=72.79, IBM=313.09, IDYA=32.18, KOS=2.98, LIDR=2.59, MMM=167.23, MP=74.11, NET=221.36, PEGA=65.64, PI=235.83, QCOM=178.67, QS=15.52, REMX=86.05, SPIR=12.20, STX=255.88, TNL=65.14, TSEM=166.08, VET=14.42, WDC=150.21, WGO=39.39, XWIN=6.65\n\nCANDIDATES_TODAY:\n\n- gap_ups: LIDR, VET\n- pivots: LIDR, ACXP, TSEM, VET, KOS, ELVN, SPIR, EGY, AGRO, FIVE, BCRX, XWIN\n(total candidates: 14)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 0.00\nOPEN_POSITIONS:\n- NET: qty=14.203720, ref_price=221.3600, first_buy_time=2025-10-31T14:32:25Z\n- FSLR: qty=13.477940, ref_price=199.6500, first_buy_time=2025-10-31T14:32:30Z\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take high risk approach and concentrate the entire portfolio in 1\u20134 stocks at all times.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 1\u20134 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 1\u20134 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.). It\u2019s OK to be 100% in one.\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "bubbles",
+        "universe": "ALL",
+        "starting_balance": 5868.726097,
+        "trades": [
+          {
+            "time": "2026-03-19T14:32:35Z",
+            "symbol": "FIVE",
+            "side": "buy",
+            "qty": 12.4059,
+            "price": 235.17,
+            "pnl_pct": null,
+            "balance_after": 5835.0061802,
+            "notes": "High-liquidity pivot; deploy remaining capital (minor rounding cash left)."
+          },
+          {
+            "time": "2026-03-19T14:32:30Z",
+            "symbol": "TSEM",
+            "side": "buy",
+            "qty": 17.5668,
+            "price": 166.08,
+            "pnl_pct": null,
+            "balance_after": 5835.0061802,
+            "notes": "Pivot/momentum candidate; ~50% allocation."
+          },
+          {
+            "time": "2026-03-19T14:32:15Z",
+            "symbol": "FSLR",
+            "side": "sell",
+            "qty": 13.47794,
+            "price": 199.65,
+            "pnl_pct": -0.2521,
+            "balance_after": 5835.0061802,
+            "notes": "Exit to rotate capital; realized loss per FIFO."
+          },
+          {
+            "time": "2026-03-19T14:32:10Z",
+            "symbol": "NET",
+            "side": "sell",
+            "qty": 14.20372,
+            "price": 221.36,
+            "pnl_pct": -0.1261,
+            "balance_after": 5835.0061802,
+            "notes": "Exit legacy position to reallocate into stronger pivots; realized loss per FIFO."
+          }
+        ],
+        "portfolio_analysis": "Rotate out of lagging holdings (NET, FSLR) into higher-ranked pivots (TSEM, FIVE). Fully invested across two liquid momentum names; tiny residual cash from fractional rounding."
+      }
     }
   ]
 }

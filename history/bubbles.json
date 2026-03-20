@@ -945,6 +945,71 @@
         ],
         "portfolio_analysis": "Rotate out of lagging holdings (NET, FSLR) into higher-ranked pivots (TSEM, FIVE). Fully invested across two liquid momentum names; tiny residual cash from fractional rounding."
       }
+    },
+    {
+      "saved_at": "2026-03-20T21:39:58.096026Z",
+      "ending_balance": 5695.825262,
+      "last_trade_time": "2026-03-20T14:31:40Z",
+      "raw": "{\n  \"model_name\": \"aggressive-momo-v1\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 5835.0061802,\n  \"portfolio_analysis\": \"Rotate out of TSEM and FIVE into higher-ranked candidates from today (SEDG, SM, PARR) to stay fully invested while avoiding penny names.\",\n  \"trades\": [\n    {\n      \"time\": \"2026-03-20T14:31:00Z\",\n      \"symbol\": \"TSEM\",\n      \"side\": \"sell\",\n      \"qty\": 17.5668,\n      \"price\": 163.63,\n      \"pnl_pct\": -0.0148,\n      \"balance_after\": 5695.825262,\n      \"notes\": \"Exit to rotate into stronger candidates.\"\n    },\n    {\n      \"time\": \"2026-03-20T14:31:10Z\",\n      \"symbol\": \"FIVE\",\n      \"side\": \"sell\",\n      \"qty\": 12.4059,\n      \"price\": 227.42,\n      \"pnl_pct\": -0.033,\n      \"balance_after\": 5695.825262,\n      \"notes\": \"Exit to redeploy into today\u2019s pivots.\"\n    },\n    {\n      \"time\": \"2026-03-20T14:31:20Z\",\n      \"symbol\": \"SEDG\",\n      \"side\": \"buy\",\n      \"qty\": 44.0427,\n      \"price\": 51.73,\n      \"pnl_pct\": null,\n      \"balance_after\": 5695.825262,\n      \"notes\": \"Initiate ~40% allocation; solar pivot with improving momentum.\"\n    },\n    {\n      \"time\": \"2026-03-20T14:31:30Z\",\n      \"symbol\": \"SM\",\n      \"side\": \"buy\",\n      \"qty\": 56.8824,\n      \"price\": 30.04,\n      \"pnl_pct\": null,\n      \"balance_after\": 5695.825262,\n      \"notes\": \"Initiate ~30% allocation; energy momentum and liquidity strong.\"\n    },\n    {\n      \"time\": \"2026-03-20T14:31:40Z\",\n      \"symbol\": \"PARR\",\n      \"side\": \"buy\",\n      \"qty\": 27.8342,\n      \"price\": 61.39,\n      \"pnl_pct\": null,\n      \"balance_after\": 5695.825262,\n      \"notes\": \"Initiate ~30% allocation; refining strength complements energy tilt.\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 5835.0061802.\n\n- Include only NEW actions since 2026-03-19T14:32:35Z but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nARCT=11.54, ATI=89.25, AVY=186.28, BBIO=66.62, CMC=59.72, F=13.26, FIVE=227.42, FSLR=199.65, GNRC=168.02, HXL=72.79, IBM=313.09, IDYA=32.18, MMM=167.23, MP=74.11, NET=221.36, OVID=2.62, PARR=61.39, PEGA=65.64, PFIX=48.65, PI=235.83, QCOM=178.67, QS=15.52, REMX=86.05, SATL=3.59, SEDG=51.73, SM=30.04, STX=255.88, SUNE=2.38, TALO=15.48, TNL=65.14, TSEM=163.63, WDC=150.21, WGO=39.39, XWIN=7.00\n\nCANDIDATES_TODAY:\n\n- pivots: SUNE, OVID, SEDG, PFIX, SATL, SM, XWIN, TALO, PARR\n(total candidates: 9)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 0.02\nOPEN_POSITIONS:\n- TSEM: qty=17.566800, ref_price=163.6300, first_buy_time=2026-03-19T14:32:30Z\n- FIVE: qty=12.405900, ref_price=227.4200, first_buy_time=2026-03-19T14:32:35Z\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take high risk approach and concentrate the entire portfolio in 1\u20134 stocks at all times.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 1\u20134 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 1\u20134 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.). It\u2019s OK to be 100% in one.\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "bubbles",
+        "universe": "ALL",
+        "starting_balance": 5835.0061802,
+        "trades": [
+          {
+            "time": "2026-03-20T14:31:40Z",
+            "symbol": "PARR",
+            "side": "buy",
+            "qty": 27.8342,
+            "price": 61.39,
+            "pnl_pct": null,
+            "balance_after": 5695.825262,
+            "notes": "Initiate ~30% allocation; refining strength complements energy tilt."
+          },
+          {
+            "time": "2026-03-20T14:31:30Z",
+            "symbol": "SM",
+            "side": "buy",
+            "qty": 56.8824,
+            "price": 30.04,
+            "pnl_pct": null,
+            "balance_after": 5695.825262,
+            "notes": "Initiate ~30% allocation; energy momentum and liquidity strong."
+          },
+          {
+            "time": "2026-03-20T14:31:20Z",
+            "symbol": "SEDG",
+            "side": "buy",
+            "qty": 44.0427,
+            "price": 51.73,
+            "pnl_pct": null,
+            "balance_after": 5695.825262,
+            "notes": "Initiate ~40% allocation; solar pivot with improving momentum."
+          },
+          {
+            "time": "2026-03-20T14:31:10Z",
+            "symbol": "FIVE",
+            "side": "sell",
+            "qty": 12.4059,
+            "price": 227.42,
+            "pnl_pct": -0.033,
+            "balance_after": 5695.825262,
+            "notes": "Exit to redeploy into today\u2019s pivots."
+          },
+          {
+            "time": "2026-03-20T14:31:00Z",
+            "symbol": "TSEM",
+            "side": "sell",
+            "qty": 17.5668,
+            "price": 163.63,
+            "pnl_pct": -0.0148,
+            "balance_after": 5695.825262,
+            "notes": "Exit to rotate into stronger candidates."
+          }
+        ],
+        "portfolio_analysis": "Rotate out of TSEM and FIVE into higher-ranked candidates from today (SEDG, SM, PARR) to stay fully invested while avoiding penny names."
+      }
     }
   ]
 }

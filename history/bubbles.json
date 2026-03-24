@@ -1035,6 +1035,91 @@
         ],
         "portfolio_analysis": "Candidates skew to low-priced microcaps (BIAF, SATL, PRTS). Non-penny options (AXTI, LUNR, YOU) do not offer superior risk-adjusted momentum vs current holdings. With negligible cash and unchanged pricing on SEDG/SM/PARR, maintain positioning and reassess on stronger, liquid signals."
       }
+    },
+    {
+      "saved_at": "2026-03-24T21:45:34.983344Z",
+      "ending_balance": 5543.276489,
+      "last_trade_time": "2026-03-24T14:30:26Z",
+      "raw": "{\n  \"model_name\": \"AlphaMomentum-2026-03-24\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 5302.675331,\n  \"portfolio_analysis\": \"Rotated out of non-candidate holdings into today\u2019s pivot leaders (DELL, FORM, ACLS, VECO) to fully deploy capital across 4 high-momentum, liquid names.\",\n  \"trades\": [\n    {\n      \"time\": \"2026-03-24T14:30:10Z\",\n      \"symbol\": \"SEDG\",\n      \"side\": \"sell\",\n      \"qty\": 44.0427,\n      \"price\": 47.67,\n      \"pnl_pct\": 0.0,\n      \"balance_after\": 5543.276489,\n      \"notes\": \"Exit laggard; rotate into stronger candidates.\"\n    },\n    {\n      \"time\": \"2026-03-24T14:30:12Z\",\n      \"symbol\": \"SM\",\n      \"side\": \"sell\",\n      \"qty\": 56.8824,\n      \"price\": 30.35,\n      \"pnl_pct\": 0.0,\n      \"balance_after\": 5543.276489,\n      \"notes\": \"Exit to redeploy into momentum pivots.\"\n    },\n    {\n      \"time\": \"2026-03-24T14:30:14Z\",\n      \"symbol\": \"PARR\",\n      \"side\": \"sell\",\n      \"qty\": 27.8342,\n      \"price\": 61.7,\n      \"pnl_pct\": 0.0,\n      \"balance_after\": 5543.276489,\n      \"notes\": \"Rotate capital to higher-ranked setups.\"\n    },\n    {\n      \"time\": \"2026-03-24T14:30:20Z\",\n      \"symbol\": \"DELL\",\n      \"side\": \"buy\",\n      \"qty\": 7.8334,\n      \"price\": 176.91,\n      \"pnl_pct\": null,\n      \"balance_after\": 5543.276489,\n      \"notes\": \"Pivot leader; strong multi-timeframe momentum and liquidity.\"\n    },\n    {\n      \"time\": \"2026-03-24T14:30:22Z\",\n      \"symbol\": \"FORM\",\n      \"side\": \"buy\",\n      \"qty\": 13.1319,\n      \"price\": 105.53,\n      \"pnl_pct\": null,\n      \"balance_after\": 5543.276489,\n      \"notes\": \"Breakout/pivot strength within semis; favorable trend structure.\"\n    },\n    {\n      \"time\": \"2026-03-24T14:30:24Z\",\n      \"symbol\": \"ACLS\",\n      \"side\": \"buy\",\n      \"qty\": 14.6818,\n      \"price\": 94.39,\n      \"pnl_pct\": null,\n      \"balance_after\": 5543.276489,\n      \"notes\": \"Candidate pivot with momentum and liquidity alignment.\"\n    },\n    {\n      \"time\": \"2026-03-24T14:30:26Z\",\n      \"symbol\": \"VECO\",\n      \"side\": \"buy\",\n      \"qty\": 40.29715,\n      \"price\": 34.39,\n      \"pnl_pct\": null,\n      \"balance_after\": 5543.276489,\n      \"notes\": \"Semicap pivot name; rounding out diversified momentum basket.\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 5302.675331.\n\n- Include only NEW actions since 2026-03-23T14:30:05Z but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nACLS=94.39, ADTN=12.53, AHCO=11.48, AMTX=2.92, ANNA=7.68, ARCT=11.54, ATI=89.25, AVY=186.28, AXTI=68.44, BBIO=66.62, CMC=59.72, DELL=176.91, F=13.26, FIVE=227.42, FORM=105.53, FSLR=199.65, GNRC=168.02, HPE=23.90, HXL=72.79, IBM=313.09, IDYA=32.18, LXU=15.40, MMM=167.23, MP=74.11, NET=221.36, PARR=61.70, PEGA=65.64, PI=235.83, QCOM=178.67, QS=15.52, REMX=86.05, SATL=5.38, SEDG=47.67, SM=30.35, STX=255.88, TNL=65.14, TSEM=163.63, VCX=314.99, VECO=34.39, VIAV=35.94, WDC=150.21, WGO=39.39\n\nCANDIDATES_TODAY:\n\n- gap_ups: ANNA\n- pivots: VCX, SATL, ANNA, ACLS, AHCO, FORM, VECO, VIAV, HPE, DELL, AXTI, AMTX, LXU, ADTN\n(total candidates: 15)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 0.01\nOPEN_POSITIONS:\n- SEDG: qty=44.042700, ref_price=47.6700, first_buy_time=2026-03-20T14:31:20Z\n- SM: qty=56.882400, ref_price=30.3500, first_buy_time=2026-03-20T14:31:30Z\n- PARR: qty=27.834200, ref_price=61.7000, first_buy_time=2026-03-20T14:31:40Z\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take high risk approach and concentrate the entire portfolio in 1\u20134 stocks at all times.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 1\u20134 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 1\u20134 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.). It\u2019s OK to be 100% in one.\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "bubbles",
+        "universe": "ALL",
+        "starting_balance": 5302.675331,
+        "trades": [
+          {
+            "time": "2026-03-24T14:30:26Z",
+            "symbol": "VECO",
+            "side": "buy",
+            "qty": 40.29715,
+            "price": 34.39,
+            "pnl_pct": null,
+            "balance_after": 5543.276489,
+            "notes": "Semicap pivot name; rounding out diversified momentum basket."
+          },
+          {
+            "time": "2026-03-24T14:30:24Z",
+            "symbol": "ACLS",
+            "side": "buy",
+            "qty": 14.6818,
+            "price": 94.39,
+            "pnl_pct": null,
+            "balance_after": 5543.276489,
+            "notes": "Candidate pivot with momentum and liquidity alignment."
+          },
+          {
+            "time": "2026-03-24T14:30:22Z",
+            "symbol": "FORM",
+            "side": "buy",
+            "qty": 13.1319,
+            "price": 105.53,
+            "pnl_pct": null,
+            "balance_after": 5543.276489,
+            "notes": "Breakout/pivot strength within semis; favorable trend structure."
+          },
+          {
+            "time": "2026-03-24T14:30:20Z",
+            "symbol": "DELL",
+            "side": "buy",
+            "qty": 7.8334,
+            "price": 176.91,
+            "pnl_pct": null,
+            "balance_after": 5543.276489,
+            "notes": "Pivot leader; strong multi-timeframe momentum and liquidity."
+          },
+          {
+            "time": "2026-03-24T14:30:14Z",
+            "symbol": "PARR",
+            "side": "sell",
+            "qty": 27.8342,
+            "price": 61.7,
+            "pnl_pct": 0.0,
+            "balance_after": 5543.276489,
+            "notes": "Rotate capital to higher-ranked setups."
+          },
+          {
+            "time": "2026-03-24T14:30:12Z",
+            "symbol": "SM",
+            "side": "sell",
+            "qty": 56.8824,
+            "price": 30.35,
+            "pnl_pct": 0.0,
+            "balance_after": 5543.276489,
+            "notes": "Exit to redeploy into momentum pivots."
+          },
+          {
+            "time": "2026-03-24T14:30:10Z",
+            "symbol": "SEDG",
+            "side": "sell",
+            "qty": 44.0427,
+            "price": 47.67,
+            "pnl_pct": 0.0,
+            "balance_after": 5543.276489,
+            "notes": "Exit laggard; rotate into stronger candidates."
+          }
+        ],
+        "portfolio_analysis": "Rotated out of non-candidate holdings into today\u2019s pivot leaders (DELL, FORM, ACLS, VECO) to fully deploy capital across 4 high-momentum, liquid names."
+      }
     }
   ]
 }

@@ -7,11 +7,11 @@
       "win_rate_num": 0.4117647058823529,
       "avg_win": "3.59%",
       "avg_loss": "-9.19%",
-      "balance": "$5,398.05",
+      "balance": "$5,135.24",
       "balance_dir": -1,
-      "trades": 85,
-      "total_actions": 85,
-      "updated": "03/27/26 21:44",
+      "trades": 86,
+      "total_actions": 86,
+      "updated": "03/30/26 21:50",
       "link": "bubbles.html"
     },
     {
@@ -21,11 +21,11 @@
       "win_rate_num": 0.7142857142857143,
       "avg_win": "4.08%",
       "avg_loss": "-15.65%",
-      "balance": "$8,606.47",
+      "balance": "$8,511.00",
       "balance_dir": -1,
-      "trades": 60,
-      "total_actions": 60,
-      "updated": "03/27/26 21:44",
+      "trades": 61,
+      "total_actions": 61,
+      "updated": "03/30/26 21:51",
       "link": "julian.html"
     }
   ],
@@ -400,5 +400,5 @@
       ]
     }
   ],
-  "updated_at": "03/30/26 11:55"
+  "updated_at": "03/30/26 21:51"
 }

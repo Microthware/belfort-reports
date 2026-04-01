@@ -1385,6 +1385,61 @@
         ],
         "portfolio_analysis": "Rotating out of ARM, SQM, and CAR to redeploy into stronger candidates (SNX, ALKS, CENX) from today\u2019s pivots/gap scans; keeping a small cash buffer."
       }
+    },
+    {
+      "saved_at": "2026-04-01T21:53:27.093092Z",
+      "ending_balance": 5552.8851625,
+      "last_trade_time": "2026-04-01T14:32:20Z",
+      "raw": "{\n  \"model_name\": \"AggressiveMomoAI-1.0\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 5476.920894,\n  \"portfolio_analysis\": \"Rotated out of non-candidates (ALKS, CENX) and concentrated into stronger pivots (keep SNX; add MRVL, PVH) to stay fully invested across 3 names with high-liquidity momentum.\",\n  \"trades\": [\n    {\n      \"time\": \"2026-04-01T14:32:05Z\",\n      \"symbol\": \"ALKS\",\n      \"side\": \"sell\",\n      \"qty\": 46.38,\n      \"price\": 35.05,\n      \"pnl_pct\": 0.0,\n      \"balance_after\": 5552.8851625,\n      \"notes\": \"Exit non-candidate to free cash for higher-ranked pivots.\"\n    },\n    {\n      \"time\": \"2026-04-01T14:32:10Z\",\n      \"symbol\": \"CENX\",\n      \"side\": \"sell\",\n      \"qty\": 18.7425,\n      \"price\": 63.51,\n      \"pnl_pct\": 0.0,\n      \"balance_after\": 5552.8851625,\n      \"notes\": \"Rotate capital from lower-ranked setup into stronger momentum names.\"\n    },\n    {\n      \"time\": \"2026-04-01T14:32:15Z\",\n      \"symbol\": \"MRVL\",\n      \"side\": \"buy\",\n      \"qty\": 17.80526610,\n      \"price\": 106.71,\n      \"pnl_pct\": null,\n      \"balance_after\": 5552.8851625,\n      \"notes\": \"Add large-cap pivot leader from today\u2019s list to improve momentum exposure.\"\n    },\n    {\n      \"time\": \"2026-04-01T14:32:20Z\",\n      \"symbol\": \"PVH\",\n      \"side\": \"buy\",\n      \"qty\": 11.9890,\n      \"price\": 76.56,\n      \"pnl_pct\": null,\n      \"balance_after\": 5552.8851625,\n      \"notes\": \"Add second pivot leader; maintain SNX (also a candidate) for a 3-name concentration.\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 5476.920894.\n\n- Include only NEW actions since 2026-03-31T14:31:57Z but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nACLS=100.85, ALKS=35.05, ARCT=11.54, ARM=151.28, ATI=89.25, AVY=186.28, BBIO=66.62, CAR=145.85, CENX=63.51, CMC=59.72, CSTM=27.32, CYCN=6.38, DELL=184.01, DFTX=20.60, F=13.26, FIVE=227.42, FORM=108.07, FSLR=199.65, GNRC=168.02, HPE=23.94, HXL=72.79, IBM=313.09, IDYA=32.18, IRDM=27.96, KOPN=2.44, MMM=167.23, MP=74.11, MRVL=106.71, NET=221.36, OMER=12.08, PARR=61.70, PEGA=65.64, PI=235.83, PROP=2.26, PVH=76.56, QCOM=178.67, QS=15.52, REMX=86.05, SEDG=47.67, SM=30.35, SNX=168.71, SQM=80.94, STX=255.88, TNL=65.14, TSEM=163.63, UNCY=7.12, VECO=36.96, WDC=150.21, WGO=39.39\n\nCANDIDATES_TODAY:\n\n- gap_ups: CYCN\n- pivots: CYCN, CAR, PROP, CSTM, SNX, UNCY, DFTX, OMER, KOPN, PVH, MRVL\n(total candidates: 12)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 1.93\nOPEN_POSITIONS:\n- SNX: qty=16.211250, ref_price=168.7100, first_buy_time=2026-03-31T14:31:50Z\n- ALKS: qty=46.380000, ref_price=35.0500, first_buy_time=2026-03-31T14:31:53Z\n- CENX: qty=18.742500, ref_price=63.5100, first_buy_time=2026-03-31T14:31:57Z\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take high risk approach and concentrate the entire portfolio in 1\u20134 stocks at all times.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 1\u20134 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 1\u20134 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.). It\u2019s OK to be 100% in one.\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "bubbles",
+        "universe": "ALL",
+        "starting_balance": 5476.920894,
+        "trades": [
+          {
+            "time": "2026-04-01T14:32:20Z",
+            "symbol": "PVH",
+            "side": "buy",
+            "qty": 11.989,
+            "price": 76.56,
+            "pnl_pct": null,
+            "balance_after": 5552.8851625,
+            "notes": "Add second pivot leader; maintain SNX (also a candidate) for a 3-name concentration."
+          },
+          {
+            "time": "2026-04-01T14:32:15Z",
+            "symbol": "MRVL",
+            "side": "buy",
+            "qty": 17.8052661,
+            "price": 106.71,
+            "pnl_pct": null,
+            "balance_after": 5552.8851625,
+            "notes": "Add large-cap pivot leader from today\u2019s list to improve momentum exposure."
+          },
+          {
+            "time": "2026-04-01T14:32:10Z",
+            "symbol": "CENX",
+            "side": "sell",
+            "qty": 18.7425,
+            "price": 63.51,
+            "pnl_pct": 0.0,
+            "balance_after": 5552.8851625,
+            "notes": "Rotate capital from lower-ranked setup into stronger momentum names."
+          },
+          {
+            "time": "2026-04-01T14:32:05Z",
+            "symbol": "ALKS",
+            "side": "sell",
+            "qty": 46.38,
+            "price": 35.05,
+            "pnl_pct": 0.0,
+            "balance_after": 5552.8851625,
+            "notes": "Exit non-candidate to free cash for higher-ranked pivots."
+          }
+        ],
+        "portfolio_analysis": "Rotated out of non-candidates (ALKS, CENX) and concentrated into stronger pivots (keep SNX; add MRVL, PVH) to stay fully invested across 3 names with high-liquidity momentum."
+      }
     }
   ]
 }

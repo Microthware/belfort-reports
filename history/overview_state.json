@@ -3,15 +3,15 @@
     {
       "name": "Bubbles",
       "symbols": "ALL",
-      "win_rate": "37.84%",
-      "win_rate_num": 0.3783783783783784,
-      "avg_win": "3.59%",
-      "avg_loss": "-8.32%",
-      "balance": "$5,476.92",
+      "win_rate": "38.46%",
+      "win_rate_num": 0.38461538461538464,
+      "avg_win": "3.90%",
+      "avg_loss": "-8.01%",
+      "balance": "$5,552.89",
       "balance_dir": -1,
-      "trades": 92,
-      "total_actions": 92,
-      "updated": "03/31/26 21:48",
+      "trades": 96,
+      "total_actions": 96,
+      "updated": "04/01/26 21:53",
       "link": "bubbles.html"
     },
     {
@@ -21,11 +21,11 @@
       "win_rate_num": 0.7142857142857143,
       "avg_win": "4.08%",
       "avg_loss": "-15.65%",
-      "balance": "$8,852.17",
+      "balance": "$8,945.37",
       "balance_dir": -1,
-      "trades": 62,
-      "total_actions": 62,
-      "updated": "03/31/26 21:51",
+      "trades": 63,
+      "total_actions": 63,
+      "updated": "04/01/26 21:54",
       "link": "julian.html"
     }
   ],
@@ -400,5 +400,5 @@
       ]
     }
   ],
-  "updated_at": "04/01/26 11:55"
+  "updated_at": "04/01/26 21:54"
 }

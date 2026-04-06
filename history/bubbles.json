@@ -1560,6 +1560,51 @@
         ],
         "portfolio_analysis": "Rotate out of CAR and VSAT to concentrate in SBAC (gap-up + pivot leadership). Fully invested in a single high-ranked name."
       }
+    },
+    {
+      "saved_at": "2026-04-06T21:45:36.709527Z",
+      "ending_balance": 6102.55244708,
+      "last_trade_time": "2026-04-06T14:30:13Z",
+      "raw": "{\n  \"model_name\": \"aggressive-pivot-allocator-v2\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 5861.805624,\n  \"portfolio_analysis\": \"Rotated out of SBAC into stronger pivot candidates CAR and AEHR from today\u2019s list to stay concentrated and nearly fully invested; avoided thin microcaps for liquidity/risk.\",\n  \"trades\": [\n    {\n      \"time\": \"2026-04-06T14:30:10Z\",\n      \"symbol\": \"SBAC\",\n      \"side\": \"sell\",\n      \"qty\": 28.728474,\n      \"price\": 212.42,\n      \"pnl_pct\": 0.0411,\n      \"balance_after\": 6102.55244708,\n      \"notes\": \"Exit to reallocate into higher-momentum pivots; FIFO PnL applied.\"\n    },\n    {\n      \"time\": \"2026-04-06T14:30:12Z\",\n      \"symbol\": \"CAR\",\n      \"side\": \"buy\",\n      \"qty\": 25.1047,\n      \"price\": 145.85,\n      \"pnl_pct\": null,\n      \"balance_after\": 6102.55244708,\n      \"notes\": \"Initiate ~60% allocation on pivot strength and liquidity.\"\n    },\n    {\n      \"time\": \"2026-04-06T14:30:13Z\",\n      \"symbol\": \"AEHR\",\n      \"side\": \"buy\",\n      \"qty\": 46.7900,\n      \"price\": 52.16,\n      \"pnl_pct\": null,\n      \"balance_after\": 6102.55244708,\n      \"notes\": \"Initiate ~40% allocation from pivot list; momentum and volatility-adjusted strength.\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 5861.805624.\n\n- Include only NEW actions since 2026-04-03T14:30:03Z but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nACLS=100.85, AEHR=52.16, ALKS=35.05, AMLX=15.82, ARCT=11.54, ARM=151.28, ATI=89.25, AVY=186.28, BBIO=66.62, CAR=145.85, CENX=63.51, CMC=59.72, CODI=9.55, DELL=184.01, F=13.26, FIVE=227.42, FORM=108.07, FSLR=199.65, GERN=1.75, GNRC=168.02, HPE=23.94, HXL=72.79, IBM=313.09, IDYA=32.18, IRDM=27.96, MMM=167.23, MP=74.11, MRVL=109.51, NET=221.36, PARR=61.70, PEGA=65.64, PI=235.83, PVH=77.11, QCOM=178.67, QS=15.52, REMX=86.05, SBAC=212.42, SEDG=47.67, SIDU=3.67, SKYQ=5.00, SM=30.35, SNX=186.92, SQM=80.94, STX=255.88, TNL=65.14, TSEM=163.63, VECO=36.96, VSAT=53.69, WDC=150.21, WGO=39.39\n\nCANDIDATES_TODAY:\n\n- pivots: SIDU, CAR, AEHR, CODI, SKYQ, AMLX, GERN\n(total candidates: 7)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 0.05\nOPEN_POSITIONS:\n- MRVL: qty=0.000000, ref_price=109.5100, first_buy_time=2026-04-01T14:32:15Z\n- SBAC: qty=28.728474, ref_price=212.4200, first_buy_time=2026-04-02T14:31:03Z\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take high risk approach and concentrate the entire portfolio in 1\u20134 stocks at all times.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 1\u20134 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 1\u20134 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.). It\u2019s OK to be 100% in one.\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "bubbles",
+        "universe": "ALL",
+        "starting_balance": 5861.805624,
+        "trades": [
+          {
+            "time": "2026-04-06T14:30:13Z",
+            "symbol": "AEHR",
+            "side": "buy",
+            "qty": 46.79,
+            "price": 52.16,
+            "pnl_pct": null,
+            "balance_after": 6102.55244708,
+            "notes": "Initiate ~40% allocation from pivot list; momentum and volatility-adjusted strength."
+          },
+          {
+            "time": "2026-04-06T14:30:12Z",
+            "symbol": "CAR",
+            "side": "buy",
+            "qty": 25.1047,
+            "price": 145.85,
+            "pnl_pct": null,
+            "balance_after": 6102.55244708,
+            "notes": "Initiate ~60% allocation on pivot strength and liquidity."
+          },
+          {
+            "time": "2026-04-06T14:30:10Z",
+            "symbol": "SBAC",
+            "side": "sell",
+            "qty": 28.728474,
+            "price": 212.42,
+            "pnl_pct": 0.0411,
+            "balance_after": 6102.55244708,
+            "notes": "Exit to reallocate into higher-momentum pivots; FIFO PnL applied."
+          }
+        ],
+        "portfolio_analysis": "Rotated out of SBAC into stronger pivot candidates CAR and AEHR from today\u2019s list to stay concentrated and nearly fully invested; avoided thin microcaps for liquidity/risk."
+      }
     }
   ]
 }

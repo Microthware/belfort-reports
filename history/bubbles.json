@@ -1695,6 +1695,71 @@
         ],
         "portfolio_analysis": "Rotate out of CAR to redeploy into stronger momentum/pivot candidates (INTC, AEHR, AAOI). Concentrate across 3 names (~35/35/30) to stay fully invested with high-conviction setups."
       }
+    },
+    {
+      "saved_at": "2026-04-09T21:53:01.975823Z",
+      "ending_balance": 10966.89462454,
+      "last_trade_time": "2026-04-09T14:31:55Z",
+      "raw": "{\n  \"model_name\": \"AggressiveMultiTF_v1\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10775.07082715,\n  \"portfolio_analysis\": \"Rotating out of INTC and AAOI into stronger pivots (CAR, STZ) while maintaining AEHR from candidates. Fully invested across 3 names with high momentum and liquidity.\",\n  \"trades\": [\n    {\n      \"time\": \"2026-04-09T14:31:12Z\",\n      \"symbol\": \"INTC\",\n      \"side\": \"sell\",\n      \"qty\": 63.974127,\n      \"price\": 61.72,\n      \"pnl_pct\": 0.047,\n      \"balance_after\": 10966.89462454,\n      \"notes\": \"Exit to reallocate into stronger pivots; realized FIFO gain.\"\n    },\n    {\n      \"time\": \"2026-04-09T14:31:20Z\",\n      \"symbol\": \"AAOI\",\n      \"side\": \"sell\",\n      \"qty\": 24.359617,\n      \"price\": 133.30,\n      \"pnl_pct\": null,\n      \"balance_after\": 10966.89462454,\n      \"notes\": \"Rotate capital from non-candidate into higher-ranked setups.\"\n    },\n    {\n      \"time\": \"2026-04-09T14:31:35Z\",\n      \"symbol\": \"CAR\",\n      \"side\": \"buy\",\n      \"qty\": 16.51950273,\n      \"price\": 261.35,\n      \"pnl_pct\": null,\n      \"balance_after\": 10966.89462454,\n      \"notes\": \"New position from today's pivots; strong momentum and liquidity.\"\n    },\n    {\n      \"time\": \"2026-04-09T14:31:45Z\",\n      \"symbol\": \"STZ\",\n      \"side\": \"buy\",\n      \"qty\": 17.65038343,\n      \"price\": 163.07,\n      \"pnl_pct\": null,\n      \"balance_after\": 10966.89462454,\n      \"notes\": \"Large-cap pivot with steady uptrend; complements CAR and AEHR.\"\n    },\n    {\n      \"time\": \"2026-04-09T14:31:55Z\",\n      \"symbol\": \"AEHR\",\n      \"side\": \"hold\",\n      \"qty\": 75.05024,\n      \"price\": 50.25,\n      \"pnl_pct\": null,\n      \"balance_after\": 10966.89462454,\n      \"notes\": \"Maintaining existing candidate position; portfolio fully allocated.\"\n    }\n  ]\n}",
+      "prompt": "You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.\n\n- Starting balance for a new/first run: 10775.07082715.\n\n- Include only NEW actions since 2026-04-08T14:31:10Z but ensure the final 'balance_after' reflects current balance.\n\n- Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).\n\n- You MUST output at least one action for the current day (first run included). Prefer buys from CANDIDATES_TODAY. If truly nothing qualifies, emit a single HOLD with 'balance_after'.\n\n- Allocate ~100% of capital across 1\u20134 positions using PRICES_TODAY (USD). Buys may be fractional shares (qty can be decimal, \u2265 4 places). For each buy, you may decide a dollar allocation and compute qty = allocation_dollars / price.\n\n- For EVERY action you output (buy/sell/hold/rebalance), include 'balance_after' = total portfolio value immediately after that action (cash + positions), valued using PRICES_TODAY.\n\n- For SELL actions, compute 'pnl_pct' from FIFO cost of prior BUYS when possible; keep it numeric (e.g., 0.0123 for +1.23), or null if not computable.\n\n- Keep numbers raw (no % signs in 'pnl_pct').\n\n- End-of-day you may hold 1\u20134 positions or cash if no setups qualify. Always output at least one action with 'balance_after'.\n\nPRICES_TODAY (USD):\n\nAAOI=133.30, ACLS=100.85, AEHR=50.25, ALKS=35.05, ARCT=11.54, ARM=151.28, ATI=89.25, AVY=186.28, BBGI=11.02, BBIO=66.62, BF-B=30.31, CAR=261.35, CELC=124.64, CENX=63.51, CMC=59.72, CYPH=1.00, DELL=184.01, F=13.26, FIVE=227.42, FORM=108.07, FSLR=199.65, GNRC=168.02, HPE=23.94, HTZ=6.57, HXL=72.79, IBM=313.09, IDYA=32.18, INTC=61.72, IRDM=27.96, KODK=12.28, LUMN=7.48, MIST=2.01, MMM=167.23, MP=74.11, MRVL=119.93, NEOG=10.03, NET=221.36, OVID=2.88, PARR=61.70, PDSB=1.07, PEGA=65.64, PHAT=12.64, PI=235.83, PLTZ=35.68, PVH=77.11, PWP=20.29, QCOM=178.67, QS=15.52, REMX=86.05, SATL=7.20, SBAC=212.42, SEDG=47.67, SM=30.35, SNX=186.92, SQM=80.94, STX=255.88, STZ=163.07, TNL=65.14, TSEM=163.63, VECO=36.96, VSAT=53.69, WDC=150.21, WGO=39.39, YSS=36.01, ZNTL=4.42\n\nCANDIDATES_TODAY:\n\n- gap_ups: BBGI, ZNTL, MIST\n- pivots: BBGI, ZNTL, YSS, CYPH, BF-B, CAR, PLTZ, MIST, AEHR, HTZ, NEOG, PHAT, KODK, OVID, SATL, PDSB, CELC, PWP, LUMN, STZ\n(total candidates: 23)\n\nCURRENT_PORTFOLIO_STATE:\n\nAVAILABLE_CASH_USD: 0.00\nOPEN_POSITIONS:\n- MRVL: qty=0.000000, ref_price=119.9300, first_buy_time=2026-04-01T14:32:15Z\n- AEHR: qty=75.050240, ref_price=50.2500, first_buy_time=2026-04-08T14:31:08Z\n- INTC: qty=63.974127, ref_price=61.7200, first_buy_time=2026-04-08T14:31:06Z\n- AAOI: qty=24.359617, ref_price=133.3000, first_buy_time=2026-04-08T14:31:10Z\n\nSchema:\n\n{\n  \"model_name\": \"<string>\",\n  \"universe\": [\"SYM\",\"...\"] | \"ALL\",\n  \"starting_balance\": <number>,\n  \"portfolio_analysis\": \"<string>\",\n  \"trades\": [\n    {\n      \"time\": \"<ISO8601Z>\",\n      \"symbol\": \"<string>\",\n      \"side\": \"buy\"|\"sell\"|\"hold\"|\"rebalance\",\n      \"qty\": <number>,\n      \"price\": <number>,\n      \"pnl_pct\": <number|null>,\n      \"balance_after\": <number>,\n      \"notes\": \"<string>\"\n    }\n  ]\n}\n\n=== STRATEGY CONTEXT ===\n\nObjective\n- You have an aggressive trading style. You research ALL stocks that qualify (market-wide) and must be in the best position every day.\n- You take high risk approach and concentrate the entire portfolio in 1\u20134 stocks at all times.\n\nUniverse\n- Scan the entire market for symbols that meet the rules below (not just a fixed watchlist). In JSON, set \"universe\" to \"ALL\" or a short representative list you actively monitored.\n\nDaily mandate\n- End each day holding 1\u20134 positions and be fully invested unless explicitly holding cash is optimal.\n- If no new entries are taken, you must still rebalance or hold and OUTPUT an action reflecting the current balance (use a \u201cnotes\u201d explanation).\n\nSelection & sizing\n- Rank candidates by a composite of liquidity, momentum (multi-TF), and volatility-adjusted strength.\n- Allocate across 1\u20134 names (e.g., 100% in 1 name, or 60/40, or 40/30/30, etc.). It\u2019s OK to be 100% in one.\n- Use whole-share quantities; reflect the resulting balance_after after each action.\n\nTrade cadence\n- If you\u2019re carrying positions from yesterday, you must either (a) keep them and record a HOLD/REBAlANCE action, or (b) exit and rotate into better.\n- Provide pnl_pct for closed positions when known; for same-day open entries, pnl_pct can be 0 until exit.\n\nRisk & constraints\n- Favor large/mega-cap liquidity; avoid penny stocks.\n- No options; equities/ETFs only.\n\n\nExample HOLD:\n{\n  \"model_name\": \"example\",\n  \"universe\": \"ALL\",\n  \"starting_balance\": 10000.0,\n  \"portfolio_analysis\": \"No new setups; preserving capital.\",\n  \"trades\": [\n    {\"time\":\"2025-10-07T14:30:00Z\",\"symbol\":\"CASH\",\"side\":\"hold\",\"qty\":0,\"price\":0,\"pnl_pct\":null,\"balance_after\":10000.0,\"notes\":\"No change today; waiting for setups.\"}\n  ]\n}\n",
+      "parsed": {
+        "model_name": "bubbles",
+        "universe": "ALL",
+        "starting_balance": 10775.07082715,
+        "trades": [
+          {
+            "time": "2026-04-09T14:31:55Z",
+            "symbol": "AEHR",
+            "side": "hold",
+            "qty": 75.05024,
+            "price": 50.25,
+            "pnl_pct": null,
+            "balance_after": 10966.89462454,
+            "notes": "Maintaining existing candidate position; portfolio fully allocated."
+          },
+          {
+            "time": "2026-04-09T14:31:45Z",
+            "symbol": "STZ",
+            "side": "buy",
+            "qty": 17.65038343,
+            "price": 163.07,
+            "pnl_pct": null,
+            "balance_after": 10966.89462454,
+            "notes": "Large-cap pivot with steady uptrend; complements CAR and AEHR."
+          },
+          {
+            "time": "2026-04-09T14:31:35Z",
+            "symbol": "CAR",
+            "side": "buy",
+            "qty": 16.51950273,
+            "price": 261.35,
+            "pnl_pct": null,
+            "balance_after": 10966.89462454,
+            "notes": "New position from today's pivots; strong momentum and liquidity."
+          },
+          {
+            "time": "2026-04-09T14:31:20Z",
+            "symbol": "AAOI",
+            "side": "sell",
+            "qty": 24.359617,
+            "price": 133.3,
+            "pnl_pct": null,
+            "balance_after": 10966.89462454,
+            "notes": "Rotate capital from non-candidate into higher-ranked setups."
+          },
+          {
+            "time": "2026-04-09T14:31:12Z",
+            "symbol": "INTC",
+            "side": "sell",
+            "qty": 63.974127,
+            "price": 61.72,
+            "pnl_pct": 0.047,
+            "balance_after": 10966.89462454,
+            "notes": "Exit to reallocate into stronger pivots; realized FIFO gain."
+          }
+        ],
+        "portfolio_analysis": "Rotating out of INTC and AAOI into stronger pivots (CAR, STZ) while maintaining AEHR from candidates. Fully invested across 3 names with high momentum and liquidity."
+      }
     }
   ]
 }

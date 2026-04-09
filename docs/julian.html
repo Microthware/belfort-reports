@@ -203,7 +203,7 @@ details[open] > summary::after { content: "▴"; }
     
     <details style="margin-top:14px;">
       <summary>Portfolio Analysis</summary>
-      <div class="inner"><pre>Fully invested across 6 liquid holdings (QCOM, CCJ, REGN, YOU, ARM, HPE) with no available cash. Reviewed candidates (SPIR, AEHR, INTC, AAOI, HUT, SBAC, PDSB, AAOX, AAOI, NESR, ANL) but chose not to rotate given risk/reward at current prices. Holding positions and reassessing tomorrow.</pre></div>
+      <div class="inner"><pre>Dev mode sample (no API key).</pre></div>
     </details>
     
 
@@ -212,9 +212,9 @@ details[open] > summary::after { content: "▴"; }
       <summary>Prompt</summary>
       <div class="inner"><pre>You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.
 
-- Starting balance for a new/first run: 8888.9602869.
+- Starting balance for a new/first run: 9047.833442.
 
-- Include only NEW actions since 2026-04-07T14:35:45Z but ensure the final &#39;balance_after&#39; reflects current balance.
+- Include only NEW actions since 2026-04-08T14:46:00Z but ensure the final &#39;balance_after&#39; reflects current balance.
 
 - Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).
 
@@ -232,26 +232,26 @@ details[open] > summary::after { content: "▴"; }
 
 PRICES_TODAY (USD):
 
-AAOI=132.70, AAOX=41.72, AEHR=63.16, ANL=12.03, ARCT=11.54, ARM=148.91, AVDL=18.52, AVY=179.17, BTSG=32.94, CCJ=115.90, CMC=59.72, DOCN=89.38, EW=81.71, HPE=24.98, HUT=61.43, INTC=58.95, LNG=281.87, MMM=167.23, NESR=24.05, PDSB=0.99, PEGA=65.49, PMI=13.17, QCOM=127.51, REGN=775.53, SBAC=218.71, SPIR=20.50, STLD=148.56, TNL=65.80, TSEM=172.13, WGO=41.20, YOU=50.41
+AEHR=68.86, ARCT=11.54, ARM=149.79, AVDL=18.52, AVY=179.17, BBGI=11.02, BF-B=30.31, BTSG=32.94, CAR=297.08, CCJ=115.54, CELC=124.64, CMC=59.72, CYPH=1.00, DOCN=87.17, EW=79.15, HPE=24.83, HTZ=6.57, KODK=12.28, LNG=281.87, LUMN=7.48, MIST=2.01, MMM=167.23, NEOG=10.03, OVID=2.88, PDSB=1.07, PEGA=65.49, PHAT=12.64, PLTZ=35.68, PMI=13.17, PWP=20.29, QCOM=127.75, REGN=767.85, SATL=7.20, STLD=148.56, STZ=163.07, TNL=65.80, TSEM=172.13, WGO=41.20, YOU=48.99, YSS=36.01, ZNTL=4.42
 
 CANDIDATES_TODAY:
 
-- gap_ups: SPIR, AEHR
-- pivots: SPIR, ANL, AEHR, HUT, AAOX, INTC, SBAC, PDSB, AAOI, NESR
-(total candidates: 12)
+- gap_ups: BBGI, ZNTL, MIST
+- pivots: BBGI, ZNTL, YSS, CYPH, BF-B, CAR, PLTZ, MIST, AEHR, HTZ, NEOG, PHAT, KODK, OVID, SATL, PDSB, CELC, PWP, LUMN, STZ
+(total candidates: 23)
 
 CURRENT_PORTFOLIO_STATE:
 
 AVAILABLE_CASH_USD: 0.00
 OPEN_POSITIONS:
-- QCOM: qty=11.728139, ref_price=127.5100, first_buy_time=2025-10-27T14:30:03Z
-- EW: qty=0.000000, ref_price=81.7100, first_buy_time=2025-10-27T14:30:04Z
-- CCJ: qty=14.022775, ref_price=115.9000, first_buy_time=2025-10-28T14:35:20Z
-- REGN: qty=2.039792, ref_price=775.5300, first_buy_time=2025-10-28T14:35:30Z
-- DOCN: qty=0.000000, ref_price=89.3800, first_buy_time=2026-03-18T14:30:14Z
-- YOU: qty=28.060993, ref_price=50.4100, first_buy_time=2026-03-23T14:30:06Z
-- ARM: qty=9.733004, ref_price=148.9100, first_buy_time=2026-03-25T14:30:20Z
-- HPE: qty=59.300346, ref_price=24.9800, first_buy_time=2026-03-25T14:30:21Z
+- QCOM: qty=11.728139, ref_price=127.7500, first_buy_time=2025-10-27T14:30:03Z
+- EW: qty=0.000000, ref_price=79.1500, first_buy_time=2025-10-27T14:30:04Z
+- CCJ: qty=14.022775, ref_price=115.5400, first_buy_time=2025-10-28T14:35:20Z
+- REGN: qty=2.039792, ref_price=767.8500, first_buy_time=2025-10-28T14:35:30Z
+- DOCN: qty=0.000000, ref_price=87.1700, first_buy_time=2026-03-18T14:30:14Z
+- YOU: qty=28.060993, ref_price=48.9900, first_buy_time=2026-03-23T14:30:06Z
+- ARM: qty=9.733004, ref_price=149.7950, first_buy_time=2026-03-25T14:30:20Z
+- HPE: qty=59.300346, ref_price=24.8300, first_buy_time=2026-03-25T14:30:21Z
 
 Schema:
 
@@ -318,24 +318,7 @@ Example HOLD:
     
     <details style="margin-top:12px;">
       <summary>Response</summary>
-      <div class="inner"><pre>{
-  &#34;model_name&#34;: &#34;aggressive-allocator-v1&#34;,
-  &#34;universe&#34;: &#34;ALL&#34;,
-  &#34;starting_balance&#34;: 8888.9602869,
-  &#34;portfolio_analysis&#34;: &#34;Fully invested across 6 liquid holdings (QCOM, CCJ, REGN, YOU, ARM, HPE) with no available cash. Reviewed candidates (SPIR, AEHR, INTC, AAOI, HUT, SBAC, PDSB, AAOX, AAOI, NESR, ANL) but chose not to rotate given risk/reward at current prices. Holding positions and reassessing tomorrow.&#34;,
-  &#34;trades&#34;: [
-    {
-      &#34;time&#34;: &#34;2026-04-08T14:46:00Z&#34;,
-      &#34;symbol&#34;: &#34;CASH&#34;,
-      &#34;side&#34;: &#34;hold&#34;,
-      &#34;qty&#34;: 0,
-      &#34;price&#34;: 0,
-      &#34;pnl_pct&#34;: null,
-      &#34;balance_after&#34;: 9047.833442,
-      &#34;notes&#34;: &#34;No changes; maintain current portfolio. 0.00 cash available.&#34;
-    }
-  ]
-}</pre></div>
+      <div class="inner"><pre>{&#34;model_name&#34;: &#34;julian&#34;, &#34;universe&#34;: &#34;ALL&#34;, &#34;starting_balance&#34;: 10000.0, &#34;portfolio_analysis&#34;: &#34;Dev mode sample (no API key).&#34;, &#34;trades&#34;: []}</pre></div>
     </details>
     
   </div>

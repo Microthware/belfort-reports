@@ -212,9 +212,9 @@ details[open] > summary::after { content: "▴"; }
       <summary>Prompt</summary>
       <div class="inner"><pre>You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.
 
-- Starting balance for a new/first run: 9047.833442.
+- Starting balance for a new/first run: 10000.0.
 
-- Include only NEW actions since 2026-04-08T14:46:00Z but ensure the final &#39;balance_after&#39; reflects current balance.
+- Include only NEW actions since yesterday but ensure the final &#39;balance_after&#39; reflects current balance.
 
 - Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).
 
@@ -232,26 +232,26 @@ details[open] > summary::after { content: "▴"; }
 
 PRICES_TODAY (USD):
 
-AEHR=68.86, ARCT=11.54, ARM=149.79, AVDL=18.52, AVY=179.17, BBGI=11.02, BF-B=30.31, BTSG=32.94, CAR=297.08, CCJ=115.54, CELC=124.64, CMC=59.72, CYPH=1.00, DOCN=87.17, EW=79.15, HPE=24.83, HTZ=6.57, KODK=12.28, LNG=281.87, LUMN=7.48, MIST=2.01, MMM=167.23, NEOG=10.03, OVID=2.88, PDSB=1.07, PEGA=65.49, PHAT=12.64, PLTZ=35.68, PMI=13.17, PWP=20.29, QCOM=127.75, REGN=767.85, SATL=7.20, STLD=148.56, STZ=163.07, TNL=65.80, TSEM=172.13, WGO=41.20, YOU=48.99, YSS=36.01, ZNTL=4.42
+AAOI=150.60, AAOX=53.33, ARCT=11.54, ARM=148.93, AVDL=18.52, AVL=46.92, AVY=179.17, BTSG=32.94, CCJ=116.04, CMC=59.72, DOCN=75.59, EW=77.87, HPE=24.89, LGN=63.20, LNG=281.87, LWLG=10.60, MMM=167.23, NBIS=144.97, OGN=8.83, PEGA=65.49, PMI=13.17, QCOM=128.06, REGN=748.87, SIDU=4.25, SKYQ=12.59, SPIR=21.56, STLD=148.56, TNL=65.80, TSEM=172.13, VERA=45.04, WGO=41.20, YOU=46.17, ZNTL=6.61
 
 CANDIDATES_TODAY:
 
-- gap_ups: BBGI, ZNTL, MIST
-- pivots: BBGI, ZNTL, YSS, CYPH, BF-B, CAR, PLTZ, MIST, AEHR, HTZ, NEOG, PHAT, KODK, OVID, SATL, PDSB, CELC, PWP, LUMN, STZ
-(total candidates: 23)
+- gap_ups: SKYQ, ZNTL, SPIR, OGN
+- pivots: SKYQ, ZNTL, SIDU, LWLG, SPIR, AAOX, OGN, VERA, AAOI, NBIS, AVL, LGN
+(total candidates: 16)
 
 CURRENT_PORTFOLIO_STATE:
 
 AVAILABLE_CASH_USD: 0.00
 OPEN_POSITIONS:
-- QCOM: qty=11.728139, ref_price=127.7500, first_buy_time=2025-10-27T14:30:03Z
-- EW: qty=0.000000, ref_price=79.1500, first_buy_time=2025-10-27T14:30:04Z
-- CCJ: qty=14.022775, ref_price=115.5400, first_buy_time=2025-10-28T14:35:20Z
-- REGN: qty=2.039792, ref_price=767.8500, first_buy_time=2025-10-28T14:35:30Z
-- DOCN: qty=0.000000, ref_price=87.1700, first_buy_time=2026-03-18T14:30:14Z
-- YOU: qty=28.060993, ref_price=48.9900, first_buy_time=2026-03-23T14:30:06Z
-- ARM: qty=9.733004, ref_price=149.7950, first_buy_time=2026-03-25T14:30:20Z
-- HPE: qty=59.300346, ref_price=24.8300, first_buy_time=2026-03-25T14:30:21Z
+- QCOM: qty=11.728139, ref_price=128.0600, first_buy_time=2025-10-27T14:30:03Z
+- EW: qty=0.000000, ref_price=77.8700, first_buy_time=2025-10-27T14:30:04Z
+- CCJ: qty=14.022775, ref_price=116.0400, first_buy_time=2025-10-28T14:35:20Z
+- REGN: qty=2.039792, ref_price=748.8700, first_buy_time=2025-10-28T14:35:30Z
+- DOCN: qty=0.000000, ref_price=75.5900, first_buy_time=2026-03-18T14:30:14Z
+- YOU: qty=28.060993, ref_price=46.1700, first_buy_time=2026-03-23T14:30:06Z
+- ARM: qty=9.733004, ref_price=148.9300, first_buy_time=2026-03-25T14:30:20Z
+- HPE: qty=59.300346, ref_price=24.8900, first_buy_time=2026-03-25T14:30:21Z
 
 Schema:
 

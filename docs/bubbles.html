@@ -212,9 +212,9 @@ details[open] > summary::after { content: "▴"; }
       <summary>Prompt</summary>
       <div class="inner"><pre>You are an autonomous trading agent. Reply with STRICT JSON ONLY (no commentary, no code fences) following the schema documented below.
 
-- Starting balance for a new/first run: 10966.89462454.
+- Starting balance for a new/first run: 10000.0.
 
-- Include only NEW actions since 2026-04-09T14:31:55Z but ensure the final &#39;balance_after&#39; reflects current balance.
+- Include only NEW actions since yesterday but ensure the final &#39;balance_after&#39; reflects current balance.
 
 - Today you MUST honor CURRENT_PORTFOLIO_STATE (see below). You may SELL or HOLD existing positions, and you may BUY new ones only if AVAILABLE_CASH_USD is sufficient. NEVER spend more than AVAILABLE_CASH_USD and NEVER sell more than currently held (FIFO).
 
@@ -232,22 +232,22 @@ details[open] > summary::after { content: "▴"; }
 
 PRICES_TODAY (USD):
 
-AAOI=133.30, AAOX=53.33, ACLS=100.85, AEHR=70.43, ALKS=35.05, ARCT=11.54, ARM=151.28, ATI=89.25, AVL=46.92, AVY=186.28, BBIO=66.62, CAR=299.94, CENX=63.51, CMC=59.72, DELL=184.01, F=13.26, FIVE=227.42, FORM=108.07, FSLR=199.65, GNRC=168.02, HPE=23.94, HXL=72.79, IBM=313.09, IDYA=32.18, INTC=61.72, IRDM=27.96, LGN=63.20, LWLG=10.60, MMM=167.23, MP=74.11, MRVL=128.49, NBIS=144.97, NET=221.36, OGN=8.83, PARR=61.70, PEGA=65.64, PI=235.83, PVH=77.11, QCOM=178.67, QS=15.52, REMX=86.05, SBAC=212.42, SEDG=47.67, SIDU=4.25, SKYQ=12.59, SM=30.35, SNX=186.92, SPIR=21.56, SQM=80.94, STX=255.88, STZ=166.15, TNL=65.14, TSEM=163.63, VECO=36.96, VERA=45.04, VSAT=53.69, WDC=150.21, WGO=39.39, ZNTL=6.61
+AAOI=133.30, ACLS=100.85, AEHR=71.66, ALAB=166.79, ALKS=35.05, ARCT=11.54, ARM=151.28, ARW=174.90, ATI=89.25, AVT=73.48, AVY=186.28, BBIO=66.62, BEAM=30.18, CAPR=34.54, CAR=261.35, CENX=63.51, CMC=59.72, CRWV=110.27, DELL=184.01, F=13.26, FIVE=227.42, FORM=108.07, FSLR=199.65, GNRC=168.02, HPE=23.94, HURA=2.87, HXL=72.79, IBM=313.09, IDYA=32.18, INTC=61.72, IRDM=27.96, LEG=11.25, LPTH=14.41, MMM=167.23, MP=74.11, MRVL=131.30, NET=221.36, NOK=10.37, OPTX=11.66, PARR=61.70, PEGA=65.64, PENG=24.38, PI=235.83, PVH=77.11, QCOM=178.67, QS=15.52, REMX=86.05, RMSG=2.70, SAFX=1.05, SBAC=212.42, SEDG=47.67, SGML=17.39, SIDU=4.93, SM=30.35, SNEX=99.37, SNX=186.92, SPIR=23.14, SQM=80.94, STX=255.88, STZ=164.60, TNL=65.14, TSEM=163.63, TSSI=14.84, VECO=36.96, VSAT=53.69, WDC=150.21, WGO=39.39
 
 CANDIDATES_TODAY:
 
-- gap_ups: SKYQ, ZNTL, SPIR, OGN
-- pivots: SKYQ, ZNTL, SIDU, LWLG, SPIR, AAOX, OGN, VERA, AAOI, NBIS, AVL, LGN
-(total candidates: 16)
+- gap_ups: RMSG, LEG
+- pivots: RMSG, CAR, HURA, SIDU, TSSI, LPTH, SGML, OPTX, CAPR, ALAB, BEAM, ARW, SPIR, LEG, SNEX, AVT, SAFX, PENG, NOK, CRWV
+(total candidates: 22)
 
 CURRENT_PORTFOLIO_STATE:
 
 AVAILABLE_CASH_USD: 0.00
 OPEN_POSITIONS:
-- CAR: qty=16.519503, ref_price=299.9400, first_buy_time=2026-04-09T14:31:35Z
-- MRVL: qty=0.000000, ref_price=128.4900, first_buy_time=2026-04-01T14:32:15Z
-- AEHR: qty=75.050240, ref_price=70.4300, first_buy_time=2026-04-08T14:31:08Z
-- STZ: qty=17.650383, ref_price=166.1500, first_buy_time=2026-04-09T14:31:45Z
+- CAR: qty=16.519503, ref_price=261.3500, first_buy_time=2026-04-09T14:31:35Z
+- MRVL: qty=0.000000, ref_price=131.3000, first_buy_time=2026-04-01T14:32:15Z
+- AEHR: qty=75.050240, ref_price=71.6600, first_buy_time=2026-04-08T14:31:08Z
+- STZ: qty=17.650383, ref_price=164.6000, first_buy_time=2026-04-09T14:31:45Z
 
 Schema:
 

@@ -11,7 +11,7 @@
       "balance_dir": 1,
       "trades": 119,
       "total_actions": 119,
-      "updated": "04/20/26 21:53",
+      "updated": "04/21/26 21:50",
       "link": "bubbles.html"
     },
     {
@@ -25,7 +25,7 @@
       "balance_dir": -1,
       "trades": 68,
       "total_actions": 68,
-      "updated": "04/20/26 21:53",
+      "updated": "04/21/26 21:50",
       "link": "julian.html"
     }
   ],
@@ -400,5 +400,5 @@
       ]
     }
   ],
-  "updated_at": "04/21/26 12:00"
+  "updated_at": "04/21/26 21:50"
 }
